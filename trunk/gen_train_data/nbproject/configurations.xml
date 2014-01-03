@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="69">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="4">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <qt>
+        <modules>core gui network opengl phonon qt3support sql svg xml webkit</modules>
+      </qt>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include</pElem>
+            <pElem>/usr/include/opencv</pElem>
+            <pElem>/usr/include/qt4/Qt</pElem>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>../nn_lib</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/lib</pElem>
+            <pElem>/usr/lib32</pElem>
+          </linkerAddLib>
+          <linkerLibItems>
+            <linkerLibLibItem>cv</linkerLibLibItem>
+            <linkerLibLibItem>cvaux</linkerLibLibItem>
+            <linkerLibLibItem>cxcore</linkerLibLibItem>
+            <linkerLibLibItem>highgui</linkerLibLibItem>
+            <linkerLibLibItem>ml</linkerLibLibItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../nn_lib"
+                            CT="3"
+                            CN="Debug"
+                            AC="true"
+                            BL="true"
+                            WD="../nn_lib"
+                            BC="${MAKE}  -f Makefile CONF=Debug"
+                            CC="${MAKE}  -f Makefile CONF=Debug clean"
+                            OP="dist/Debug/GNU-Linux-x86/libnn_lib.a">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibLibItem>fann</linkerLibLibItem>
+            <linkerLibLibItem>qt-mt</linkerLibLibItem>
+            <linkerLibLibItem>QtCore</linkerLibLibItem>
+            <linkerLibLibItem>QtGui</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+        <requiredProjects>
+          <makeArtifact PL="../nn_lib"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="true"
+                        WD="../nn_lib"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="dist/Debug/GNU-Linux-x86/libnn_lib.a">
+          </makeArtifact>
+        </requiredProjects>
+      </compileType>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
