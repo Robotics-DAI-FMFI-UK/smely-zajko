@@ -14,3 +14,5 @@ gen_train_data/ - the application to generate the training data - unfortunately 
 
 destination.txt - contains GPS coordinates of the robot destination location
 *.net - a trained neural network
+
+postman/ - contains application for postman delivery project
