@@ -1,7 +1,7 @@
 #ifndef MAIN_H 
 #define MAIN_H 
 
-#define F_CPU 14745600UL
+#include "fcpu.h"
 
 #include <avr/io.h>
 #include <avr/wdt.h>

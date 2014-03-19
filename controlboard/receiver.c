@@ -57,7 +57,7 @@ ISR(INT5_vect)  //receiver left/right
 			if (tm < -140) tm = 0;
 			tm *= -1;
 			//int new_dir = tm * 40 / 110;
-			int new_dir = (tm * abs(tm) + 50*tm)/450;
+			int new_dir = (tm * abs(tm) + 50*tm)/180;
 
 			if (new_dir != dir)
 			{

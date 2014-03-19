@@ -13,6 +13,8 @@ volatile int8_t THRESHOLD_OBSTACLE_M = 80;
 static uint8_t distL = 255;
 static uint8_t distM = 255;
 static uint8_t distR = 255;
+static uint8_t distSL = 255;
+static uint8_t distSR = 255;
 
 
 void unblock()
@@ -22,7 +24,6 @@ void unblock()
 	wait(10);
 	blocked = 0;
 }
-
 
 void initialization(void)
 {
@@ -81,7 +82,7 @@ void remote_controll(void)
 			stop();
         }
 		last_remote_override = remote_override;
-	 }			
+	}			
 }
 
 
@@ -95,6 +96,8 @@ void obstacle_avoidance(void)
 	//load sampled distance values
 	distL = 200; 
 	distR = 200; 
+	distSL = 200;
+	distSR = 200;
 	distM = srf08_echos[0];
 
 	if (distM < 25) distM = 200;
@@ -133,15 +136,13 @@ void status_reporting()
 	  
 	  // produce regular polling output
 	  int32_t sumL = offsetL;
-	  if (stepL < 0) sumL -= (-stepL);
-	  else sumL += stepL;
+	  sumL += stepL;
 	  int32_t sumR = offsetR;
-	  if (stepR < 0) sumR -= (-stepR);
-	  else sumR += stepR;
+	  sumR += stepR;
 
-      sprintf(prnbuf, "@%ld %ld %d %d %d %d %u %u %u\n\r", 
-	               sumL, sumR, act_speedL, act_speedR, blocked,
-				   obstacle, distL, distM, distR);
+      sprintf(prnbuf, "@%ld %ld %d %d %d %d %u %u %u %u %u\n\r", 
+	               sumL, sumR, current_speedL, current_speedR, blocked,
+				   obstacle, distL, distM, distR, distSL, distSR);
 
       // send it (in the background)
 	  usart1_putstr();       
@@ -150,8 +151,34 @@ void status_reporting()
 ///////////////////////////////////////////////////////////////////////////////
 int main(void)
 {
-    initialization();
+	int i;
+	initialization();
 
+/*	for (i = SERVO_STOP; i < SERVO_FW; i++)
+	{
+		wait(4);
+		set_servo(2, i);
+		set_servo(3, i);
+		steering();
+		status_reporting();
+    }
+
+	for (i = 0; i < 10; i++)
+	{
+		wait(1000);
+  	    steering();
+	    status_reporting();
+    }
+
+    for (i = SERVO_FW; i > SERVO_STOP; i--)
+	{
+		wait(4);
+		set_servo(2, i);
+	    set_servo(3, i);
+  	    steering();
+	    status_reporting();
+    }
+*/
 	while(1)
 	{
 	  remote_controll();
