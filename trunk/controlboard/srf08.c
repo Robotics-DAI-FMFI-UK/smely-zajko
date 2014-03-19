@@ -33,9 +33,9 @@ void srf08_sample(uint8_t adr)
     i2cMasterReceiveNI(adr, 1, buf);
 	_delay_ms(1);
 	waiting++;
-  } while ((waiting<18) && (buf[0] == (uint8_t)0x00)); //while the value is not ready, we will read 0x00 from the sensor 
+  } while ((waiting<30) && (buf[0] == (uint8_t)0x00)); //while the value is not ready, we will read 0x00 from the sensor 
 
-  if (waiting >= 18) return;  
+  if (waiting >= 30) return;  
 
   //for (i = 0; i < 17; i++)
   for (i = 0; i < 1; i++)

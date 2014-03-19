@@ -10,11 +10,11 @@ extern volatile int8_t speed;
 extern volatile int8_t dir;
 extern volatile int8_t speed_req;
 
-extern uint16_t act_speedL;
-extern uint16_t act_speedR;
+extern volatile int16_t current_speedL;
+extern volatile int16_t current_speedR;
 
-extern uint16_t stepL;
-extern uint16_t stepR;
+extern int16_t stepL;
+extern int16_t stepR;
 
 extern int32_t offsetL;
 extern int32_t offsetR;
@@ -23,5 +23,7 @@ extern uint8_t blocked;
 extern uint8_t obstacle;
 extern volatile uint8_t ignore_obstacles;
 extern volatile uint8_t red_switch_pressed;
+
+void update_real_spd();
 
 #endif

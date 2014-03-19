@@ -9,7 +9,6 @@ USART1 is the Bluetooth usart, through which the robot receives its commands fro
 
 
 extern volatile char speed_req;
-extern volatile char blocked;
 extern volatile char speed;
 extern volatile char dir;
 extern volatile char reset_steps;
@@ -167,9 +166,6 @@ void process_char(char c)
 				  value = 0;
 				  expect_value = 1;
 				  break;
-        case 'u': blocked = 0;
-		          command = ' ';
-		          break;
         case 'r': reset_steps = 1;
 		          command = ' ';
 				  break;

@@ -1,9 +1,8 @@
 #include "timers.h"
 #include "receiver.h"
+#include "motors.h"
 
 #include <stdio.h>
-
-extern char red_switch_pressed;
 
 static int last_change_PF0 = -1000;
 static uint8_t last_PF0 = 0;
@@ -63,6 +62,7 @@ ISR(TIMER0_COMP_vect)	//this intterrupt occurs 100times/sec
 		}
 	}
 
+    update_real_spd();
 	return;
 }
 
