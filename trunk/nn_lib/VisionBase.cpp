@@ -3,7 +3,8 @@
 #include <cv.h>
 #include <vector>
 #include <opencv/cxcore.h>
-#include <opencv/cxtypes.h>
+//#include <opencv/cxtypes.h>
+#include <opencv2/core/types_c.h>
 
 #include "VisionBase.h"
 

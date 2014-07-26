@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc
 CCC=g++
 CXX=g++
-FC=
+FC=gfortran
 AS=as
 
 # Macros
 CND_PLATFORM=GNU-Linux-x86
 CND_CONF=Debug
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -57,41 +58,41 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/GNU-Linux-x86/libnn_lib.a
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
 
-dist/Debug/GNU-Linux-x86/libnn_lib.a: ${OBJECTFILES}
-	${MKDIR} -p dist/Debug/GNU-Linux-x86
-	${RM} dist/Debug/GNU-Linux-x86/libnn_lib.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a ${OBJECTFILES} 
-	$(RANLIB) dist/Debug/GNU-Linux-x86/libnn_lib.a
+	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
 
 ${OBJECTDIR}/VisionBase.o: VisionBase.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionBase.o VisionBase.cpp
+	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionBase.o VisionBase.cpp
 
 ${OBJECTDIR}/VisionRegionReduced.o: VisionRegionReduced.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
+	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
 
 ${OBJECTDIR}/VisionRegion.o: VisionRegion.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
+	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
 
 ${OBJECTDIR}/VisionHistogram.o: VisionHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionHistogram.o VisionHistogram.cpp
+	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionHistogram.o VisionHistogram.cpp
 
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Debug
-	${RM} dist/Debug/GNU-Linux-x86/libnn_lib.a
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
 
 # Subprojects
 .clean-subprojects:

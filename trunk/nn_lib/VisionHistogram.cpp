@@ -5,7 +5,8 @@
  * Created on Pondelok, 2011, február 28, 14:58
  */
 
-#include <opencv/cxtypes.h>
+//#include <opencv/cxtypes.h>
+#include <opencv2/core/types_c.h>
 
 #include "VisionHistogram.h"
 

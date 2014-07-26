@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="69">
-  <logicalFolder name="root" displayName="root" projectFiles="true">
+<configurationDescriptor version="80">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
       <itemPath>VisionBase.h</itemPath>
       <itemPath>VisionHistogram.h</itemPath>
       <itemPath>VisionRegion.h</itemPath>
       <itemPath>VisionRegionReduced.h</itemPath>
+      <itemPath>../../fann-2.1.0/src/include/fann.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
       <itemPath>VisionBase.cpp</itemPath>
       <itemPath>VisionHistogram.cpp</itemPath>
       <itemPath>VisionRegion.cpp</itemPath>
@@ -40,17 +38,22 @@
   <confs>
     <conf name="Debug" type="3">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
-        <platform>2</platform>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../../fann-2.1.0/src/include</pElem>
+          </incDir>
+        </cTool>
         <ccTool>
           <architecture>1</architecture>
           <incDir>
             <pElem>/usr/include</pElem>
             <pElem>/usr/include/opencv</pElem>
             <pElem>/usr/local/include</pElem>
+            <pElem>../../fann-2.1.0/src/include</pElem>
           </incDir>
         </ccTool>
         <archiverTool>
@@ -59,9 +62,8 @@
     </conf>
     <conf name="Release" type="3">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
-        <platform>2</platform>
       </toolsSet>
       <compileType>
         <cTool>
