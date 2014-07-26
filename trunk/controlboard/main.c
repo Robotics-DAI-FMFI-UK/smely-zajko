@@ -5,16 +5,23 @@
 #include "servo.h"
 #include "motors.h"
 
-#define SRF08_ADDR 0xE8
+// ==============================
+// addresses of SRF08 US sensors:
+//
+//
+//      E8   E6    E4
+//   EA               E2
+//          front
+//
+// ==============================
 
+#define SRF08_ADDR 0xE2
+
+volatile int8_t THRESHOLD_OBSTACLE_SIDE = 25;
 volatile int8_t THRESHOLD_OBSTACLE_LR = 45;
 volatile int8_t THRESHOLD_OBSTACLE_M = 80;
 
-static uint8_t distL = 255;
-static uint8_t distM = 255;
-static uint8_t distR = 255;
-static uint8_t distSL = 255;
-static uint8_t distSR = 255;
+static uint16_t dist[5];
 
 
 void unblock()
@@ -27,6 +34,8 @@ void unblock()
 
 void initialization(void)
 {
+    int i;
+
 	io_init();
 
     wait(500);
@@ -35,10 +44,14 @@ void initialization(void)
 
 	i2cInit();
 
-	wait(100);
+	wait(700);
 
-	srf08_set_range(SRF08_ADDR, (uint8_t)100);
-    srf08_set_gain(SRF08_ADDR, (uint8_t)9);
+    for (i = 0; i < 5; i++)
+	{
+		srf08_set_range(SRF08_ADDR + i * 2, (uint8_t)100);
+    	srf08_set_gain(SRF08_ADDR + i * 2, (uint8_t)9);
+		wait(3);
+	}
 
 	set_leds(0x01); wait(50);
 	set_leds(0x03); wait(60);
@@ -88,23 +101,26 @@ void remote_controll(void)
 
 void obstacle_avoidance(void)
 {
+    static uint8_t which_sensor = 0;
+	    
 	int8_t seen_obstacle = 0;
 
-	srf08_sample(SRF08_ADDR);
+	srf08_sample(SRF08_ADDR + 4);  // always sample center sensor
 	wait(14);
+	dist[2] = srf08_echos[0];
+	if (dist[2] < 25) dist[2] = 200;
 
-	//load sampled distance values
-	distL = 200; 
-	distR = 200; 
-	distSL = 200;
-	distSR = 200;
-	distM = srf08_echos[0];
-
-	if (distM < 25) distM = 200;
+    // and one of the other 4 (round robin)
+	srf08_sample(SRF08_ADDR + which_sensor * 2);
+	wait(14);
+	dist[which_sensor] = srf08_echos[0];
+	which_sensor++;
+	if (which_sensor == 2) which_sensor++;
+	else if (which_sensor == 5) which_sensor = 0;
 
 	//detect obstacle
-	//if ((distL < THRESHOLD_OBSTACLE_LR) || (distR < THRESHOLD_OBSTACLE_LR) || (distM < THRESHOLD_OBSTACLE_M))
-	if ((distR < THRESHOLD_OBSTACLE_LR) || (distM < THRESHOLD_OBSTACLE_M))
+	if ((dist[0] < THRESHOLD_OBSTACLE_SIDE) || (dist[1] < THRESHOLD_OBSTACLE_LR) || (dist[2] < THRESHOLD_OBSTACLE_M)
+	    || (dist[3] < THRESHOLD_OBSTACLE_LR) || (dist[4] < THRESHOLD_OBSTACLE_SIDE))
 		seen_obstacle += 5;
 	else 
 	if (seen_obstacle) seen_obstacle --;
@@ -142,10 +158,10 @@ void status_reporting()
 
       sprintf(prnbuf, "@%ld %ld %d %d %d %d %u %u %u %u %u\n\r", 
 	               sumL, sumR, current_speedL, current_speedR, blocked,
-				   obstacle, distL, distM, distR, distSL, distSR);
+				   obstacle, dist[0], dist[1], dist[2], dist[3], dist[4]);
 
       // send it (in the background)
-	  usart1_putstr();       
+	  usart1_putstr();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -189,4 +205,3 @@ int main(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
