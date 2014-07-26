@@ -18,7 +18,8 @@
 
 #include <cmath>
 #include <float.h>
-#include <opencv/cxtypes.h>
+//#include <opencv/cxtypes.h>
+#include <opencv2/core/types_c.h>
 #include <opencv/cxcore.h>
 #include <opencv/highgui.h>
 

@@ -17,19 +17,20 @@ RANLIB=ranlib
 CC=gcc
 CCC=g++
 CXX=g++
-FC=
+FC=gfortran
 AS=as
 
 # Macros
 CND_PLATFORM=GNU-Linux-x86
 CND_CONF=Debug
 CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
@@ -59,67 +60,67 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lcv -lhighgui -lcvaux -lml -lcxcore ../nn_lib/dist/Debug/GNU-Linux-x86/libnn_lib.a -lfann
+LDLIBSOPTIONS=-L/usr/lib/i386-linux-gnu -L../../fann-2.1.0/src -lopencv_core -lopencv_highgui -lopencv_ml ../nn_lib/dist/Debug/GNU-Linux-x86/libnn_lib.a -lfann -lpthread -lopencv_imgproc -lopencv_legacy
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-Debug.mk dist/Debug/GNU-Linux-x86/robot_controll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll
 
-dist/Debug/GNU-Linux-x86/robot_controll: ../nn_lib/dist/Debug/GNU-Linux-x86/libnn_lib.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ../nn_lib/dist/Debug/GNU-Linux-x86/libnn_lib.a
 
-dist/Debug/GNU-Linux-x86/robot_controll: ${OBJECTFILES}
-	${MKDIR} -p dist/Debug/GNU-Linux-x86
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/EvalDireciton.o: EvalDireciton.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/EvalDireciton.o EvalDireciton.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/EvalDireciton.o EvalDireciton.cpp
 
 ${OBJECTDIR}/BindSerialPorts.o: BindSerialPorts.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/Coordinate.o: Coordinate.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
 
 ${OBJECTDIR}/GpsThread.o: GpsThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
 
 ${OBJECTDIR}/PhoneThread.o: PhoneThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/PhoneThread.o PhoneThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/PhoneThread.o PhoneThread.cpp
 
 ${OBJECTDIR}/JoystickThread.o: JoystickThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/JoystickThread.o JoystickThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/JoystickThread.o JoystickThread.cpp
 
 ${OBJECTDIR}/ImuThread.o: ImuThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
 
 ${OBJECTDIR}/SbotThread.o: SbotThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
 
 ${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -MMD -MP -MF $@.d -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
 
 # Subprojects
 .build-subprojects:
@@ -127,8 +128,8 @@ ${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
-	${RM} -r build/Debug
-	${RM} dist/Debug/GNU-Linux-x86/robot_controll
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll
 
 # Subprojects
 .clean-subprojects:

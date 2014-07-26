@@ -67,9 +67,9 @@ public:
 
     SbotData getData();
 
-    void sendCommand(char *s);
-    int validate(char* devName);
-    void setDeviceName(char* dev_name);
+    void sendCommand(const char *s);
+    int validate(const char* devName);
+    void setDeviceName(const char* dev_name);
  /////////
 private:
     
