@@ -2,6 +2,7 @@
 #include "motors.h"
 #include "servo.h"
 #include "usart1.h"
+#include "receiver.h"
 
 #define F_CPU 14745600UL
 
@@ -117,6 +118,12 @@ void update_real_spd()
 
 void compute_update_spd(void)
 {
+  if ((obstacle && 
+      ((!ignore_obstacles) && 
+	   (!obstacle_override))) || 
+	  blocked) 
+	return;
+  
   if (dir >= 0)
   {
     target_speedL = 40;
@@ -138,7 +145,7 @@ void compute_update_spd(void)
   //usart1_putstr(prnbuf);
 
   speed_req = 0;
-  if ((obstacle && (!ignore_obstacles)) || blocked) return;
+
   //printf("! SET  dir=%d, spd=%d, targetL=%d, targetR=%d,  realL=%d, realR=%d, currL=%d, currR=%d\n", (int)dir, (int)speed, target_speedL, target_speedR, real_speedL, real_speedR, current_speedL, current_speedR);
 }
 

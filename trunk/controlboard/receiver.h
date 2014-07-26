@@ -7,6 +7,7 @@
 #include <ctype.h>
 
 extern volatile uint8_t remote_override;
+extern volatile uint8_t obstacle_override;
 
 
 #endif

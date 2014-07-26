@@ -6,5 +6,7 @@
 #include "misc.h"
 #include "servo.h"
 
+#define RED_SWITCH_PIN 32
+
 #endif
 
