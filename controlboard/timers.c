@@ -5,18 +5,30 @@
 #include <stdio.h>
 
 static int last_change_PF0 = -1000;
+static int last_change_PF1 = -1000;
+static uint8_t last_PF = 0;
 static uint8_t last_PF0 = 0;
-
+static uint8_t last_PF1 = 0;
+static uint8_t pf, pf0, pf1;
+static int tm;
 
 ISR(TIMER3_OVF_vect)	//this intterrupt occurs about 4k-times/sec
 {
-	uint8_t pf0 = PINF & 1;
+	pf = PINF;
+
+	if (pf != last_PF);
+	{
+	  last_PF = pf;
+
+	  pf0 = PINF & 1;
+	  pf1 = PINF & 2;
+
  	  if (pf0 != last_PF0)
 	  {
 	     last_PF0 = pf0;
 		 if (!pf0)
 		 {
-		    int tm = TCNT1;
+		    tm = TCNT1;
 			if (tm < last_change_PF0) tm += ICR1 - last_change_PF0;
 			else tm -= last_change_PF0;
 		    if (tm < 300)
@@ -26,7 +38,24 @@ ISR(TIMER3_OVF_vect)	//this intterrupt occurs about 4k-times/sec
          }
 		 last_change_PF0 = TCNT1;
       }
-	  return;
+	  
+	  if (pf1 != last_PF1)
+	  {
+	     last_PF1 = pf1;
+		 if (!pf1)
+		 {
+		    tm = TCNT1;
+			if (tm < last_change_PF1) tm += ICR1 - last_change_PF1;
+			else tm -= last_change_PF1;
+		    if (tm < 300)
+				obstacle_override = 0;
+            else if (tm < 650)
+				obstacle_override = 1;
+         }
+		 last_change_PF1 = TCNT1;
+      }
+	}
+	return;
 }
 
 int reset_counter = 0;
@@ -45,7 +74,7 @@ ISR(TIMER0_COMP_vect)	//this intterrupt occurs 100times/sec
 		clear_decoleds();
 	}
 	
-	if ((PINF & 64) == 0)
+	if ((PINC & RED_SWITCH_PIN) == 0)
 	{
 		if (!red_switch_pressed)
 	   	{

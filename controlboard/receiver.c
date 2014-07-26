@@ -9,6 +9,7 @@ extern volatile char dir;
 static int last_t1, last_t2;
 
 volatile uint8_t remote_override = 0;
+volatile uint8_t obstacle_override = 0;
 
 ISR(INT4_vect)	//receiver fwd/bwd
 {

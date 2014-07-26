@@ -18,7 +18,7 @@
 #define SRF08_ADDR 0xE2
 
 volatile int8_t THRESHOLD_OBSTACLE_SIDE = 25;
-volatile int8_t THRESHOLD_OBSTACLE_LR = 45;
+volatile int8_t THRESHOLD_OBSTACLE_LR = 30;
 volatile int8_t THRESHOLD_OBSTACLE_M = 80;
 
 static uint16_t dist[5];
@@ -77,6 +77,7 @@ void initialization(void)
 void remote_controll(void)
 {
 	static uint8_t last_remote_override = 2;
+	static uint8_t last_obstacle_override = 2;
 
 	if (remote_override != last_remote_override)
 	{
@@ -95,15 +96,31 @@ void remote_controll(void)
 			stop();
         }
 		last_remote_override = remote_override;
-	}			
+	}
+	
+	if (obstacle_override != last_obstacle_override)
+	{
+	  	if (obstacle_override) 
+		{
+			sprintf(prnbuf, "!r_ig_OB\n\r");
+			usart1_putstr();
+			speed_req = 1;
+		}
+		else 
+		{
+			sprintf(prnbuf, "!r_ni_OB\n\r");
+			usart1_putstr();
+			speed_req = 1;
+        }
+		last_obstacle_override = obstacle_override;
+	}
 }
 
 
 void obstacle_avoidance(void)
 {
-    static uint8_t which_sensor = 0;
-	    
-	int8_t seen_obstacle = 0;
+    static uint8_t which_sensor = 0;	    
+	static int8_t seen_obstacle = 0;
 
 	srf08_sample(SRF08_ADDR + 4);  // always sample center sensor
 	wait(14);
@@ -114,6 +131,8 @@ void obstacle_avoidance(void)
 	srf08_sample(SRF08_ADDR + which_sensor * 2);
 	wait(14);
 	dist[which_sensor] = srf08_echos[0];
+	if (dist[which_sensor] < 10) dist[which_sensor] = 200;
+
 	which_sensor++;
 	if (which_sensor == 2) which_sensor++;
 	else if (which_sensor == 5) which_sensor = 0;

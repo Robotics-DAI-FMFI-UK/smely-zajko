@@ -35,8 +35,8 @@ static inline void io_init(void)
 	DDRG = _BV(1);	//the decorational LEDs
 	PORTG = _BV(0);//the port whose sole purpose is to have a gpio jumper
 
-	DDRC = 64 + 128;  // US1 & US2 sample request pins (0 = no sample, 1 (min.20 uS) = sample)
-	PORTC = 32;    // big red switch pull-up ON
+	//DDRC = 64 + 128;  // US1 & US2 sample request pins (0 = no sample, 1 (min.20 uS) = sample)
+	PORTC = RED_SWITCH_PIN;    // big red switch pull-up ON
 
 	DDRA = _BV(4) | _BV(5) | _BV(6) | _BV(7);
 	PORTA = _BV(0) | _BV(1) | _BV(2) | _BV(3);
@@ -59,7 +59,6 @@ static inline void io_init(void)
     PORTE = 0;
 
 	DDRF = 8;    // relay for switching off US distance sensors
-	PORTF = 64;  // red switch on pin6 has pullup on, relay is ON in 0 position
 
     // INT4 and INT5 (remote control receiver) generate INT4/5 on toggle
 	// (INT4 = OC3B = PE4)
