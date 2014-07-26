@@ -73,7 +73,7 @@ slightly in each iteration
 */
 
 
-#define UPDATE_FREQUENCY 1
+#define UPDATE_FREQUENCY 3
 
 static volatile uint8_t next_updateL;
 static volatile uint8_t next_updateR;
