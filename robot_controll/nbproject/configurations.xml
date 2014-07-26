@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="69">
-  <logicalFolder name="root" displayName="root" projectFiles="true">
+<configurationDescriptor version="80">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
       <itemPath>BindSerialPorts.h</itemPath>
       <itemPath>DataTypes.h</itemPath>
       <itemPath>EvalDireciton.h</itemPath>
@@ -14,16 +13,15 @@
       <itemPath>LocalizationAndPlaning.h</itemPath>
       <itemPath>PhoneThread.h</itemPath>
       <itemPath>SbotThread.h</itemPath>
+      <itemPath>../../fann-2.1.0/src/include/fann.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
       <itemPath>BindSerialPorts.cpp</itemPath>
       <itemPath>Coordinate.cpp</itemPath>
       <itemPath>Coordinate.h</itemPath>
@@ -52,25 +50,32 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
-        <platform>2</platform>
       </toolsSet>
       <compileType>
+        <cTool>
+          <incDir>
+            <pElem>../../fann-2.1.0/src/include</pElem>
+          </incDir>
+        </cTool>
         <ccTool>
           <incDir>
             <pElem>../rapidxml-1.13</pElem>
             <pElem>/usr/include/opencv</pElem>
             <pElem>../nn_lib</pElem>
+            <pElem>../../fann-2.1.0/src/include</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/lib/i386-linux-gnu</pElem>
+            <pElem>../../fann-2.1.0/src</pElem>
+          </linkerAddLib>
           <linkerLibItems>
-            <linkerLibLibItem>cv</linkerLibLibItem>
-            <linkerLibLibItem>highgui</linkerLibLibItem>
-            <linkerLibLibItem>cvaux</linkerLibLibItem>
-            <linkerLibLibItem>ml</linkerLibLibItem>
-            <linkerLibLibItem>cxcore</linkerLibLibItem>
+            <linkerLibLibItem>opencv_core</linkerLibLibItem>
+            <linkerLibLibItem>opencv_highgui</linkerLibLibItem>
+            <linkerLibLibItem>opencv_ml</linkerLibLibItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../nn_lib"
                             CT="3"
@@ -84,15 +89,17 @@
               </makeArtifact>
             </linkerLibProjectItem>
             <linkerLibLibItem>fann</linkerLibLibItem>
+            <linkerLibLibItem>pthread</linkerLibLibItem>
+            <linkerLibLibItem>opencv_imgproc</linkerLibLibItem>
+            <linkerLibLibItem>opencv_legacy</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
-        <platform>2</platform>
       </toolsSet>
       <compileType>
         <cTool>

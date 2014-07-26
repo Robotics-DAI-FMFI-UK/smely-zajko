@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <opencv/highgui.h>
 #include <sys/time.h>
@@ -168,8 +169,9 @@ int main(int argc, char** argv) {
     
     //loc.readMap( "../maps/wien.osm" );
     //loc.readMap( (char *)"../maps/stromovka.osm" );
-    loc.readMap( (char *)"../maps/lodz.osm" );
-
+    //loc.readMap( (char *)"../maps/lodz.osm" );
+    loc.readMap( (char *)"../maps/homologacie_fei.osm" );
+    
     loc.readDestination( (char *)"../destination.txt");
     cvSetMouseCallback( "localization", loc_mouse_callback, NULL );
 
@@ -272,8 +274,8 @@ int main(int argc, char** argv) {
 
         cvResize( frame, tmp_frame );
 
-        cvFlip( tmp_frame, tmp_frame, 0);
-        cvFlip( tmp_frame, tmp_frame, 1);
+        //cvFlip( tmp_frame, tmp_frame, 0);
+        //cvFlip( tmp_frame, tmp_frame, 1);
 
         if(START_TIMER){
            timer();

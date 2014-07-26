@@ -54,12 +54,12 @@ SbotThread::SbotThread(){
     end = true; //TODO: 
 }
 
-void SbotThread::setDeviceName(char* dev_name){
+void SbotThread::setDeviceName(const char* dev_name){
     strcpy(device_name, dev_name );
     end = false;
 }
 
-int SbotThread::validate(char* devName){
+int SbotThread::validate(const char* devName){
     //char *command="plink /dev/ttyUSB0 -serial -sercfg 115200,N,n,8,1";
     char command[128];
 
@@ -212,7 +212,7 @@ void* SbotThread::mainLoop(void*) {
               &result->lspeed, &result->rspeed,
               &blocked, &obstacle,
               &result->distRR, &result->distFR,
-              &result->distM, &result->distRL, &result->distFL);
+              &result->distM, &result->distFL, &result->distRL);
 
             result->blocked = (blocked);
             result->obstacle = (obstacle);
@@ -274,7 +274,7 @@ void SbotThread::stop(){
     }
 }
 
-void SbotThread::sendCommand(char *s) {
+void SbotThread::sendCommand(const char *s) {
 
     if (end) {
         return;
