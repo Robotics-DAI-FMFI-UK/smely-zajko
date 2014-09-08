@@ -39,8 +39,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Coordinate.o \
 	${OBJECTDIR}/GpsThread.o \
-	${OBJECTDIR}/PhoneThread.o \
-	${OBJECTDIR}/JoystickThread.o \
 	${OBJECTDIR}/ImuThread.o \
 	${OBJECTDIR}/SbotThread.o \
 	${OBJECTDIR}/LocalizationAndPlaning.o
@@ -96,16 +94,6 @@ ${OBJECTDIR}/GpsThread.o: GpsThread.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
-
-${OBJECTDIR}/PhoneThread.o: PhoneThread.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/PhoneThread.o PhoneThread.cpp
-
-${OBJECTDIR}/JoystickThread.o: JoystickThread.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/JoystickThread.o JoystickThread.cpp
 
 ${OBJECTDIR}/ImuThread.o: ImuThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
