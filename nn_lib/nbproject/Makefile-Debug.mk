@@ -34,6 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/VisionBaseNew.o \
 	${OBJECTDIR}/VisionBase.o \
 	${OBJECTDIR}/VisionRegionReduced.o \
 	${OBJECTDIR}/VisionRegion.o \
@@ -65,6 +66,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a: ${OBJECTFILES}
 	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
+
+${OBJECTDIR}/VisionBaseNew.o: VisionBaseNew.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -I/usr/include -I/usr/include/opencv -I/usr/local/include -I../../fann-2.1.0/src/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionBaseNew.o VisionBaseNew.cpp
 
 ${OBJECTDIR}/VisionBase.o: VisionBase.cpp 
 	${MKDIR} -p ${OBJECTDIR}

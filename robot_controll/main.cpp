@@ -15,11 +15,15 @@
 #include <string.h>
 #include <opencv/highgui.h>
 #include <sys/time.h>
-
+/*
+//#############################
 #include "VisionBase.h"
 #include "VisionRegionReduced.h"
 #include "VisionRegion.h"
 #include "VisionHistogram.h"
+*/
+#include "VisionBaseNew.h"
+
 
 #include "EvalDireciton.h"
 #include "SbotThread.h"
@@ -37,13 +41,17 @@ const bool USE_LOCALIZATION = 0;
 //const bool START_SBOT = 0;
 //const bool START_JOYSTICK = 0;
 bool START_TIMER = 1;
+const int camera_w = 320;
+const int camera_h = 240;
 
 //VisionHistogram nn(320, 240, 6, 6, 12);  //(720, 576, 6, 6, 12);
 //VisionBase nn(320, 240, 4, 4);
-VisionBase nn(320, 240, 6, 6);
+//VisionBase nn(320, 240, 6, 6);
+//EvalDireciton ed( nn.image_width*0.4, nn.image_height*0.7, 10, nn.image_width, nn.image_height );
+//#############################
+VisionBase nn(camera_w,camera_h, 5, 5, 5, 5, 1, 1);
 
-EvalDireciton ed( nn.image_width*0.4, nn.image_height*0.7, 10, nn.image_width, nn.image_height );
-
+EvalDireciton ed( (nn.out_width)*0.4, (nn.out_height)*0.7, 10, nn.out_width, nn.out_height);
 FILE* mainLog;
 int log_counter=0;
 bool autonomy = true;
@@ -151,10 +159,11 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    IplImage* empty_frame = cvCreateImage( cvSize( 360, 240 ), 8, 3);
+    IplImage* empty_frame = cvCreateImage( cvSize( camera_w, camera_h ), 8, 3);
 
     cvNamedWindow( "camera", CV_WINDOW_AUTOSIZE );
-    cvNamedWindow( "path", CV_WINDOW_AUTOSIZE );
+    //cvNamedWindow( "path", CV_WINDOW_AUTOSIZE );
+    cvNamedWindow( "path", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO );//Win.normal dovoluje resize lebo out je drobny a obrazok sa stretchne, keepratio je obvious
     cvNamedWindow( "localization", CV_WINDOW_AUTOSIZE );
 
     cvShowImage( "camera", empty_frame );
@@ -170,7 +179,8 @@ int main(int argc, char** argv) {
     //loc.readMap( "../maps/wien.osm" );
     //loc.readMap( (char *)"../maps/stromovka.osm" );
     //loc.readMap( (char *)"../maps/lodz.osm" );
-    loc.readMap( (char *)"../maps/homologacie_fei.osm" );
+    //loc.readMap( (char *)"../maps/homologacie_fei.osm" );
+    loc.readMap( (char *)"../maps/botanicka.osm" );
     
     loc.readDestination( (char *)"../destination.txt");
     cvSetMouseCallback( "localization", loc_mouse_callback, NULL );
@@ -246,7 +256,9 @@ int main(int argc, char** argv) {
     setlocale(LC_ALL, "C");
 //    nn.load("../1307266316.net");//1304670470.net
 //    nn.load("../1316258985.net");//1304670470.net
-    nn.load("../1347706382.net");
+    //###########################################################
+    //nn.load("../1347706382.net");
+    nn.load("../neur5555b.net");//bolo treba zmazat min_niecodaco riadky leob fann je starsi tu
     CvMat* predicted_data;
 
     autonomy = true;
@@ -270,10 +282,10 @@ int main(int argc, char** argv) {
         }
         frame_counter=0;
 
-        IplImage* tmp_frame = cvCreateImage( cvSize( 360, 240 ), frame->depth,frame->nChannels);
+        IplImage* tmp_frame = cvCreateImage( cvSize( camera_w, camera_h ), frame->depth,frame->nChannels);
 
         cvResize( frame, tmp_frame );
-
+        cvCvtColor(tmp_frame, tmp_frame, CV_BGR2Lab);
         //cvFlip( tmp_frame, tmp_frame, 0);
         //cvFlip( tmp_frame, tmp_frame, 1);
 
@@ -328,10 +340,13 @@ int main(int argc, char** argv) {
         int display_direction = coor.move(predicted_data, &sbot, a.map, idata.xAngle, &ed );
 
         //draw result
-        int sizeC = ed.frame_w / ed.dir_count;
+        int sizeC = tmp_frame->width / ed.dir_count;
         
         //cvLine( predicted_data, cvPoint( sizeC*b, (ed.frame_h-ed.triangle_h) ), cvPoint( ed.frame_w/2, ed.frame_h ), cvScalar( 0, 255 ) );
-        cvLine( tmp_frame, cvPoint( sizeC*display_direction, (ed.frame_h-ed.triangle_h) ), cvPoint( ed.frame_w/2, ed.frame_h ), cvScalar( 0, 0,255 ), 5);
+        //##################################################
+        //cvLine( tmp_frame, cvPoint( sizeC*display_direction, (ed.frame_h-ed.triangle_h) ), cvPoint( ed.frame_w/2, ed.frame_h ), cvScalar( 0, 0,255 ), 5);
+        //TODO aj tu tie stepx ponicit nech je to v evale a nie v main
+        cvLine( tmp_frame, cvPoint( sizeC*(display_direction), (tmp_frame->height-ed.triangle_h*nn.step_y) ), cvPoint( tmp_frame->width/2, tmp_frame->height ), cvScalar( 0, 0,255 ), 5);
 
         localizationFrame = loc.getGui();
 

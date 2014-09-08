@@ -28,9 +28,7 @@
       <itemPath>EvalDireciton.cpp</itemPath>
       <itemPath>GpsThread.cpp</itemPath>
       <itemPath>ImuThread.cpp</itemPath>
-      <itemPath>JoystickThread.cpp</itemPath>
       <itemPath>LocalizationAndPlaning.cpp</itemPath>
-      <itemPath>PhoneThread.cpp</itemPath>
       <itemPath>SbotThread.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>

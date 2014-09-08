@@ -1,2 +1,2 @@
-latitude 51.7541784
-longitude 19.4407237
+latitude 48.14625
+longitude 17.07503
