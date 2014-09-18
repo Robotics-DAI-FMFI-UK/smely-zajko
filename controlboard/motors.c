@@ -12,8 +12,8 @@ volatile int8_t dir;
 
 volatile uint8_t reset_steps = 0;
 
-volatile int16_t real_speedL = 0;
-volatile int16_t real_speedR = 0;
+volatile int16_t pwm_speedL = 0;
+volatile int16_t pwm_speedR = 0;
 
 int deltaL = 0;
 int deltaR = 0;
@@ -47,25 +47,25 @@ the desired direction and speed are:
  dir     -80..80   where -80/80 turn left/right at the spot, 0=move forward, otherwise move along some circle
  speed   -50..50   (realistic speeds with robot up to +/- 20) 
                    the speed is = to what is measured by the encoder
-				   ecoder reports speed in units/0.5s, there are 36 units/wheel revolution
+				   encoder reports speed in units/0.5s, there are 36 units/wheel revolution
 
 when the above are changed, speed_req variable is set to 1, 
 and set back to 0 after request has been considered
 
-from the above, we infer the target wished speed for both wheels:
+from the above, we infer the target wished speed for both wheels (units/0.5s):
 
 target_speedL
 target_speedR
 
-and we maintain the current speed of both wheels
+and we maintain the current speed of both wheels (units/0.5s)
 
 current_speedL  
 current_speedR  
 
-the control variables however are:
+the input variables variables to the motor controllers however are (PWM timer value):
 
-real_speedL
-real_speedR
+pwm_speedL
+pwm_speedR
 
 these are from the interval SERVO_BW...SERVO_STOP...SERVO_FW (230...345...460)
 we want the speed control to be smooth, i.e. we modify the variables only
@@ -86,12 +86,12 @@ void update_real_spd()
 	{
 	    if (target_speedL > current_speedL)
 		{
-		   if (real_speedL < SERVO_FW) real_speedL++;
+		   if (pwm_speedL < SERVO_FW) pwm_speedL++;
 		   next_updateL = UPDATE_FREQUENCY;
 		}
 		else if (target_speedL < current_speedL)
 		{
-			if (real_speedL > SERVO_BW) real_speedL--;
+			if (pwm_speedL > SERVO_BW) pwm_speedL--;
 			next_updateL = UPDATE_FREQUENCY;
 		}
 	}
@@ -101,18 +101,18 @@ void update_real_spd()
 	{
 		if (target_speedR > current_speedR)
 		{
-			if (real_speedR < SERVO_FW) real_speedR++;
+			if (pwm_speedR < SERVO_FW) pwm_speedR++;
 			next_updateR = UPDATE_FREQUENCY;
 		}
 		else if (target_speedR < current_speedR)
 		{
-			if (real_speedR > SERVO_BW) real_speedR--;
+			if (pwm_speedR > SERVO_BW) pwm_speedR--;
 			next_updateR = UPDATE_FREQUENCY;
 		}
 	}
 	       
-	set_servo(3, real_speedR);
-	set_servo(2, real_speedL);
+	set_servo(3, pwm_speedR);
+	set_servo(2, pwm_speedL);
 }
 
 
@@ -146,7 +146,7 @@ void compute_update_spd(void)
 
   speed_req = 0;
 
-  //printf("! SET  dir=%d, spd=%d, targetL=%d, targetR=%d,  realL=%d, realR=%d, currL=%d, currR=%d\n", (int)dir, (int)speed, target_speedL, target_speedR, real_speedL, real_speedR, current_speedL, current_speedR);
+  //printf("! SET  dir=%d, spd=%d, targetL=%d, targetR=%d,  realL=%d, realR=%d, currL=%d, currR=%d\n", (int)dir, (int)speed, target_speedL, target_speedR, pwm_speedL, pwm_speedR, current_speedL, current_speedR);
 }
 
 
@@ -173,8 +173,8 @@ void setup_motors()
 	next_updateR = 0;
 	offsetL = (int32_t)0;
 	offsetR = (int32_t)0;
-	real_speedL = SERVO_STOP;
-	real_speedR = SERVO_STOP;
+	pwm_speedL = SERVO_STOP;
+	pwm_speedR = SERVO_STOP;
 	servos_init();
     set_servo(2, SERVO_STOP);
 	set_servo(3, SERVO_STOP);
@@ -242,8 +242,8 @@ void forced_stop(void)
 	stepR = -query_position_right();
     wait(1);
 
-	target_speedL = backup_speedL;
-	target_speedR = backup_speedR;
+//	target_speedL = backup_speedL;
+//	target_speedR = backup_speedR;
 
     sprintf(prnbuf, "!resume\n\r");
     usart1_putstr();
