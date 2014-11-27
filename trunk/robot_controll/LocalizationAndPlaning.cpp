@@ -398,7 +398,7 @@ void LocalizationAndPlaning::setDestination(Ll point){
 
     FindOnWay fw;
     fw = find_on_way( point );
-    if( distance( fw.pointFound, points[fw.pointId1] ) < distance( fw.pointFound, points[fw.pointId2] ) ){
+    if( distance2( fw.pointFound, points[fw.pointId1] ) < distance2( fw.pointFound, points[fw.pointId2] ) ){
         destId = fw.pointId1;
     }else{
         destId = fw.pointId2;
@@ -443,8 +443,7 @@ double LocalizationAndPlaning::distance(Ll p1, Ll p2){
 }
 
 double LocalizationAndPlaning::distance2(Ll p1, Ll p2){
-    double result = 0;
-
+    
     double dLat1InRad = p1.latitude * (M_PI / 180);
     double dLong1InRad = p1.longitude * (M_PI / 180);
     double dLat2InRad = p2.latitude * (M_PI / 180);
@@ -453,12 +452,12 @@ double LocalizationAndPlaning::distance2(Ll p1, Ll p2){
     double dLongitude = dLong2InRad - dLong1InRad;
     double dLatitude = dLat2InRad - dLat1InRad;
 
-    double a = pow( sin( dLatitude / 2 ), 2) * cos(dLat1InRad) * cos(dLat2InRad) * pow( sin(dLongitude / 2) , 2);
-    double c = 2* atan2( sqrt(a), sqrt(1-a ));
+    double a = pow( sin( dLatitude / 2 ), 2) + cos(dLat1InRad) * cos(dLat2InRad) * pow( sin(dLongitude / 2) , 2);
+    double c = 2* atan2( sqrt(a), sqrt(1-a));
 
     double kEarthRadiusKms = 6376.5;
 
-    result = kEarthRadiusKms * c;
+    return kEarthRadiusKms * c;
 }
 
 double LocalizationAndPlaning::wayDistance(vector<double> w){
@@ -607,7 +606,7 @@ GpsAngles LocalizationAndPlaning::update(Ll gps){
 
     wasCurPoint = curPoint;
 
-    if( distance( fw.pointFound, points[fw.pointId1] ) < distance( fw.pointFound, points[fw.pointId2] ) ){
+    if( distance2( fw.pointFound, points[fw.pointId1] ) < distance2( fw.pointFound, points[fw.pointId2] ) ){
         curPoint = fw.pointId1;
     }else{
         curPoint = fw.pointId2;
@@ -667,12 +666,21 @@ GpsAngles LocalizationAndPlaning::update(Ll gps){
 
             //printf("angle %f  vec :%f %f\n", angle, vec.latitude, vec.longitude);
 
+			/*
             if( distance(points[destId], gps )<0.00005 ){
                 printf("destination \n");
                 result.map = DBL_MAX;
             }
+			*/
+			
+		result.dstToFin = distance2(points[destId], gps );
+		
+	    if( result.dstToFin < 0.002 ){//dst v km
+                printf("SME V CIELI ( %f m ) \n",result.dstToFin*1000);
+                result.map = DBL_MAX;
+            }
 
-            result.map = angle;
+        result.map = angle;
 
         }
         //ak ano smer je vektor od aktualnej pozicie ku bodu ktory ma vecsiu poziciu v bestWay

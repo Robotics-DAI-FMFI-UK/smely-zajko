@@ -11,6 +11,7 @@ extern int away_from_left;
 extern int away_from_right;
 
 Coordinate::Coordinate() {
+	wrong_dir =0;
 }
 
 
@@ -38,7 +39,12 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
         }
         vDist.push_back( f );
     }
- 
+    //in destination vicinity
+    if( mapAngle==DBL_MAX ){
+        sbot->setDirection( 0 );
+        sbot->setSpeed(0);
+        return 0;
+    }
 
     //delta
     if( mapAngle==DBL_MIN ){
@@ -49,10 +55,35 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
     }
     if (delta >180) delta = delta - 360;
 
-
-
-    if( isChodnik==0 ) //no valid direction from vision
+	//heading roughly the right way
+	if(abs(delta) < 40){
+		wrong_dir = 0;
+	}
+	//significantly off course(> 110deg), turn
+	if(abs(delta)> 110 || wrong_dir ){
+		printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Going in wrong direction, delta %f turning...\n",delta);
+		wrong_dir = 1;
+        if(delta>0)
+        {
+            if(autonomy){
+                sbot->setDirection( 80 );
+                sbot->setSpeed( 1 );
+            }
+            display_direction = 5;
+        }else
+        {
+            if(autonomy){
+                sbot->setDirection( -80 );
+                sbot->setSpeed( 1 );
+            }
+            display_direction = -5;
+        }
+		
+		
+	}
+	else if( isChodnik==0 ) //no valid direction from vision
     {
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Chodnik missing searching..\n");
         if(delta>0)
         {
             if(autonomy){
@@ -102,7 +133,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
       if (sdir < -40) sdir = -40;
       if (autonomy){
         sbot->setDirection( sdir );
-        sbot->setSpeed(4);
+        sbot->setSpeed(5);
       }
       display_direction = maxdir;
     }

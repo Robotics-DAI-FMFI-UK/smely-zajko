@@ -23,6 +23,7 @@ extern bool autonomy;
 
 class Coordinate {
 public:
+	int wrong_dir;
     Coordinate();
 
     int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed );

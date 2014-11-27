@@ -34,7 +34,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/LocalizationAndPlaning.o
 
 
 # C Compiler Flags
@@ -51,37 +52,36 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/lib -lcxcore -lcvaux -lhighgui -lcv -lml ../nn_lib/dist/Debug/GNU-Linux-x86/libnn_lib.a -lfann -lopencv_highgui
+LDLIBSOPTIONS=`pkg-config --libs opencv`  
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/locplantest
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train: ../nn_lib/dist/Debug/GNU-Linux-x86/libnn_lib.a
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/locplantest: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/locplantest ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -I/usr/include -I../nn_lib -I/usr/include/opencv -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../nn_lib && ${MAKE}  -f Makefile CONF=Debug
-	cd ../nn_lib && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/locplantest
 
 # Subprojects
 .clean-subprojects:
-	cd ../nn_lib && ${MAKE}  -f Makefile CONF=Debug clean
-	cd ../nn_lib && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl
