@@ -49,7 +49,7 @@ double EvalDireciton::comp_sum( CvMat* frame){
     CvMat* tmp_frame2 = cvCreateMat( frame->rows, frame->cols, frame->type );
 
     set_mask();
-
+    //printf("widthframe %d maskwi %d \n", frame->width, mask->width);
     cvAnd( frame, mask , tmp_frame2 );
     
     CvScalar s = cvSum( tmp_frame2 );

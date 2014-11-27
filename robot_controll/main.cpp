@@ -40,7 +40,7 @@ const bool USE_LOCALIZATION = 0;
 //const bool START_IMU = 0;
 //const bool START_SBOT = 0;
 //const bool START_JOYSTICK = 0;
-bool START_TIMER = 1;
+bool START_TIMER = 0;
 const int camera_w = 320;
 const int camera_h = 240;
 
@@ -49,7 +49,7 @@ const int camera_h = 240;
 //VisionBase nn(320, 240, 6, 6);
 //EvalDireciton ed( nn.image_width*0.4, nn.image_height*0.7, 10, nn.image_width, nn.image_height );
 //#############################
-VisionBase nn(camera_w,camera_h, 5, 5, 5, 5, 1, 1);
+VisionBase nn(camera_w,camera_h, 4, 4, 5, 5, 1, 1,false);
 
 EvalDireciton ed( (nn.out_width)*0.4, (nn.out_height)*0.7, 10, nn.out_width, nn.out_height);
 FILE* mainLog;
@@ -120,7 +120,7 @@ void loc_mouse_callback(int event, int x, int y, int flags, void* param)
 
 }
 
-void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle )
+void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle, double kmtotarget )
 {
     time_t t;
     time(&t);
@@ -135,8 +135,8 @@ void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle )
         log_counter++;
     }else{
         log_counter = 0;
-        printf("data > %d %d %d %d %d %d %d %d %d %d %d \n", sdata.lstep, sdata.rstep, sdata.lspeed,
-           sdata.rspeed, sdata.blocked, sdata.obstacle, sdata.distRL, sdata.distFL, sdata.distM, sdata.distFR, sdata.distRR);
+        printf("data > %d %d %d %d %d %d %d %d %d %d %d %f \n", sdata.lstep, sdata.rstep, sdata.lspeed,
+           sdata.rspeed, sdata.blocked, sdata.obstacle, sdata.distRL, sdata.distFL, sdata.distM, sdata.distFR, sdata.distRR, kmtotarget*1000);
     }
 }
 
@@ -171,8 +171,8 @@ int main(int argc, char** argv) {
     cvShowImage( "localization", empty_frame );
 
     cvMoveWindow( "camera", 1000, 30 );
-    cvMoveWindow( "path", 670, 30 );
-    cvMoveWindow( "localization", 620, 299 );
+    cvMoveWindow( "path", 1000, 370 );
+    cvMoveWindow( "localization", 30, 30 );
 
     LocalizationAndPlaning loc(800,400);
     
@@ -181,6 +181,7 @@ int main(int argc, char** argv) {
     //loc.readMap( (char *)"../maps/lodz.osm" );
     //loc.readMap( (char *)"../maps/homologacie_fei.osm" );
     loc.readMap( (char *)"../maps/botanicka.osm" );
+    //loc.readMap( (char *)"../maps/borsky2.osm" );
     
     loc.readDestination( (char *)"../destination.txt");
     cvSetMouseCallback( "localization", loc_mouse_callback, NULL );
@@ -258,7 +259,13 @@ int main(int argc, char** argv) {
 //    nn.load("../1316258985.net");//1304670470.net
     //###########################################################
     //nn.load("../1347706382.net");
-    nn.load("../neur5555b.net");//bolo treba zmazat min_niecodaco riadky leob fann je starsi tu
+    //nn.load("../neur5555b.net");//bolo treba zmazat min_niecodaco riadky leob fann je starsi tu
+    //nn.load("../plzen1.net");
+    //nn.load("../plzen3.net"); // aj slnko aj neslnko
+    //nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
+    //nn.load("../555511.net");
+    nn.load("../555511.net");
+    
     CvMat* predicted_data;
 
     autonomy = true;
@@ -268,7 +275,14 @@ int main(int argc, char** argv) {
 
     bool was_obstacle = false;
     long found_obstacle;
-
+    int finishcount = 0;
+    int setstart = 0; //ci je setnuta start pozicija
+    Ll startpos;
+    int finnumber = 1;
+    double lft = 0;
+    double rgh = 0;
+    int bakdir = 0;
+    
     while(1) {
         frame = cvQueryFrame( capture );
         if( !frame ){
@@ -283,9 +297,10 @@ int main(int argc, char** argv) {
         frame_counter=0;
 
         IplImage* tmp_frame = cvCreateImage( cvSize( camera_w, camera_h ), frame->depth,frame->nChannels);
-
+        IplImage* rgb_frame = cvCreateImage( cvSize( camera_w, camera_h ), frame->depth,frame->nChannels);
         cvResize( frame, tmp_frame );
-        cvCvtColor(tmp_frame, tmp_frame, CV_BGR2Lab);
+        cvResize( frame, rgb_frame );
+	cvCvtColor(tmp_frame, tmp_frame, CV_BGR2Lab);
         //cvFlip( tmp_frame, tmp_frame, 0);
         //cvFlip( tmp_frame, tmp_frame, 1);
 
@@ -302,6 +317,11 @@ int main(int argc, char** argv) {
         ImuData idata = imu.getData();
         Ll gdata = gps.getData();
 
+        if(setstart == 0){
+            setstart = 1;
+            startpos = gdata;
+        }
+        
         if (sdata.obstacle && (!was_obstacle))
         {
             time_t tobs = time(NULL);
@@ -309,17 +329,28 @@ int main(int argc, char** argv) {
             printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!OBSTACLE\n");
         }
         time_t tmnow = time(NULL);
-        if ((sdata.obstacle) && (tmnow - found_obstacle > 30))
+        if ((sdata.obstacle) && (tmnow - found_obstacle > 20))
         {
             printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BACKING UP\n");
-            found_obstacle = found_obstacle +60;
+            found_obstacle = found_obstacle +30;
             // cuvat alebo aspon tocit!!
+            lft = ed.eval( predicted_data,0 );
+            rgh = ed.eval( predicted_data,ed.dir_count );
+            
+            if(lft>rgh){
+                bakdir = -40;
+                printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT\n");
+            }
+            else{
+                bakdir = 40;
+                printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RIGHT\n");
+            }
             sbot.ignoreObstacle(true);
             sbot.setDirection( 0 );
-            sbot.setSpeed( -2 );
+            sbot.setSpeed( -3 );
             sleep(4);
-            sbot.setDirection( -40 );
-            sbot.setSpeed( 1 );
+            sbot.setDirection( bakdir );
+            sbot.setSpeed( 2 );
             sleep(2);
             sbot.setDirection( 0 );
             sbot.setSpeed( 0 );
@@ -335,7 +366,27 @@ int main(int argc, char** argv) {
 
         GpsAngles a = loc.update( gdata);
 
-        log_data( sdata, gdata, idata, a.map);
+		//TODO ked 10sec stoji ze je v cieli vypni ho uz(ak je uspesne to zastavenie)
+        if(a.map ==DBL_MAX){
+            finishcount++;
+        }
+        else{
+            finishcount = 0;
+        }
+        if(finishcount>60){
+            if(finnumber == 2){
+                printf("FINISH CONFIRMED with %d readings , TURNING OFF\n",finishcount);
+                break;
+            }
+            else{
+                for(int ghe = 0 ; ghe <7; ghe++)
+                        printf("FINISH REACHED GOING BACK TO START\n");
+                //TODO set next dest
+                loc.setDestination(startpos);
+                finnumber = 2;
+            }
+        }
+        log_data( sdata, gdata, idata, a.map, a.dstToFin);
 
         int display_direction = coor.move(predicted_data, &sbot, a.map, idata.xAngle, &ed );
 
@@ -346,11 +397,11 @@ int main(int argc, char** argv) {
         //##################################################
         //cvLine( tmp_frame, cvPoint( sizeC*display_direction, (ed.frame_h-ed.triangle_h) ), cvPoint( ed.frame_w/2, ed.frame_h ), cvScalar( 0, 0,255 ), 5);
         //TODO aj tu tie stepx ponicit nech je to v evale a nie v main
-        cvLine( tmp_frame, cvPoint( sizeC*(display_direction), (tmp_frame->height-ed.triangle_h*nn.step_y) ), cvPoint( tmp_frame->width/2, tmp_frame->height ), cvScalar( 0, 0,255 ), 5);
+        cvLine( rgb_frame, cvPoint( sizeC*(display_direction), (rgb_frame->height-ed.triangle_h*nn.step_y) ), cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 0,255 ), 5);
 
         localizationFrame = loc.getGui();
 
-        cvShowImage( "camera", tmp_frame );
+        cvShowImage( "camera", rgb_frame );
         cvShowImage( "path", predicted_data );
         cvShowImage( "localization", localizationFrame );
 
@@ -375,4 +426,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-

@@ -5,7 +5,7 @@ using namespace std;
 
 //in_x,y je velkost vstupov, out velkost vystupov, in >= out
 
-VisionBase::VisionBase(int image_width, int image_height, int step_x, int step_y, int in_x, int in_y, int out_x, int out_y) {
+VisionBase::VisionBase(int image_width, int image_height, int step_x, int step_y, int in_x, int in_y, int out_x, int out_y,bool kontext) {
     this->step_x = step_x;
     this->step_y = step_y;
     this->in_x = in_x;
@@ -14,6 +14,7 @@ VisionBase::VisionBase(int image_width, int image_height, int step_x, int step_y
     this->out_y = out_y;
     this->image_width = image_width;
     this->image_height = image_height;
+    this->context = kontext;
 
     this->out_width = (int)((image_width - (in_x - step_x))/step_x);
     this->out_height = (int)((image_height - (in_y - step_y))/step_y);
@@ -21,6 +22,8 @@ VisionBase::VisionBase(int image_width, int image_height, int step_x, int step_y
     channels = 3; //RGB
 
     this->input_neurons = in_x * in_y * 3;
+    if(context)
+        this->input_neurons = this->input_neurons + 3;
     this->output_neurons = out_x * out_y;
 
 }
@@ -63,7 +66,25 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
     int res = 0;
     int xo = 0;
     int yo = 0;
+    double kl=0,ka=0,kb=0;
     for (int k = 0; k < inputs.size(); k++) {
+        //vytvor kontextove veci
+        if(context){
+            for (int i = 0; i < image_width/4; i++) {
+                for (int j = 0; j < image_height/10; j++) {
+                    s = cvGet2D(inputs[k], image_height-image_height/10 +j, image_width/2-image_width/8 + i); //get2D ma druhy parameter y a treti x
+                    for (int c = 0; c < channels; c++) {
+                        kl +=s.val[0]/255;
+                        ka +=s.val[1]/255;
+                        kb +=s.val[2]/255;
+                    } 
+
+                }
+            }
+            kl /=(image_width/4)*(image_height/10);
+            ka /=(image_width/4)*(image_height/10);
+            kb /=(image_width/4)*(image_height/10);
+        }
         for (int x = 0; x <= (image_width - in_x); x += step_x) {
             for (int y = 0; y <= (image_height - in_y); y += step_y) {
                 //vypis vstup
@@ -76,6 +97,12 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
                         }
                     }
                 }
+                if(context){
+                    fprintf(outFile, "%f ", kl);
+                    fprintf(outFile, "%f ", ka);
+                    fprintf(outFile, "%f ", kb);
+                }
+                
                 fprintf(outFile, "\n");
 
                 //vypis chceny vystup
@@ -115,7 +142,7 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
     return 1;
 }
 //vytvori trenovaci subor z obrazkov nahodne zvolenymi oknami
-//TODO urob na vector ako vo full tj copypasta a rnggod
+//TODO urob na vector ako vo full
 int VisionBase::create_training_file_partial(vector<IplImage*> inputs, vector< vector<int> >& outputs, char* out_file, int samples) {
 
     FILE* outFile = fopen(out_file, "wt");
@@ -221,6 +248,26 @@ CvMat* VisionBase::predict(IplImage* inputs) {
     vector<fann_type*> input_array;
     vector<fann_type> calc_out;
     int pom = 0;int kk=0;
+    double kl=0,ka=0,kb=0;
+    CvScalar s;
+    
+    if(context){
+        for (int i = 0; i < image_width/4; i++) {
+            for (int j = 0; j < image_height/10; j++) {
+                s = cvGet2D(inputs, image_height-image_height/10 +j, image_width/2-image_width/8 + i); //get2D ma druhy parameter y a treti x
+                for (int c = 0; c < channels; c++) {
+                    kl +=s.val[0]/255;
+                    ka +=s.val[1]/255;
+                    kb +=s.val[2]/255;
+                } 
+
+            }
+        }
+        kl /=(image_width/4)*(image_height/10);
+        ka /=(image_width/4)*(image_height/10);
+        kb /=(image_width/4)*(image_height/10);
+    }
+    
     for (int y = 0; y <= (image_height - in_y); y += step_y) {
         for (int x = 0; x <= (image_width - in_x); x += step_x) {
             fann_type* row = new fann_type[ ann->num_input ];
@@ -230,17 +277,21 @@ CvMat* VisionBase::predict(IplImage* inputs) {
             for (int i = 0; i < in_x; i++) {
                 for (int j = 0; j < in_y; j++) {
                     //TODO get pixel value sa da aj efektivnejsie
-                    CvScalar s = cvGet2D(inputs, y + j, x + i); //get2D ma druhy parameter y a treti x
+                    s = cvGet2D(inputs, y + j, x + i); //get2D ma druhy parameter y a treti x
                     for (int c = 0; c < channels; c++) {
                         row[ pom ] = s.val[c]/255;
                         pom++;
                     }
                 }
             }
+            if(context){
+                row[ pom ] = kl;
+                row[ pom+1 ] = ka;
+                row[ pom+2 ] = kb;
+            }
             input_array.push_back(row);
         }
     }
-   // cout<<"\n"<< kk<<" input sajz "<<input_array.size()<<"\n";
     //TODO vytvor vystup  run vracia array tu je len s 1 out neuronom p[0] inak by bolo p[0 - #of neurons]
     //TODO urob to bez input array len v 1 cykle volat hned run takto zbytocne plnim array
     
@@ -256,16 +307,16 @@ CvMat* VisionBase::predict(IplImage* inputs) {
     }
 
     input_array.clear();
-    
+
     CvMat* mat = create_out_mat( calc_out );
     calc_out.clear();
-    
+
     return mat;
 }
 
 CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
 
-    CvMat* result = cvCreateMat(  (int)(image_height/step_y),(int)(image_width/step_x), CV_32F );
+    CvMat* result = cvCreateMat(  (int)(out_height),(int)(out_width), CV_32F );
     cvSetZero( result );
 
     int w4 = image_height/step_y;
@@ -289,7 +340,6 @@ CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
 
     return result;
 }
-
 
 //upscalne result tak aby sa dal pouzit ako overlay obrazku
 //TODO nejak efektivnejsie sa neda? cez copy alebo nejake memcpy...

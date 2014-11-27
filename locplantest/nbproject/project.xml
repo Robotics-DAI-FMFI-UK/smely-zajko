@@ -2,15 +2,15 @@
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>nn_train</name>
-            <make-project-type>0</make-project-type>
+            <name>locplantest</name>
             <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
-            <header-extensions/>
+            <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects>
-                <make-dep-project>../nn_lib</make-dep-project>
-            </make-dep-projects>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
+            <make-dep-projects/>
             <sourceRootList/>
             <confList>
                 <confElem>

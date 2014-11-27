@@ -27,11 +27,13 @@ public:
     int out_x, out_y;
     int out_width,out_height;
     int channels;
+    bool context;
 
+    
     int input_neurons;
     int output_neurons;
 
-    VisionBase(int image_width, int image_height, int step_x, int step_y, int in_x, int in_y, int out_x, int out_y);
+    VisionBase(int image_width, int image_height, int step_x, int step_y, int in_x, int in_y, int out_x, int out_y,bool kontext);
     void init(int hidden_neurons, int hidden_layers);
     void load(const char* filepath);
     void save(const char* filepath);
@@ -56,6 +58,8 @@ protected:
     //virtual vector<fann_type*> create_predict_mat(CvArr* mat);
 
     virtual CvMat* create_out_mat(vector<fann_type> calc_out);
+
 };
 
 #endif	/* NEURAL_NETWORK_H_INCLUDED */
+
