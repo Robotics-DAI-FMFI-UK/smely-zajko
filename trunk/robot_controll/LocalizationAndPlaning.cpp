@@ -1,12 +1,8 @@
 /* 
  * File:   Localization.cpp
- * Author: myron
- * 
- * Created on Štvrtok, 2010, september 9, 10:17
  */
 
 #include "LocalizationAndPlaning.h"
-
 #include "../rapidxml-1.13/rapidxml.hpp"
 #include "../rapidxml-1.13/rapidxml_utils.hpp"
 
@@ -18,28 +14,56 @@
 
 #include <cmath>
 #include <float.h>
-//#include <opencv/cxtypes.h>
-#include <opencv2/core/types_c.h>
-#include <opencv/cxcore.h>
-#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
 
 #include <time.h>
 
 using namespace std;
 using namespace rapidxml;
 
-
 LocalizationAndPlaning::LocalizationAndPlaning(int guiWidth, int guiHeight) {
-    this->guiWidth = guiWidth;
-    this->guiHeight = guiHeight;
-
-    headingPointId = -1;
+    //this->guiDebugHeight = 50;//debug border height 0to turn off
+    this->guiDebugHeight = 0;
+    this->guiMapWidth = guiWidth;
+    this->guiMapHeight = guiHeight - this->guiDebugHeight;
+    this->guiDebugWidth = guiWidth;
+    lastPosition.latitude = 0;
+    lastPosition.longitude = 0;
+    curPoint.latitude = 0;
+    curPoint.longitude = 0;
+    ell_a = 0;
+    ell_b = 0;
+    EarthRadius = 6376.5;
+    heading_search_radius = 0.004;
+    cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.3);
+    cvInitFont(&fontBig, CV_FONT_HERSHEY_SIMPLEX, 0.6, 0.6);
 }
 
 LocalizationAndPlaning::~LocalizationAndPlaning() {
 }
 
-void LocalizationAndPlaning::readMap(char* filename){
+Point LocalizationAndPlaning::convert(Ll point) {
+
+    double width = bounds.maxlon - bounds.minlon;
+    double height = bounds.maxlat - bounds.minlat;
+
+    Point result;
+
+    result.x = ((point.longitude - bounds.minlon) / width) * guiMapWidth;
+    result.y = ( (1- (point.latitude - bounds.minlat) / height) ) * guiMapHeight;
+
+    return result;
+}
+
+Ll LocalizationAndPlaning::reverse(Point location) {
+
+    Ll result;
+    result.longitude = (double)location.x / (double)guiMapWidth * (double)(bounds.maxlon - bounds.minlon) + bounds.minlon;
+    result.latitude = (double)location.y / (double)guiMapHeight * (double)(bounds.maxlat - bounds.minlat) + bounds.minlat;
+    return result;
+}
+
+void LocalizationAndPlaning::readMap(char* filename) {
 
     ifstream is;
     is.open (filename);
@@ -189,225 +213,7 @@ void LocalizationAndPlaning::readMap(char* filename){
     }
 }
 
-double LocalizationAndPlaning::dist_point_linesegment(double x, double y, double x1, double y1, double x2, double y2, double *nx, double *ny)
-{
-    double l = (y - y1) * (y1 - y2) - (x1 - x) * (x1 - x2);
-    l /= (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-	*nx = x1 + l * (x1 - x2);
-	*ny = y1 + l * (y1 - y2);
-	double d1 = (*nx - x) * (*nx - x) + (*ny - y) * (*ny - y);
-	double dA = (x1 - *nx) * (x1 - *nx) + (y1 - *ny) * (y1 - *ny);
-	double dB = (x2 - *nx) * (x2 - *nx) + (y2 - *ny) * (y2 - *ny);
-	double dAB = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-	double d2 = (x - x1) * (x - x1) + (y - y1) * (y - y1);
-	double d3 = (x - x2) * (x - x2) + (y - y2) * (y - y2);
-	if ((dA > dAB) || (dB > dAB)) d1 = d2 + d3;
-	if ((d1 <= d2) && (d1 <= d3)) return d1;
-	if (d2 < d3)
-	{
-		*nx = x1;
-		*ny = y1;
-		return d2;
-	}
-	*nx = x2;
-	*ny = y2;
-	return d3;
-}
-
-FindOnWay LocalizationAndPlaning::find_on_way(Ll point){
-
-    FindOnWay result;
-    //Ll pointFound;
-    double dist = DBL_MAX;
-
-    for(int i=0; i<paths.size(); i++){
-        for(int j=1; j<paths.at(i).points.size(); j++ ){
-            Ll tmp;
-            double id1 = paths.at(i).points[j];
-            double id2 = paths.at(i).points[j-1];
-            double d = dist_point_linesegment(
-                point.longitude, point.latitude,
-                points.at(id1).longitude, points.at(id1).latitude,
-                points.at(id2).longitude, points.at(id2).latitude,
-                &tmp.longitude, &tmp.latitude
-            );
-
-            if( d<dist ){
-                dist = d;
-                result.pointFound = tmp;
-                result.pathId = i;
-                result.pointId1 = id1;
-                result.pointId2 = id2;
-                result.pathPosition = j;
-            }
-        }
-    }
-
-    return result;
-}
-
-double LocalizationAndPlaning::add_point_on_way(Ll point){
-
-    FindOnWay fw;
-    fw = find_on_way( point );
-
-    WayPoint pointFound(fw.pointFound);
-
-    //new point id
-    double newID = 0;
-    map<double,WayPoint>::iterator it;
-
-    for ( it=points.begin() ; it != points.end(); it++ ){
-        if( (*it).first > newID ){
-            newID = (*it).first;
-        }
-    }
-    newID++;
-
-    //insert
-    pointFound.nextPoints.push_back(fw.pointId1);
-    pointFound.nextPoints.push_back(fw.pointId2);
-    points[newID] = pointFound;
-
-
-    paths[fw.pathId].points.insert( paths[fw.pathId].points.begin()+fw.pathPosition, newID);
-
-    points[fw.pointId1].nextPoints.push_back(newID);
-    points[fw.pointId2].nextPoints.push_back(newID);
-
-    //to erase
-    vector<double>::iterator it2;
-
-    for ( it2=points[fw.pointId1].nextPoints.begin() ; it2 != points[fw.pointId1].nextPoints.end(); it2++ ){
-        if( (*it2)==fw.pointId2 ){
-            points[fw.pointId1].nextPoints.erase( it2 );
-            break;
-        }
-    }
-
-    for ( it2=points[fw.pointId2].nextPoints.begin() ; it2 != points[fw.pointId2].nextPoints.end(); it2++ ){
-        if( (*it2)==fw.pointId1 ){
-            points[fw.pointId2].nextPoints.erase( it2 );
-            break;
-        }
-    }
-
-    return newID;
-}
-
-Point LocalizationAndPlaning::convert(Ll point){
-
-    double width = bounds.maxlon - bounds.minlon;
-    double height = bounds.maxlat - bounds.minlat;
-
-    Point result;
-
-    result.x = ((point.longitude - bounds.minlon) / width) * guiWidth;
-    result.y = ( (1- (point.latitude - bounds.minlat) / height) ) * guiHeight;
-
-    return result;
-}
-
-Ll LocalizationAndPlaning::reverse(Point location)
-{
-    Ll result;
-    result.longitude = (double)location.x / (double)guiWidth * (double)(bounds.maxlon - bounds.minlon) + bounds.minlon;
-    result.latitude = (double)location.y / (double)guiHeight * (double)(bounds.maxlat - bounds.minlat) + bounds.minlat;
-    return result;
-}
-
-IplImage* LocalizationAndPlaning::getGui(){
-    IplImage* result = cvCreateImage( cvSize(guiWidth, guiHeight),32, 3 );
-
-    cvFillImage( result,255);
-        
-    for(int i=0; i<paths.size(); i++){
-        if( paths.at(i).points.size()>1 ){
-            Point p1 = convert( points.at( paths.at(i).points[0] )  );
-
-            for(int j=1; j<paths.at(i).points.size(); j++ ){
-                Point p2 = convert(points.at( paths.at(i).points[j] ) );
-
-                cvLine( result, cvPoint(p1.x,p1.y), cvPoint(p2.x,p2.y), cvScalar(0, 0, 0));
-                p1 = p2;
-            }
-        }
-    }
-
-    //best way
-    if( bestWay.size()>0 ){
-        Point p1 = convert( points[ bestWay[0] ]  );
-        for(int i=1; i<bestWay.size(); i++){
-            Point p2 = convert( points[ bestWay[i] ]  );
-
-            cvLine( result, cvPoint(p1.x,p1.y), cvPoint(p2.x,p2.y), cvScalar(i*((double)1/bestWay.size()), 0, 0), 3);
-            p1 = p2;
-        }
-    }
-
-    Point o2 = convert( lastPosition  );
-    cvCircle( result, cvPoint(o2.x, o2.y ), 5, cvScalar(0, 1, 0) );
-
-    Point o3 = convert( points[ destId ]  );
-    cvCircle( result, cvPoint(o3.x, o3.y ), 5, cvScalar(0, 0, 1) );
-
-    if( headingPointId>0 ){
-        Point o1 = convert( points[ headingPointId ]  );
-        cvCircle( result, cvPoint(o1.x, o1.y ), 5, cvScalar(0, 0, 0) );
-    }
-
-    if( curPoint>0 ){
-        Point o1 = convert( points[ curPoint ]  );
-        cvCircle( result, cvPoint(o1.x, o1.y ), 5, cvScalar(0, 1, 1) );
-    }
-
-//    map<double,WayPoint>::iterator it;
-//    for ( it=points.begin() ; it != points.end(); it++ ){
-//        if((*it).second.dist!=DBL_MAX ){
-//            Point o5 = convert( (*it).second  );
-//            cvCircle( result, cvPoint(o5.x, o5.y ), 5, cvScalar(0, 1, 1),2 );
-//        }
-//    }
-
-    //TEST
-    //Point o1 = convert( points[ testid1 ]  );
-    //Point o2 = convert( points[ testid2 ]  );
-
-//    cvCircle( result, cvPoint(o1.x, o1.y ), 5, cvScalar(0, 0, 0) );
-//    cvCircle( result, cvPoint(o2.x, o2.y ), 5, cvScalar(0, 0, 0) );
-
-    //TODO: pozicia, pozicia na ceste, smer otocenia, smer k cielu
-    return result;
-}
-
-IplImage* LocalizationAndPlaning::getGui(Ll point){
-
-    IplImage* result = getGui();
-
-    //if( point!=NULL ){
-        Point o4 = convert( point  );
-        cvCircle( result, cvPoint(o4.x, o4.y ), 5, cvScalar(0, 0, 1),2 );
-    //}
-
-    return result;
-}
-
-void LocalizationAndPlaning::setDestination(Ll point){
-
-    //destId = add_point_on_way( point );
-
-    FindOnWay fw;
-    fw = find_on_way( point );
-    if( distance2( fw.pointFound, points[fw.pointId1] ) < distance2( fw.pointFound, points[fw.pointId2] ) ){
-        destId = fw.pointId1;
-    }else{
-        destId = fw.pointId2;
-    }
-
-
-}
-
-void LocalizationAndPlaning::readDestination(char* filename){
+void LocalizationAndPlaning::readDestination(char* filename) {
 
     Ll point;
 
@@ -437,36 +243,418 @@ void LocalizationAndPlaning::readDestination(char* filename){
     setDestination(point);
 }
 
+void LocalizationAndPlaning::setDestination(Ll point) {
 
-double LocalizationAndPlaning::distance(Ll p1, Ll p2){
-    return sqrt( pow( p1.latitude - p2.latitude,2) + pow( p1.longitude - p2.longitude,2) );
+    FindOnWay fw;
+    fw = find_on_way(point);
+    destinationPoint = fw.pointFound;
+
+    //vypocitaj elipsu okolia pre danu geopoziciu
+    calcEllipse(point, heading_search_radius);
 }
 
-double LocalizationAndPlaning::distance2(Ll p1, Ll p2){
+void LocalizationAndPlaning::calcEllipse(Ll point,double km){//vypocita ell_a ell_b parametre pre elipsu v bode point s radiusom km kilometrov
+	double preccons = 0.0001;
+	Ll dummy;
+	
+	//zisti deltu pre lat
+	dummy.latitude = point.latitude + preccons;
+	dummy.longitude = point.longitude;
+	double delta = distance(point,dummy);
+	
+	ell_a = (km/delta)*preccons;	
+	
+	//zisti deltu pre lon
+	dummy.latitude = point.latitude;
+	dummy.longitude = point.longitude + preccons;		
+	delta = distance(point,dummy);
+	
+	ell_b = (km/delta)*preccons;	
+
+}
+
+pair<Ll, Ll> LocalizationAndPlaning::ellipseLineIntersection(Ll p0,Ll p1){//prienik usecky a elipsy ak nema prienik tj aj ked je to dotyk vrati lon a lat DBL_MAX
+	//x = lat y = lon
+	
+	Ll re1;
+	Ll re2;
+	//move so ellipse center is in origin
+	p0.latitude -= curPoint.latitude;
+	p0.longitude -= curPoint.longitude;
+	p1.latitude -= curPoint.latitude;
+	p1.longitude -= curPoint.longitude;
+	
+	//calc line slope
+	double latdif = p1.latitude - p0.latitude;
+	if(latdif == 0)
+		latdif = DBL_MIN;
+	double m = (p1.longitude - p0.longitude)/latdif;
+	
+	double c = p1.longitude -m*p1.latitude;
+	//pomocne mocniny
+	double a_2 = ell_a*ell_a;
+	double b_2 = ell_b*ell_b;
+	double c_2 = c*c;
+	double m_2 = m*m;
+	//prienik elipsy a priamky
+	double hlp1 = (2*a_2*c*m)/(2*(b_2 + a_2*m_2));
+	double hlp3 = ( (b_2 - c_2)/(b_2 + a_2*m_2) )+( (a_2*c_2*m_2)/( pow((b_2 + a_2*m_2),2) ) );
+	double hlp2 = 0;
+	if(hlp3 > 0){//realna cast odmocniny zaporneho cisla je nenulova ak je cislo kladne
+		hlp2 = ell_a*sqrt( hlp3 );
+	}
+	re1.latitude = -hlp1 + hlp2;
+	re1.longitude =  m*(re1.latitude) + c;
+	re2.latitude = -hlp1 - hlp2;
+	re2.longitude =  m*(re2.latitude) + c;
+	
+	//posun body spat
+	re1.latitude += curPoint.latitude;
+	re1.longitude += curPoint.longitude;
+	re2.latitude += curPoint.latitude;
+	re2.longitude += curPoint.longitude;
+	p0.latitude += curPoint.latitude;
+	p0.longitude += curPoint.longitude;
+	p1.latitude += curPoint.latitude;
+	p1.longitude += curPoint.longitude;
+        
+	//nieje prienik
+	if(re1.latitude == re2.latitude && re1.longitude == re2.longitude){
+		re1.latitude = DBL_MAX;
+		re1.longitude =  DBL_MAX;
+		re2.latitude = DBL_MAX;
+		re2.longitude =  DBL_MAX;
+                return pair<Ll,Ll>(re1,re2);
+	}
+	
+	//check ci je na usecke a nie mimo
+	double seglen = distance(p0,p1);
+	if(distance(re1,p0)>seglen || distance(re1,p1)>seglen){
+		re1.latitude = DBL_MAX;
+		re1.longitude =  DBL_MAX;
+	}
+	if(distance(re2,p0)>seglen || distance(re2,p1)>seglen){
+		re2.latitude = DBL_MAX;
+		re2.longitude =  DBL_MAX;
+	}
+	
+	return pair<Ll,Ll>(re1,re2);
+}
+
+Ll LocalizationAndPlaning::calcHeadingPoint() {
     
-    double dLat1InRad = p1.latitude * (M_PI / 180);
-    double dLong1InRad = p1.longitude * (M_PI / 180);
-    double dLat2InRad = p2.latitude * (M_PI / 180);
-    double dLong2InRad = p2.longitude * (M_PI / 180);
+    
+    if(bestWay.size() < 3){
+        //if only one segment remains and destination in range mark it as heading point
+        if(distance(destinationPoint,curPoint) < heading_search_radius)
+            return destinationPoint;
+        //bestway is oriented so if we went behind destination swap bestway orientation
+        if(bestWay.size() == 2 && distance(points[bestWay[0]],curPoint) < distance(destinationPoint,points[bestWay[0]])){
+            double swp = bestWay[1];
+            bestWay[1] = bestWay[0];
+            bestWay[0] = swp;
+        }
+    }
+    
+    //init
+    Ll result;
+    result.latitude = DBL_MAX;
+    result.longitude = DBL_MAX;    
+   
+    bool out = false;//vychadza z radiusu
+    //get heading point as intersection of bestway and elliptical radius 
+    //best way
+    if (bestWay.size() > 0) {
+        //vyber bod na prieniku elipsy a najskorsieho segmentu  vychadzajuceho z ellipsy
+        Ll p1 = points[ bestWay[bestWay.size() - 1] ];
+        for (int i = bestWay.size() - 2; i >= 0; i--) {
+            Ll p2 = points[ bestWay[i] ];
+            //vzdialenost polohy od konca segmentu
+            double tmpdst = distance(curPoint, p2);
 
-    double dLongitude = dLong2InRad - dLong1InRad;
-    double dLatitude = dLat2InRad - dLat1InRad;
+            pair<Ll, Ll> par = ellipseLineIntersection(p1, p2);
+            //ak su dva prieniky alebo zacinajuci bod lezi dnu a existuje prienik musi byt vychadzajuci prienik
+            if ((par.first.longitude != DBL_MAX && par.second.longitude != DBL_MAX) ||
+                    ((distance(p1, curPoint) < heading_search_radius) && (par.first.longitude != DBL_MAX || par.second.longitude != DBL_MAX))
+                    ) {
+                out = true;
+            }
+            if(out){//dalsi segment vychadza
+                //zober najlepsi validny na tomto segmente
+                if (par.first.longitude != DBL_MAX && distance(par.first, p2) < tmpdst) {
+                    result = par.first;
+                    break;
+                }
 
-    double a = pow( sin( dLatitude / 2 ), 2) + cos(dLat1InRad) * cos(dLat2InRad) * pow( sin(dLongitude / 2) , 2);
-    double c = 2* atan2( sqrt(a), sqrt(1-a));
+                if (par.second.longitude != DBL_MAX && distance(par.second, p2) < tmpdst) {
+                    result = par.second;
+                    break;
+                }
+            }
+            p1 = p2;
+        }
+    }
 
-    double kEarthRadiusKms = 6376.5;
+    //if no intersection is found it means all segments are in radius
+    if (result.latitude == DBL_MAX) {
 
-    return kEarthRadiusKms * c;
+        if (bestWay.size() > 2) {//set the firsts segments second point(the one shared with second segment) a he gets close to that intersection he will most likely catch on
+            result = points[ bestWay[bestWay.size() - 2] ];
+        } else {//if only one segment remains set destination as heading point
+            result = destinationPoint;
+        }
+    }
+
+    return result;
 }
 
-double LocalizationAndPlaning::wayDistance(vector<double> w){
-    double result = 0;
-    for(int i=1; i<w.size(); i++ ){
-        double id1 = w[i];
-        double id2 = w[i-1];
+IplImage* LocalizationAndPlaning::getGui() {
+    IplImage* result = cvCreateImage(cvSize(guiMapWidth, guiMapHeight+guiDebugHeight), 32, 3);
+    //biele pozadie
+    cvSet(result, CV_RGB(255,255,255));
+    //cesty    
+    for (int i = 0; i < paths.size(); i++) {
+        if (paths.at(i).points.size() > 1) {
+            Point p1 = convert(points.at(paths.at(i).points[0]));
 
-        result += distance( points[id1], points[id2] );
+            for (int j = 1; j < paths.at(i).points.size(); j++) {
+                Point p2 = convert(points.at(paths.at(i).points[j]));
+
+                cvLine(result, cvPoint(p1.x, p1.y), cvPoint(p2.x, p2.y), cvScalar(0, 0, 0));
+                p1 = p2;
+            }
+        }
+    }
+
+    //best way
+    if (bestWay.size() > 0) {
+        double bluuu = (double) 1 / bestWay.size();//gradient
+        Point p1 = convert(points[ bestWay[0] ]);
+        for (int i = 1; i < bestWay.size(); i++) {
+            Point p2 = convert(points[ bestWay[i] ]);
+            cvLine(result, cvPoint(p1.x, p1.y), cvPoint(p2.x, p2.y), cvScalar(0.5+0.5*(i * (bluuu)), 0, 0), 2);
+            p1 = p2;
+        }
+    }
+    
+    //raw gps - kruh
+    Point o2 = convert(lastPosition);
+    cvCircle(result, cvPoint(o2.x, o2.y), 3, cvScalar(0, 1, 0),-1);
+
+    //ciel - stvorcek
+    Point o3 = convert(destinationPoint);
+    cvRectangle(result, cvPoint(o3.x - 5, o3.y - 5), cvPoint(o3.x + 5, o3.y + 5), cvScalar(0.8, 0.8, 0.8), -1);
+
+    
+
+    //poloha - krizik    
+    Point o4 = convert(curPoint);
+    cvLine(result, cvPoint(o4.x - 4, o4.y - 4), cvPoint(o4.x + 4, o4.y + 4), cvScalar(0, 0, 1), 2);
+    cvLine(result, cvPoint(o4.x - 4, o4.y + 4), cvPoint(o4.x + 4, o4.y - 4), cvScalar(0, 0, 1), 2);
+    
+    //medziciel - plny kruh    
+    Point o1 = convert(headingPoint);
+    cvCircle(result, cvPoint(o1.x, o1.y), 3, cvScalar(1, 0, 1), -1);
+    
+    //elipsa okolia
+    Ll dummy;
+    dummy.longitude = curPoint.longitude;           
+    dummy.latitude = curPoint.latitude+ell_a;
+    Point o8 = convert(dummy);
+    dummy.longitude = curPoint.longitude+ell_b;           
+    dummy.latitude = curPoint.latitude;
+    Point o9 = convert(dummy);    
+    cvEllipse(result, cvPoint(o4.x, o4.y), cvSize(abs(o4.x - o9.x), abs(o4.y - o8.y)), 0, 0, 360, cvScalar(0.5, 0.5, 0.5));
+    
+    //draw debug
+    if(guiDebugHeight > 0){
+        //base
+        cvRectangle(result,cvPoint(0, guiMapHeight),cvPoint(guiDebugWidth, guiMapHeight+guiDebugHeight),cvScalar(1, 1, 1),-1);
+        cvLine(result, cvPoint(0, guiMapHeight), cvPoint(guiDebugWidth, guiMapHeight), cvScalar(0, 0, 0), 1);
+        
+        //distances     
+        cvPutText(result,"gps",cvPoint(5,guiMapHeight + 15),&font,cvScalar(0,0,0));
+        cvCircle(result, cvPoint(30, guiMapHeight + 15), 3, cvScalar(0, 1, 0),-1);        
+        cvPutText(result,"->curPos",cvPoint(35,guiMapHeight + 15),&font,cvScalar(0,0,0));
+        cvLine(result, cvPoint(90 - 4, guiMapHeight + 15 - 4), cvPoint(90 + 4, guiMapHeight + 15 + 4), cvScalar(0, 0, 1), 2);
+        cvLine(result, cvPoint(90 - 4, guiMapHeight + 15 + 4), cvPoint(90 + 4, guiMapHeight + 15 - 4), cvScalar(0, 0, 1), 2);
+        
+        stringstream diststr;
+        diststr << distance(lastPosition, curPoint)*1000 << "m";
+        cvPutText(result,diststr.str().c_str(),cvPoint(5,guiMapHeight + 40),&fontBig,cvScalar(0,0,0));
+                
+        cvPutText(result,"curPos",cvPoint(120,guiMapHeight + 15),&font,cvScalar(0,0,0));
+        cvLine(result, cvPoint(160 - 4, guiMapHeight + 15 - 4), cvPoint(160 + 4, guiMapHeight + 15 + 4), cvScalar(0, 0, 1), 2);
+        cvLine(result, cvPoint(160 - 4, guiMapHeight + 15 + 4), cvPoint(160 + 4, guiMapHeight + 15 - 4), cvScalar(0, 0, 1), 2);
+        cvPutText(result,"->dest",cvPoint(165,guiMapHeight + 15),&font,cvScalar(0,0,0));
+        cvRectangle(result, cvPoint(207 - 5, guiMapHeight + 15 - 5), cvPoint(207 + 5, guiMapHeight + 15 + 5), cvScalar(0.8, 0.8, 0.8), -1);
+        
+        
+        diststr.str("");
+        diststr << distance(destinationPoint, curPoint)*1000 << "m";
+        cvPutText(result,diststr.str().c_str(),cvPoint(120,guiMapHeight + 40),&fontBig,cvScalar(0,0,0));        
+        //bestway info
+        diststr.str("seg");
+        cvPutText(result,diststr.str().c_str(),cvPoint(340,guiMapHeight + 20),&font,cvScalar(0,0,0));   
+        diststr.str("");
+        diststr << bestWay.size()-1;
+        cvPutText(result,diststr.str().c_str(),cvPoint(335,guiMapHeight + 40),&fontBig,cvScalar(0,0,0));        
+    }       
+
+    return result;
+}
+
+double LocalizationAndPlaning::distance(Ll p1, Ll p2) {
+    //degrees to radians
+    p1.latitude *= (M_PI / 180);
+    p1.longitude *= (M_PI / 180);
+    p2.latitude *= (M_PI / 180);
+    p2.longitude *= (M_PI / 180);
+
+    double dlon = p2.longitude - p1.longitude;
+    double dlat = p2.latitude - p1.latitude;
+    //earth radius * (radial distance)
+    return EarthRadius*2*asin( sqrt( pow(sin(dlat/2),2) + cos(p1.latitude)*cos(p2.latitude)*pow(sin(dlon/2),2) ) );
+}
+//vypocita initial bearing z bodu a do bodu b
+double LocalizationAndPlaning::calc_bearing(Ll a, Ll b) {
+    //deg to rad
+    
+    a.longitude *= (M_PI / 180);
+    a.latitude *= (M_PI / 180);
+    b.longitude *= (M_PI / 180);
+    b.latitude *= (M_PI / 180);
+    double res = atan2(sin(b.longitude - a.longitude) * cos(b.latitude),
+            cos(a.latitude) * sin(b.latitude) - sin(a.latitude) * cos(b.latitude) * cos(b.longitude - a.longitude));
+    //we want positive degrees
+    res /= (M_PI / 180);
+    res +=360;
+    res = fmod(res,360);   
+    return res;
+}
+
+//ak su rovnake vrati bod p1 ak je nejasne vrati p2
+Ll LocalizationAndPlaning::intersection_of_bearings(Ll p1,double b1,Ll p2,double b2){
+
+    double lat1 = p1.latitude * (M_PI / 180);
+    double lon1 = p1.longitude * (M_PI / 180);
+    double lat2 = p2.latitude * (M_PI / 180);
+    double lon2 = p2.longitude * (M_PI / 180);
+    
+    double t13 = b1 * (M_PI / 180);
+    double t23 = b2 * (M_PI / 180);
+    double dlat = lat2-lat1;
+    double dlon = lon2-lon1;
+    //radial distance of p1 - p2
+    double D12 = 2*asin( sqrt( pow(sin(dlat/2),2) + cos(lat1)*cos(lat2)*pow(sin(dlon/2),2) ) );
+    
+    if (D12 == 0) return p1;//p1 and p2 are the same point
+
+    // initial/final bearings between points    
+    double t1 = 0;
+    double pom = sin(D12)*cos(lat1);
+    double pom2= 666;//anything>1 for acos check
+    if(pom != 0){
+        pom2 = (sin(lat2) - sin(lat1)*cos(D12))/pom;
+    }
+    if(abs(pom2) <=1){
+        t1 = acos(pom2);
+    }
+        
+    double t2 = 0;
+    pom = sin(D12)*cos(lat2);
+    pom2= 666;//anything>1 for acos check
+    if(pom != 0){
+        pom2 = (sin(lat1) - sin(lat2)*cos(D12))/pom;
+    }
+    if(abs(pom2) <=1){
+        t2 = acos(pom2);
+    }
+    
+    double t12 = 0;
+    double t21 = 0;
+    if (sin(lon2-lon1) > 0) {
+        t12 = t1;
+        t21 = 2*M_PI - t2;
+    } else {
+        t12 = 2*M_PI - t1;
+        t21 = t2;
+    }
+
+    double a1 = fmod((t13 - t12 + M_PI) , (2*M_PI)) - M_PI; // angle 2-1-3
+    double a2 = fmod((t21 - t23 + M_PI) , (2*M_PI)) - M_PI; // angle 1-2-3
+
+    if (sin(a1)==0 && sin(a2)==0) return p1; // infinite intersections
+    if (sin(a1)*sin(a2) < 0) return p2;      // ambiguous intersection
+
+    double a3 = acos( -cos(a1)*cos(a2) + sin(a1)*sin(a2)*cos(D12) );
+    double D13 = atan2( sin(D12)*sin(a1)*sin(a2),
+                          cos(a2)+cos(a1)*cos(a3) );
+    double lat3 = asin( sin(lat1)*cos(D13) + cos(lat1)*sin(D13)*cos(t13) );
+    double dlon13 = atan2(sin(t13)*sin(D13)*cos(lat1),
+                           cos(D13)-sin(lat1)*sin(lat3) );
+    double lon3 = lon1 + dlon13;
+    lon3 = fmod((lon3+3*M_PI) , (2*M_PI)) - M_PI; 
+    
+    Ll intersec;
+    intersec.latitude = lat3 *(180 / M_PI);
+    intersec.longitude = lon3 *(180 / M_PI);
+
+    return intersec;
+}
+
+//vypocita vzdialenost usecky start-end a bodu "point" a najblizsi bod usecky k "point"
+pair<double,Ll> LocalizationAndPlaning::dist_point_linesegment(Ll point, Ll start, Ll end) {
+    		
+	Ll closest;
+	double b_se = calc_bearing(start,end);
+        double b_sp = calc_bearing(start,point);
+        
+        //assume we are right of line        
+        double pravyuhol = -90;
+        //check if we are left of line
+        if( fmod(360+b_sp - b_se,360) > 180 )
+            pravyuhol = 90;
+        
+        double b_perp = b_se +pravyuhol;
+	
+        //calc intersection of trajectories 
+        closest = intersection_of_bearings(point,b_perp,start,b_se);
+        
+        //closest is the closest point on great circle - trim it to segment
+        double cls = distance(closest,start);
+        double cle = distance(closest,end);
+        double seglen = distance(start,end);
+        
+        if(cls > seglen || cle > seglen){
+            if(distance(start,point) > distance(end,point))
+                closest = end;
+            else
+                closest = start;
+        }
+            
+	return pair<double,Ll>(distance(closest,point), closest);
+}
+
+FindOnWay LocalizationAndPlaning::find_on_way(Ll point){
+
+    FindOnWay result;
+    long double dist = DBL_MAX;
+    pair<double, Ll> p;
+    for (int i = 0; i < paths.size(); i++) {
+        for (int j = 1; j < paths.at(i).points.size(); j++) {
+            double id1 = paths.at(i).points[j];
+            double id2 = paths.at(i).points[j - 1];
+            p = dist_point_linesegment(point, points.at(id1), points.at(id2));
+            if (p.first < dist) {
+                dist = p.first;
+                result.pointFound = p.second;
+                result.pathId = i;
+                result.pointId1 = id1;
+                result.pointId2 = id2;
+                result.pathPosition = j;
+            }
+        }
     }
 
     return result;
@@ -476,80 +664,50 @@ bool distCompare(IdDist i, IdDist j){
     return (i.dist<j.dist);
 }
 
-void LocalizationAndPlaning::findWay2(double destPoint, double curPoint){
-    //vector<long> usedPoints;
+void LocalizationAndPlaning::calcPath(double strtPoint, double strtPointB, double destPoint, double destPointB) {//najde najkratsiu cestu z cesty strt na cestu dest
+	
     set<double> usedPoints;
-
     list<double> toProcess;
 
-//    for(int i=0; i<points[curPoint].nextPoints.size(); i++ ){
-//        toProcess.push_back( points[curPoint].nextPoints[i] );
-//    }
 
     map<double,WayPoint>::iterator it;
     for ( it=points.begin() ; it != points.end(); it++ ){
         (*it).second.dist = DBL_MAX;
     }
 
-    toProcess.push_back( curPoint );
-    //usedPoints.insert( curPoint );
+    toProcess.push_back( strtPoint );
 
-    points[curPoint].dist = 0;
+    points[strtPoint].dist = 0;
 
     //process points
-    while( toProcess.size()>0 ){
+    while( toProcess.size()>0 ) {
         double id = toProcess.front();
         toProcess.pop_front();
-
-//        if( id==destPoint ){
-//            break;
-//        }
-
-        //usedPoints.insert( id );
-
-//        printf(">> d:%f\n", points[id].dist);
-//
-//        IplImage* img = getGui( points[id]);
-//
-//        cvShowImage( "test", img );
-//        cvStartWindowThread();
-//
-//        //usleep( 50000 );
-//
-//        cvReleaseImage( &img );
 
         WayPoint w = points[id];
 
         vector<IdDist> toProcess2;
 
-        for(int i=0; i<w.nextPoints.size(); i++ ){
+        for(int i=0; i<w.nextPoints.size(); i++ ) {
 
             double idn = w.nextPoints[i];
+			double dist = w.dist + distance( w, points[idn] );
 
-            //if( usedPoints.count( idn )==0 ){ //usedPoints.find( idn )==usedPoints.end() ){
-
-                double dist = distance( w, points[idn] );
-                dist += w.dist;
-
-                if( dist<points[ idn ].dist ){
-
-                    IdDist tmp;
-                    tmp.dist = dist;
-                    tmp.id = idn;
-                    toProcess2.push_back( tmp );
-                }
-            //}
+			if( dist<points[ idn ].dist ) {
+				IdDist tmp;
+				tmp.dist = dist;
+				tmp.id = idn;
+				toProcess2.push_back( tmp );
+            }
         }
 
         sort( toProcess2.begin(), toProcess2.end(), distCompare );
 
         vector<IdDist>::iterator it2;
-        for(it2 = toProcess2.begin(); it2!=toProcess2.end(); it2++  ){
+        for(it2 = toProcess2.begin(); it2!=toProcess2.end(); it2++  ) {
             toProcess.push_back((*it2).id );
             points[ (*it2).id  ].dist = (*it2).dist;
             points[ (*it2).id  ].previous = id;
-
-            //usedPoints.insert( (*it2).id );
         }
 
     }
@@ -566,11 +724,10 @@ void LocalizationAndPlaning::findWay2(double destPoint, double curPoint){
         double id = toProcess.front();
         toProcess.pop_front();
 
-        if( id==curPoint ){
-            path.push_back( curPoint );
+        if( id==strtPoint ){
+            path.push_back( strtPoint );
             break;
         }
-
         
         WayPoint w = points[id];
         if( w.previous!=-1 && usedPoints.count( w.previous )==0 ){
@@ -578,114 +735,64 @@ void LocalizationAndPlaning::findWay2(double destPoint, double curPoint){
             toProcess.push_back( w.previous );
         }
         usedPoints.insert( id );
-        //printf("> d:%ld %ld %d\n", id, w.previous, w.nextPoints.size());
-
     }
-
-    bestWay = path;
+	bestWay.clear();
+	//ak nieje finalny bod cesty na kt lezi ciel vo vypocitanej ceste pridame ho
+	if(path.size() < 2 || path[1] != destPointB){
+		bestWay.push_back(destPointB);
+	}
+	for(int i = 0; i<path.size(); i++){
+            //dont allow 0distance steps
+            if(bestWay.size()==0 || path[i] != bestWay[bestWay.size()-1])
+		bestWay.push_back(path[i]);
+	}
+	//ak nieje zaciatok cesty kde sa nachadzame v bestway pridaj
+	if(bestWay[bestWay.size()-2] != strtPointB && bestWay[bestWay.size()-1] != strtPointB){
+		bestWay.push_back(strtPointB);
+	}
 }
 
-
 GpsAngles LocalizationAndPlaning::update(Ll gps){
-
-    //TODO: remove direction computing
-
-    static int cntsame = 0;
+   
     GpsAngles result;
 
     lastPosition = gps;
 
     FindOnWay fw;
-    fw = find_on_way( gps );
-
-    if ((wasCurPoint != curPoint) & (cntsame >= 10))
-      lastCurPoint = wasCurPoint;
-
-    if (curPoint == wasCurPoint) cntsame++;
-    else cntsame = 0;
-
-    wasCurPoint = curPoint;
-
-    if( distance2( fw.pointFound, points[fw.pointId1] ) < distance2( fw.pointFound, points[fw.pointId2] ) ){
-        curPoint = fw.pointId1;
-    }else{
-        curPoint = fw.pointId2;
-    }
-
-//    Ll vector;
-//    vector.latitude = points[curPoint].latitude - points[lastCurPoint].latitude;
-//    vector.longitude = points[curPoint].longitude - points[lastCurPoint].longitude;
-//    double angleGps = atan2( vector.longitude, vector.latitude);
-
-    //result.gps = angleGps;
+    //najdime sa na nejakej ceste
+    fw = find_on_way(gps);
+    curPoint = fw.pointFound; 
     
-    if( bestWay.size()==0 ){
-        bestDist = DBL_MAX;
-
-        if(curPoint != destId){
-            time_t t = time(NULL);
-            //printf("1 new cur: %ld\n", curPoint);
-            findWay2(destId, curPoint );
-            time_t t2 = time(NULL);
-            //printf("best waysize: %d time: %d \n", bestWay.size(), t2-t); //67, 32
-        }
-    }else{
-
-        //zisti ci su v bestWay
-        int point1pos = -1;
-        int point2pos = -1;
-
-        for(int i=0; i<bestWay.size(); i++ ){
-            if( bestWay[i]==fw.pointId1 ){
-                point1pos = i;
-            }
-            if( bestWay[i]==fw.pointId2 ){
-                point2pos = i;
-            }
-        }
-
-        double angle;
-
-        if( point1pos<point2pos && point1pos!=-1 ){
-            headingPointId = fw.pointId1;
-        }else if( point1pos>point2pos && point2pos!=-1 ){
-            headingPointId = fw.pointId2;
-        } else{
-            headingPointId = -1;
-            bestWay.clear();
-            result.map = DBL_MIN;
-        }
-
-        if(headingPointId!= -1){
-            Ll vec;
-            vec.latitude = points[headingPointId].latitude - fw.pointFound.latitude;
-            vec.longitude = points[headingPointId].longitude - fw.pointFound.longitude;
-
-            angle = atan2( vec.longitude,vec.latitude );
-            angle *= (180/ M_PI);
-
-            //printf("angle %f  vec :%f %f\n", angle, vec.latitude, vec.longitude);
-
-			/*
-            if( distance(points[destId], gps )<0.00005 ){
-                printf("destination \n");
-                result.map = DBL_MAX;
-            }
-			*/
-			
-		result.dstToFin = distance2(points[destId], gps );
-		
-	    if( result.dstToFin < 0.002 ){//dst v km
-                printf("SME V CIELI ( %f m ) \n",result.dstToFin*1000);
-                result.map = DBL_MAX;
-            }
-
-        result.map = angle;
-
-        }
-        //ak ano smer je vektor od aktualnej pozicie ku bodu ktory ma vecsiu poziciu v bestWay
-        //ak nema tak ku poslednemu bodu ktory bol pouzity pre smer
+    //ak sme uz na druhom segmente odstranime ten prvy
+    
+    if (bestWay.size() > 2 && ((fw.pointId1 == bestWay[bestWay.size() - 2] && fw.pointId2 == bestWay[bestWay.size() - 3]) ||
+            (fw.pointId1 == bestWay[bestWay.size() - 3] && fw.pointId2 == bestWay[bestWay.size() - 2]))) {
+        //remove first segment
+        bestWay.erase(bestWay.end() - 1);
     }
-
+    //TODO presne kedy recalc doriesit  teraz solidne ale ak sa vyberie jednym smerom dlho tak sa da pokazit- mozno recalc ak nemame heading point ako priesecnik alebo destpoint tj ten druhy bod  prveho segmentu
+    //ak nemame trasu alebo sme na ceste ktora sa nespaja s bestway na jej zaciatku -> vypocitame trasu
+    if (bestWay.size() == 0 ||
+            (bestWay.size() == 1 && fw.pointId1 != bestWay[bestWay.size() - 1] && fw.pointId2 != bestWay[bestWay.size() - 1]) ||
+            (bestWay.size() > 1 && fw.pointId1 != bestWay[bestWay.size() - 1] && fw.pointId2 != bestWay[bestWay.size() - 1] && fw.pointId1 != bestWay[bestWay.size() - 2] && fw.pointId2 != bestWay[bestWay.size() - 2])
+            ) {
+        FindOnWay fwDest = find_on_way(destinationPoint);
+        calcPath(fw.pointId1, fw.pointId2, fwDest.pointId1, fwDest.pointId2);
+        //printf("new bestWay calculated\n");
+    }
+    
+    //najdeme headingpoint
+    headingPoint = calcHeadingPoint();
+    
+    //checkneme ciel a vratime data
+    result.dstToFin = distance(destinationPoint, curPoint);
+    result.map = calc_bearing(curPoint,headingPoint);//bearing in degrees to heading point
+    if (result.dstToFin < 0.002) {//dst v km
+        printf("SME V CIELI ( %f m ) \n", result.dstToFin * 1000);
+        result.map = DBL_MAX;
+    }
     return result;
+
+
 };
+

@@ -1,8 +1,5 @@
 /* 
  * File:   Localization.h
- * Author: myron
- *
- * Created on Štvrtok, 2010, september 9, 10:17
  */
 
 #ifndef LOCALIZATION_H
@@ -11,17 +8,17 @@
 #include "DataTypes.h"
 #include <vector>
 #include <map>
-#include <cv.h>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 
-class IdDist{
+class IdDist {
 public:
     double id;
     double dist;
 };
 
-class FindOnWay{
+class FindOnWay {
 public:
     Ll pointFound;
     double pointId1;
@@ -38,11 +35,12 @@ public:
     double dist;
     double previous;
 
-    WayPoint(){
+    WayPoint() {
         dist = DBL_MAX;
         previous = -1;
     };
-    WayPoint(Ll src){
+
+    WayPoint(Ll src) {
         dist = DBL_MAX;
         previous = -1;
         this->latitude = src.latitude;
@@ -50,13 +48,12 @@ public:
     };
 };
 
-class Path{
+class Path {
 public:
     vector<double> points;
 };
 
-
-class BoundsLl{
+class BoundsLl {
 public:
     double minlat;
     double minlon;
@@ -70,55 +67,73 @@ public:
     map< double, WayPoint> points;
     BoundsLl bounds;
 
-    int guiWidth;
-    int guiHeight;
+    int guiMapWidth;
+    int guiMapHeight;
+    int guiDebugWidth;
+    int guiDebugHeight;
 
-    //Ll destionation;
-    double destId;
-    vector<int> way;
-    //dint curPath;
-    double curPoint;
-    double wasCurPoint;
+    //main points
+    Ll destinationPoint;
+    Ll curPoint;
+    Ll headingPoint;
 
-    double lastCurPoint;
-
-
-
-    double headingPointId;
+    //last known gps position
     Ll lastPosition;
 
     LocalizationAndPlaning(int guiWidth, int guiHeight);
     virtual ~LocalizationAndPlaning();
-
+    //read osm map from xml
     void readMap(char* filename);
-
+    //gets image of map and main points
     IplImage* getGui();
-    IplImage* getGui(Ll point);
-
-    void setDestination(Ll point);//prvate?
+    //destination set
+    void setDestination(Ll point);
     void readDestination(char* filename);
-
-    GpsAngles update( Ll gps);//TODO: , ImuData imu);
-
-    void findWay(vector<double>* usedPoints, double destPoint, double curPoint, double dist, int level);
-    void findWay2(double destPoint, double curPoint);
+    //update state with new gps data
+    GpsAngles update(Ll gps);
+    //calculate shortest path between two paths
+    void calcPath(double strtPoint, double strtPointB, double destPoint, double destPointB);
 
     //bool distCompare(IdDist i, IdDist j);
     Ll reverse(Point location);
 
 private:
-    double dist_point_linesegment(double x, double y, double x1, double y1, double x2, double y2, double *nx, double *ny);
-    FindOnWay find_on_way(Ll point);
-    double add_point_on_way(Ll point);
-    Point convert(Ll point);
-
+    //shortest path to destination
     vector<double> bestWay;
-    double bestDist;
     
+    //ellipse parameters
+    double ell_a;
+    double ell_b;
+    
+    //sphere radius
+    double EarthRadius;
+    
+    //km radius of ellipse for heading point calculation
+    double heading_search_radius;
+    
+    //fonts for gui
+    CvFont font;
+    CvFont fontBig;
+    
+    //calc point to linesegment distance and closest point on segment to target point
+    pair<double, Ll> dist_point_linesegment(Ll point, Ll start, Ll end);
+    //calc intersections of a line and ellipse
+    pair<Ll, Ll> ellipseLineIntersection(Ll p0, Ll p1);
+    //najde bod segmentu a segmente najblizsie k bodu point
+    FindOnWay find_on_way(Ll point);
+    //lon,lat to map x,y
+    Point convert(Ll point);
+    //distance between 2 points on a sphere
     double distance(Ll p1, Ll p2);
-    double distance2(Ll p1, Ll p2);
-    double wayDistance(vector<double> w);
-    
+    //calculates bearing (initial)
+    double calc_bearing(Ll a, Ll b);
+    //calculates intersection when going from p1 with initial bearing b1 and path from p2 along bearing b2
+    Ll intersection_of_bearings(Ll p1,double b1,Ll p2,double b2);
+    //calc ellipse parameters
+    void calcEllipse(Ll point, double km);
+    //calc heading point
+    Ll calcHeadingPoint();
+
 };
 
 #endif	/* LOCALIZATION_H */
