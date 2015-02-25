@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <fann.h>
 
+#include "VisionContext.h"
+#include "VisionModifier.h"
+
 using namespace std;
 
 class VisionBase{
@@ -25,39 +28,42 @@ public:
     int step_x, step_y;
     int in_x, in_y;
     int out_x, out_y;
-    int out_width,out_height;
     int channels;
-    bool context;
+    int out_width,out_height;
+
+    VisionContext* context;
+    VisionModifier* modifier;
 
     
     int input_neurons;
     int output_neurons;
 
-    VisionBase(int image_width, int image_height, int step_x, int step_y, int in_x, int in_y, int out_x, int out_y,bool kontext);
+    VisionBase(int step_x, int step_y, int in_x, int in_y, int out_x, int out_y, VisionContext* con,vector<int> vcp, VisionModifier* mod,vector<int> vmp);
     void init(int hidden_neurons, int hidden_layers);
     void load(const char* filepath);
     void save(const char* filepath);
 
 
     double train( const float desired_error, const unsigned int max_epochs, char* train_file );
+    double train_on_data( const float desired_error, const unsigned int max_epochs, fann_train_data* data );
 
     double test(char* train_file);
-
+    double test_on_data(fann_train_data* data);
+    
     CvMat* predict(IplImage* inputs);
     
     void close();
 
     virtual int create_training_file_full( vector<IplImage*> inputs, vector< vector<int> >& outputs, char* out_file );
     virtual int create_training_file_partial( vector<IplImage*> inputs, vector< vector<int> >& outputs,  char* out_file, int samples );
-    virtual  vector<int>  upscale_result(vector<fann_type> v);
+    virtual  vector<int>  upscale_result(vector<fann_type> v,int image_width, int image_height);
     void scale_data(char* file, char* out_file);
-protected:
-
+    
     struct fann *ann;
-
-    //virtual vector<fann_type*> create_predict_mat(CvArr* mat);
-
+    
+protected :
     virtual CvMat* create_out_mat(vector<fann_type> calc_out);
+
 
 };
 

@@ -1,29 +1,41 @@
 
 #include "VisionBaseNew.h"
+#include "VisionContext.h"
+#include "VisionModifier.h"
 
 using namespace std;
 
 //in_x,y je velkost vstupov, out velkost vystupov, in >= out
 
-VisionBase::VisionBase(int image_width, int image_height, int step_x, int step_y, int in_x, int in_y, int out_x, int out_y,bool kontext) {
+VisionBase::VisionBase(int step_x, int step_y, int in_x, int in_y, int out_x, int out_y, VisionContext* con,vector<int> vcp, VisionModifier* mod,vector<int> vmp) {
     this->step_x = step_x;
     this->step_y = step_y;
     this->in_x = in_x;
     this->in_y = in_y;
     this->out_x = out_x;
     this->out_y = out_y;
-    this->image_width = image_width;
-    this->image_height = image_height;
-    this->context = kontext;
-
+    this->context = con;
+    this->modifier = mod;
+    //init contexts and mods
+    vector<int> pars;
+    pars.push_back(step_x);
+    pars.push_back(step_y);
+    pars.push_back(in_x);
+    pars.push_back(in_y);
+    pars.push_back(out_x);
+    pars.push_back(out_y);
+    mod->set_params(vmp,pars);
+    con->set_params(vcp,pars);
+    channels = 3; //RGB
+    image_width = 320;
+    image_height = 240;
     this->out_width = (int)((image_width - (in_x - step_x))/step_x);
     this->out_height = (int)((image_height - (in_y - step_y))/step_y);
-    
-    channels = 3; //RGB
 
     this->input_neurons = in_x * in_y * 3;
-    if(context)
-        this->input_neurons = this->input_neurons + 3;
+    this->input_neurons += mod->getSize();
+    this->input_neurons += con->getSize();
+    
     this->output_neurons = out_x * out_y;
 
 }
@@ -57,50 +69,43 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
     if (outFile == NULL) {
         return 0;
     }
-
-    int counte = (1 + ((image_width - in_y) / step_y))*(1 + (image_height - in_y) / step_y);
-    fprintf(outFile, "%d %d %d\n",(int) inputs.size() * counte, this->input_neurons, this->output_neurons);
+    int counte = 0;
+    for (int k = 0; k < inputs.size(); k++) {
+        counte += (1 + ((inputs[k]->width - in_y) / step_y))*(1 + (inputs[k]->height - in_y) / step_y);
+    }
+    fprintf(outFile, "%d %d %d\n",(int) counte, this->input_neurons, this->output_neurons);
 
     CvScalar s;
+    cv::Vec3b tri;
     int pom = 0;
     int res = 0;
     int xo = 0;
     int yo = 0;
-    double kl=0,ka=0,kb=0;
     for (int k = 0; k < inputs.size(); k++) {
-        //vytvor kontextove veci
-        if(context){
-            for (int i = 0; i < image_width/4; i++) {
-                for (int j = 0; j < image_height/10; j++) {
-                    s = cvGet2D(inputs[k], image_height-image_height/10 +j, image_width/2-image_width/8 + i); //get2D ma druhy parameter y a treti x
-                    for (int c = 0; c < channels; c++) {
-                        kl +=s.val[0]/255;
-                        ka +=s.val[1]/255;
-                        kb +=s.val[2]/255;
-                    } 
-
-                }
-            }
-            kl /=(image_width/4)*(image_height/10);
-            ka /=(image_width/4)*(image_height/10);
-            kb /=(image_width/4)*(image_height/10);
-        }
-        for (int x = 0; x <= (image_width - in_x); x += step_x) {
-            for (int y = 0; y <= (image_height - in_y); y += step_y) {
+        //cout<<"creating "<<k+1<<" of "<<inputs.size()<<"\n";
+        //vytvor kontext a mod verziu vstupu        
+        vector<float> saa = context->getContext(inputs[k]);
+        cv::Mat modded = modifier->getContext(inputs[k]);
+        for (int x = 0; x <= (inputs[k]->width - in_x); x += step_x) {
+            for (int y = 0; y <= (inputs[k]->height - in_y); y += step_y) {
                 //vypis vstup
                 for (int i = 0; i < in_x; i++) {
                     for (int j = 0; j < in_y; j++) {
                         //TODO get pixel value sa da aj efektivnejsie
                         s = cvGet2D(inputs[k], y + j, x + i); //get2D ma druhy parameter y a treti x
                         for (int c = 0; c < channels; c++) {
-                            fprintf(outFile, "%f ", s.val[c]/255);
+                            fprintf(outFile, "%f ", (float)s.val[c]/(float)255);
+                        }
+                        //mod
+                        tri = modded.at<cv::Vec3b>(y + j, x + i);
+                        for (int c = 0; c < modded.channels(); c++) {
+                            fprintf(outFile, "%f ", (float)tri.val[c]/(float)255);
                         }
                     }
                 }
-                if(context){
-                    fprintf(outFile, "%f ", kl);
-                    fprintf(outFile, "%f ", ka);
-                    fprintf(outFile, "%f ", kb);
+                //context
+                for(int rr = 0; rr < saa.size(); rr++){
+                    fprintf(outFile, "%f ", saa[rr]);
                 }
                 
                 fprintf(outFile, "\n");
@@ -117,7 +122,7 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
                         for (int d = xo + f * (step_x / out_x); d < xo + (f + 1)*(step_x / out_x); d++) {
                             for (int e = yo + g * (step_y / out_y); e < yo + (g + 1)*(step_y / out_y); e++) {
                               
-                                if (outputs[k][image_width*e + d] >0) {
+                                if (outputs[k][inputs[k]->width*e + d] >0) {
                                     pom++;
                                 }
                             }
@@ -163,8 +168,8 @@ int VisionBase::create_training_file_partial(vector<IplImage*> inputs, vector< v
 
         for (int rnc = 0; rnc < samples; rnc++) {
             //get random x, y
-            x = (((double) rand() / (double) RAND_MAX)* (image_width - in_x - 1));
-            y = (((double) rand() / (double) RAND_MAX)* (image_height - in_y - 1));
+            x = (((double) rand() / (double) RAND_MAX)* (inputs[k]->width - in_x - 1));
+            y = (((double) rand() / (double) RAND_MAX)* (inputs[k]->height - in_y - 1));
             //vypis vstup
             for (int i = 0; i < in_x; i++) {
                 for (int j = 0; j < in_y; j++) {
@@ -191,7 +196,7 @@ int VisionBase::create_training_file_partial(vector<IplImage*> inputs, vector< v
                         for (int e = yo + g * (step_y / out_y); e < yo + (g + 1)*(step_y / out_y); e++) {
                             //TODO nepassuj cvmat ale len vector a getni ho width*e +d
                             
-                            if (outputs[k][image_width*e + d]>0) {
+                            if (outputs[k][inputs[k]->width*e + d]>0) {
                                 pom++;
                             }
                         }
@@ -226,6 +231,14 @@ double VisionBase::train(const float desired_error, const unsigned int max_epoch
     return fann_get_MSE(ann);
 }
 
+double VisionBase::train_on_data(const float desired_error, const unsigned int max_epochs, fann_train_data* data) {
+    const unsigned int epochs_between_reports = 5;
+    fann_reset_MSE(ann);
+    fann_train_on_data(ann, data, max_epochs, epochs_between_reports, desired_error);
+
+    return fann_get_MSE(ann);
+}
+
 //test returns MSE of data
 
 double VisionBase::test(char* train_file) {
@@ -241,6 +254,18 @@ double VisionBase::test(char* train_file) {
     return fann_get_MSE(ann);
 }
 
+double VisionBase::test_on_data(fann_train_data* data) {
+
+    fann_reset_MSE(ann);
+
+    fann_test_data(ann, data);
+
+    fann_destroy_train(data);
+
+    return fann_get_MSE(ann);
+}
+
+
 //process image with nn
 
 CvMat* VisionBase::predict(IplImage* inputs) {
@@ -248,28 +273,15 @@ CvMat* VisionBase::predict(IplImage* inputs) {
     vector<fann_type*> input_array;
     vector<fann_type> calc_out;
     int pom = 0;int kk=0;
-    double kl=0,ka=0,kb=0;
     CvScalar s;
-    
-    if(context){
-        for (int i = 0; i < image_width/4; i++) {
-            for (int j = 0; j < image_height/10; j++) {
-                s = cvGet2D(inputs, image_height-image_height/10 +j, image_width/2-image_width/8 + i); //get2D ma druhy parameter y a treti x
-                for (int c = 0; c < channels; c++) {
-                    kl +=s.val[0]/255;
-                    ka +=s.val[1]/255;
-                    kb +=s.val[2]/255;
-                } 
-
-            }
-        }
-        kl /=(image_width/4)*(image_height/10);
-        ka /=(image_width/4)*(image_height/10);
-        kb /=(image_width/4)*(image_height/10);
-    }
-    
-    for (int y = 0; y <= (image_height - in_y); y += step_y) {
-        for (int x = 0; x <= (image_width - in_x); x += step_x) {
+    cv::Vec3b tri;
+    vector<float> saa = context->getContext(inputs);
+    cv::Mat modded = modifier->getContext(inputs);
+    bool usemod=false;
+    if(modifier->getSize() >0)
+        usemod = true;
+    for (int y = 0; y <= (inputs->height - in_y); y += step_y) {
+        for (int x = 0; x <= (inputs->width - in_x); x += step_x) {
             fann_type* row = new fann_type[ ann->num_input ];
 
             pom = 0; //pomocny iterator nech je menej instrukcii
@@ -279,16 +291,24 @@ CvMat* VisionBase::predict(IplImage* inputs) {
                     //TODO get pixel value sa da aj efektivnejsie
                     s = cvGet2D(inputs, y + j, x + i); //get2D ma druhy parameter y a treti x
                     for (int c = 0; c < channels; c++) {
-                        row[ pom ] = s.val[c]/255;
+                        row[ pom ] = (float)s.val[c]/(float)255;
                         pom++;
+                    }
+                    //mod
+                    if(usemod){
+                    tri = modded.at<cv::Vec3b>(y + j, x + i);
+                        for (int c = 0; c < modded.channels(); c++) {
+                            row[ pom ] = (float)tri.val[c]/(float)255;
+                            pom++;
+                        }
                     }
                 }
             }
-            if(context){
-                row[ pom ] = kl;
-                row[ pom+1 ] = ka;
-                row[ pom+2 ] = kb;
-            }
+            
+            for(int rr = 0; rr < saa.size(); rr++){
+                    row[pom] = saa[rr];
+                    pom++;
+                }
             input_array.push_back(row);
         }
     }
@@ -305,13 +325,16 @@ CvMat* VisionBase::predict(IplImage* inputs) {
 
         delete[] (*it);
     }
-
+/*
+    for(int u = 0; u < input_array.size(); u++)
+        delete input_array[u];*/
     input_array.clear();
 
     CvMat* mat = create_out_mat( calc_out );
     calc_out.clear();
 
     return mat;
+
 }
 
 CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
@@ -322,8 +345,8 @@ CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
     int w4 = image_height/step_y;
     int ite=0;
     for (int y = 0; y <= (image_height - in_y); y += step_y) {
-        for (int x = 0; x <= (image_width - in_x); x += step_x) { 
-    
+        for (int x = 0; x <= (image_width - in_x); x += step_x) {
+   
             double d = calc_out.at(ite);
             ite++;
             d = d*2; //weight
@@ -333,7 +356,7 @@ CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
             }else if(d>1){
                 d=1;
             }
-            
+           
             cvSetReal2D(result,(int)(y/step_y),(int)(x/step_x),d);
         }
     }
@@ -343,7 +366,7 @@ CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
 
 //upscalne result tak aby sa dal pouzit ako overlay obrazku
 //TODO nejak efektivnejsie sa neda? cez copy alebo nejake memcpy...
- vector<int>  VisionBase::upscale_result(vector<fann_type> v){
+ vector<int>  VisionBase::upscale_result(vector<fann_type> v,int image_width, int image_height){
     cout<< "upscale "<<v.size()<<"\n";
     vector<int>  res;
     vector<int>  row;

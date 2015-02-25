@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <cv.h>
 #include <vector>
@@ -222,7 +221,7 @@ int VisionBase::create_random_training( vector<IplImage*> inputs, vector<CvMat*>
 }
 
 void VisionBase::scale_data(char* file, char* out_file){
-    
+   
     fann_train_data* data = fann_read_train_from_file( file );
 
     fann_set_scaling_params( ann, data, 0.0f, 1.0f, 0.0f, 1.0f );

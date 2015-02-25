@@ -22,7 +22,12 @@
 #include "VisionRegion.h"
 #include "VisionHistogram.h"
 */
+
+#include "ContextHistogram.h"
+#include "ContextProbableRectangle.h"
+#include "ModKMeans.h"
 #include "VisionBaseNew.h"
+
 
 
 #include "EvalDireciton.h"
@@ -49,7 +54,11 @@ const int camera_h = 240;
 //VisionBase nn(320, 240, 6, 6);
 //EvalDireciton ed( nn.image_width*0.4, nn.image_height*0.7, 10, nn.image_width, nn.image_height );
 //#############################
-VisionBase nn(camera_w,camera_h, 4, 4, 5, 5, 1, 1,false);
+VisionContext* con = new VisionContext();//new VisionContext(); je prazdny kontext
+VisionModifier* mod = new VisionModifier(); //new VisionModifier(); je prazdny modifier
+vector<int> vmod;
+vector<int> vcon;
+VisionBase nn(5, 5, 5, 5, 1, 1,con,vcon,mod,vmod);
 
 EvalDireciton ed( (nn.out_width)*0.4, (nn.out_height)*0.7, 10, nn.out_width, nn.out_height);
 FILE* mainLog;
@@ -81,43 +90,86 @@ void init_video(){
 }
 
 void timer(){
-    time_t t = time(NULL);
-
-    printf("current time: %s \n", ctime( &t) );
-
-    struct tm x;
-    printf("enter start time\n");
-    //char *s = "12:00:00";
-    char s[30];
-    fgets( s, 30, stdin );
-
-    s[strlen(s)-1]='\0';
-
-    x = *localtime(&t);
-
-    strptime( s, "%T", &x );
-    time_t time1 = mktime( &x );
-
-    printf("current: %d, start: %d, (%s)\n", (int)time(NULL), (int)time1, s);
-
-    while( time(NULL)< time1 ){
-        printf("%d seconds to start\n", (int)(time1 - time(NULL)) );
-        sleep(1);
-    }
+    
+    
 }
 
 Point pixel;
 int clicked;
-
-void loc_mouse_callback(int event, int x, int y, int flags, void* param)
-{
-    if( event == CV_EVENT_LBUTTONDOWN || ( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON)  ) )
-    {
-      pixel.x = x;
-      pixel.y = y;
-      clicked = 1;
+time_t start_time;
+int locwin_width;
+int locwin_map_height;
+bool debugging=false;
+void loc_mouse_callback(int event, int x, int y, int flags, void* param) {
+    if(debugging)
+        if (event == CV_EVENT_LBUTTONDOWN || (event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON))) {
+            pixel.x = x;
+            pixel.y = locwin_map_height-y;
+            clicked = 1;
+        }
+    if (event == CV_EVENT_LBUTTONDOWN){
+        //allow start time change if we did not start yet
+        if(start_time > time(NULL)){
+            if(x>(locwin_width-150) && x<(locwin_width-110) ){
+                if((y) > (locwin_map_height+25) && (y)<(locwin_map_height+50)){
+                    start_time -=60;
+                }
+                else if((y) > (locwin_map_height) && (y)<(locwin_map_height+25)){
+                    start_time +=60;
+                }
+            }
+        }
     }
-
+}
+CvFont font;
+CvFont fontBig;
+void add_debug_to_image(IplImage** img,int top_margin,int maxwidth,SbotData sdat){
+    //palceholder potom sa tam nahadzu senzory
+    int senzor1 = sdat.distRL;
+    int senzor2 = sdat.distFL;
+    int senzor3 = sdat.distM;
+    int senzor4 = sdat.distFR;
+    int senzor5 = sdat.distRR;
+    
+    vector<int> se;
+    se.push_back(senzor1);//LBocny
+    se.push_back(senzor2);//Lavy Predny
+    se.push_back(senzor3);//UUUUUplnePredny
+    se.push_back(senzor4);//PravyPredny
+    se.push_back(senzor5);//PBocny
+    stringstream diststr;
+    int trs = 80;//treshold of obstacle
+    int maxim = 200;//max of sensor
+    for(int i = 0; i<se.size();i++){
+        //draw rectangle
+        cvRectangle(*img,cvPoint(235+(i*15), top_margin + 45 -( 26-13*abs(i - 2)) ),cvPoint(255+(i*15), top_margin + 35 -( 26-13*abs(i - 2)) ),cvScalar(0, 1*( (double)max(se[i]-trs,0)/(maxim-trs) ), 1*(1- (double)max(se[i]-trs,0)/(maxim-trs) )) ,-1);
+        
+        diststr.str("");
+        diststr << se[i];
+        cvPutText(*img,diststr.str().c_str(),cvPoint(237+(i*15),top_margin + 43 -( 26-13*abs(i - 2))),&font,cvScalar(0,0,0));  
+    }
+    //curtime and start time
+    time_t t1 = time(NULL);
+    struct tm  t; 
+    localtime_r(&t1,&t);
+    struct tm  t2;
+    localtime_r(&start_time,&t2);
+    char buffer[20];
+    char buffer2[20];
+    strftime(buffer, sizeof(buffer), "%H:%M:%S", &t);    
+    cvPutText(*img,buffer,cvPoint(maxwidth-100,top_margin +20),&fontBig,cvScalar(0,0,0));  
+    strftime(buffer2, sizeof(buffer2), "%H:%M:%S", &t2);
+    cvPutText(*img,buffer2,cvPoint(maxwidth-100,top_margin + 45 ),&fontBig,cvScalar(0,0,0)); 
+    //start time +- 'buttons'
+    cvLine(*img,cvPoint(maxwidth - 150,top_margin),cvPoint(maxwidth - 150,top_margin+50),cvScalar(0,0,0));
+    cvLine(*img,cvPoint(maxwidth - 110,top_margin),cvPoint(maxwidth - 110,top_margin+50),cvScalar(0,0,0));
+    cvLine(*img,cvPoint(maxwidth - 150,top_margin+25),cvPoint(maxwidth,top_margin+25),cvScalar(0,0,0));
+    diststr.str("+");
+    cvPutText(*img,diststr.str().c_str(),cvPoint(maxwidth-137,top_margin +20),&fontBig,cvScalar(0,0,0)); 
+    diststr.str("-");
+    cvPutText(*img,diststr.str().c_str(),cvPoint(maxwidth-137,top_margin + 45 ),&fontBig,cvScalar(0,0,0)); 
+    
+    
 }
 
 void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle, double kmtotarget )
@@ -150,7 +202,11 @@ int main(int argc, char** argv) {
     setlocale(LC_ALL, "C");
     time_t t;
     time(&t);
-
+    start_time = time(NULL) +5*60;
+    
+    cvInitFont(&fontBig, CV_FONT_HERSHEY_SIMPLEX, 0.6, 0.6);
+    cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.3);
+    
     char logname[64];
     sprintf(logname, "../logs/%ld.log", t);
     mainLog = fopen( logname, "w");
@@ -175,7 +231,8 @@ int main(int argc, char** argv) {
     cvMoveWindow( "localization", 30, 30 );
 
     LocalizationAndPlaning loc(800,400);
-    
+    locwin_width = loc.guiMapWidth;
+    locwin_map_height = loc.guiMapHeight;
     //loc.readMap( "../maps/wien.osm" );
     //loc.readMap( (char *)"../maps/stromovka.osm" );
     //loc.readMap( (char *)"../maps/lodz.osm" );
@@ -186,29 +243,6 @@ int main(int argc, char** argv) {
     loc.readDestination( (char *)"../destination.txt");
     cvSetMouseCallback( "localization", loc_mouse_callback, NULL );
 
-
-    printf("!!!!!!!!map only? [m]\n");
-    fflush(stdout);
-    sleep(2);
-    int mapkey = cvWaitKey(3500);
-    if ('m' == mapkey)
-    {
-        printf("map only...\n");
-        localizationFrame = loc.getGui();
-        cvShowImage( "localization", localizationFrame );
-        cvWaitKey(33);
-        while (true) {
-            if (clicked)
-            {
-                Ll p = loc.reverse(pixel);
-                printf("click: long=%lf lat = %lf\n", p.longitude, p.latitude);
-                fflush(stdout);
-                clicked = 0;
-            }
-            cvWaitKey(10);
-        }
-    }
-    else printf("%d %c", mapkey, mapkey);
 
     CvCapture* capture;
 
@@ -227,7 +261,7 @@ int main(int argc, char** argv) {
     Coordinate coor;
 
 
-
+    
 
     GpsThread gps;
     ImuThread imu;
@@ -255,13 +289,6 @@ int main(int argc, char** argv) {
 
     IplImage* frame;
     setlocale(LC_ALL, "C");
-//    nn.load("../1307266316.net");//1304670470.net
-//    nn.load("../1316258985.net");//1304670470.net
-    //###########################################################
-    //nn.load("../1347706382.net");
-    //nn.load("../neur5555b.net");//bolo treba zmazat min_niecodaco riadky leob fann je starsi tu
-    //nn.load("../plzen1.net");
-    //nn.load("../plzen3.net"); // aj slnko aj neslnko
     //nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
     //nn.load("../555511.net");
     nn.load("../555511.net");
@@ -303,19 +330,29 @@ int main(int argc, char** argv) {
 	cvCvtColor(tmp_frame, tmp_frame, CV_BGR2Lab);
         //cvFlip( tmp_frame, tmp_frame, 0);
         //cvFlip( tmp_frame, tmp_frame, 1);
+        
+        SbotData sdata = sbot.getData();
+        ImuData idata = imu.getData();
+        Ll gdata = gps.getData();
+        GpsAngles a = loc.update( gdata);
+        //starting timer
+        while( time(NULL)< start_time ){
+            //printf("%d seconds to start\n", (int)(start_time - time(NULL)) );
+            
+            localizationFrame = loc.getGui();
+            add_debug_to_image(&localizationFrame,loc.guiMapHeight,loc.guiDebugWidth,sdata);
+            cvShowImage( "localization", localizationFrame );
+            cvReleaseImage( &localizationFrame );
 
-        if(START_TIMER){
-           timer();
-           START_TIMER = 0;
+            char c = cvWaitKey(33);
+            //sleep(1);
         }
 
         predicted_data = nn.predict( tmp_frame );
         //predicted_data = nn.nn_random_predict( tmp_frame, 1000 );
 
         //
-        SbotData sdata = sbot.getData();
-        ImuData idata = imu.getData();
-        Ll gdata = gps.getData();
+        
 
         if(setstart == 0){
             setstart = 1;
@@ -364,7 +401,7 @@ int main(int argc, char** argv) {
         }
         was_obstacle = sdata.obstacle;
 
-        GpsAngles a = loc.update( gdata);
+        
 
 		//TODO ked 10sec stoji ze je v cieli vypni ho uz(ak je uspesne to zastavenie)
         if(a.map ==DBL_MAX){
@@ -400,7 +437,7 @@ int main(int argc, char** argv) {
         cvLine( rgb_frame, cvPoint( sizeC*(display_direction), (rgb_frame->height-ed.triangle_h*nn.step_y) ), cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 0,255 ), 5);
 
         localizationFrame = loc.getGui();
-
+        add_debug_to_image(&localizationFrame,loc.guiMapHeight,loc.guiDebugWidth,sdata);
         cvShowImage( "camera", rgb_frame );
         cvShowImage( "path", predicted_data );
         cvShowImage( "localization", localizationFrame );

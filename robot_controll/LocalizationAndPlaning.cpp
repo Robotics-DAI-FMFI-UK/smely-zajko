@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <list>
+#include <list>1
 #include <set>
 
 #include <cmath>
@@ -22,8 +22,8 @@ using namespace std;
 using namespace rapidxml;
 
 LocalizationAndPlaning::LocalizationAndPlaning(int guiWidth, int guiHeight) {
-    //this->guiDebugHeight = 50;//debug border height 0to turn off
-    this->guiDebugHeight = 0;
+    this->guiDebugHeight = 50;//debug border height 0to turn off
+    //this->guiDebugHeight = 0;
     this->guiMapWidth = guiWidth;
     this->guiMapHeight = guiHeight - this->guiDebugHeight;
     this->guiDebugWidth = guiWidth;
