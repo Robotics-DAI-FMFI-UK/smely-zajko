@@ -43,6 +43,10 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="LocalizationAndPlaning.cpp" ex="false" tool="1" flavor="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor="0">
+      </item>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>

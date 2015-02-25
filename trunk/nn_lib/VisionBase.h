@@ -1,3 +1,10 @@
+/* 
+ * File:   VisionBase.h
+ * Author: mnam
+ *
+ * Created on April 27, 2014, 9:01 PM
+ */
+
 #ifndef NEURAL_NETWORK_H_INCLUDED
 #define NEURAL_NETWORK_H_INCLUDED
 
@@ -67,3 +74,5 @@ protected:
 
 };
 #endif // NEURAL_NETWORK_H_INCLUDED
+
+

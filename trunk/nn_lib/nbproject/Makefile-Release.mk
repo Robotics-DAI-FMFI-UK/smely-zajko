@@ -36,8 +36,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/VisionBaseNew.o \
 	${OBJECTDIR}/VisionBase.o \
+	${OBJECTDIR}/ContextHistogram.o \
 	${OBJECTDIR}/VisionRegionReduced.o \
+	${OBJECTDIR}/ModKMeans.o \
 	${OBJECTDIR}/VisionRegion.o \
+	${OBJECTDIR}/ContextProbableRectangle.o \
 	${OBJECTDIR}/VisionHistogram.o
 
 
@@ -77,15 +80,30 @@ ${OBJECTDIR}/VisionBase.o: VisionBase.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionBase.o VisionBase.cpp
 
+${OBJECTDIR}/ContextHistogram.o: ContextHistogram.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
+
 ${OBJECTDIR}/VisionRegionReduced.o: VisionRegionReduced.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
 
+${OBJECTDIR}/ModKMeans.o: ModKMeans.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
+
 ${OBJECTDIR}/VisionRegion.o: VisionRegion.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
+
+${OBJECTDIR}/ContextProbableRectangle.o: ContextProbableRectangle.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
 
 ${OBJECTDIR}/VisionHistogram.o: VisionHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
