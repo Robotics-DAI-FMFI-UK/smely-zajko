@@ -10,6 +10,8 @@ static int last_t1, last_t2;
 
 volatile uint8_t remote_override = 0;
 volatile uint8_t obstacle_override = 0;
+volatile uint8_t extra_flag = 0;
+volatile int16_t MAXSPEED = 10;
 
 ISR(INT4_vect)	//receiver fwd/bwd
 {
@@ -28,7 +30,7 @@ ISR(INT4_vect)	//receiver fwd/bwd
 			if (tm > 150) tm = 0;
 			if (tm < -150) tm = 0;
 			tm *= -1;
-			int new_speed = tm / 6;
+			int new_speed = tm * MAXSPEED / 120; //tm / 6;
 			if (new_speed != speed)
 			{
     			speed = new_speed;

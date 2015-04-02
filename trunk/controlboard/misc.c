@@ -1,15 +1,40 @@
 #include "misc.h"
+#include "motors.h"
+#include "encoders.h"
 
 volatile unsigned char bot_number=DEFAULT_SBOT_NUMBER;//a global in which the number of the bot is stored; 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//finished, working
+//wait specified # of milliseconds
 void wait(unsigned int a)
 {							
 	while(a--)_delay_ms(1);
 	return;
 }
+
+//wait milliseconds, but keep updating current_speed,
+//must be used for waits longer than 10ms (otherwise
+//motors get crazy in timer interrupt routine)
+void long_wait(unsigned int a)
+{							
+	while(a > 10)
+	{
+	  a -= 10;
+	  _delay_ms(8);
+      //query left encoder for speed
+	  current_speedL = -(query_speed_left());
+	  wait(1);
+
+      // query right encoder for speed
+	  current_speedR = -(query_speed_right());
+      wait(1);
+	}
+	wait(a);
+
+	return;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -207,7 +207,7 @@ void halt_request(void)
     // red_switch_pressed = 0;
 	sprintf(prnbuf, "!red switch pressed\n\r");
 	usart1_putstr(prnbuf);
-	wait(50);    
+	long_wait(50);    
 }
 
 
@@ -216,26 +216,26 @@ void forced_stop(void)
 	int backup_speedL = target_speedL;
 	int backup_speedR = target_speedR;
 
-    stop();
-	sprintf(prnbuf, "!need a break\n\r");
+    sprintf(prnbuf, "!need a break\n\r");
 	usart1_putstr();
-	wait(3000); //wait until it acutally stops
+	stop();
+	long_wait(500); //wait until it acutally "stops"
 
     stepL = -query_position_left();
 	wait(1);
  	stepR = -query_position_right();
 
-    sprintf(prnbuf, "!reset pos to 0\n\r");
-	usart1_putstr();
+    //sprintf(prnbuf, "!reset pos to 0\n\r");
+	//usart1_putstr();
     stop_immediatelly();
-	wait(100);
+	wait(5);
 
 	offsetL += stepL;
 	offsetR += stepR;
 
 	current_speedL = 0;
 	current_speedR = 0;
-
+    //forced_print = 1;
 
     stepL = -query_position_left();
 	wait(1);
@@ -245,13 +245,15 @@ void forced_stop(void)
 //	target_speedL = backup_speedL;
 //	target_speedR = backup_speedR;
 
-    sprintf(prnbuf, "!resume\n\r");
-    usart1_putstr();
+//    sprintf(prnbuf, "!resume\n\r");
+//    usart1_putstr();
 }
 
 
 void steering(void)
 {
+	 int cnt = 0;
+
       //query left encoder for position	  
 	  stepL = -query_position_left();
       wait(1);
@@ -279,20 +281,14 @@ void steering(void)
 	  {
 	  	forced_stop();
       }
-      
 
       //query left encoder for speed
-	  current_speedL = query_speed_left();
-	  current_speedL *= -1;
+	  current_speedL = -(query_speed_left());
 	  wait(1);
 
       // query right encoder for speed
-	  current_speedR = query_speed_right();
-	  current_speedR *= -1;
+	  current_speedR = -(query_speed_right());
       wait(1);
 
   	  if (speed_req) compute_update_spd();		    //REACT
 }
-
-
-

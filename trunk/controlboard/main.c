@@ -78,6 +78,8 @@ void remote_controll(void)
 {
 	static uint8_t last_remote_override = 2;
 	static uint8_t last_obstacle_override = 2;
+	static uint8_t last_extra_flag = 2;
+	static int16_t last_MAXSPEED;
 
 	if (remote_override != last_remote_override)
 	{
@@ -114,6 +116,28 @@ void remote_controll(void)
         }
 		last_obstacle_override = obstacle_override;
 	}
+
+	if (MAXSPEED != last_MAXSPEED)
+	{
+		last_MAXSPEED = MAXSPEED;
+		sprintf(prnbuf, "!max=%d\n\r",MAXSPEED);
+		usart1_putstr();
+	}
+
+	if (extra_flag != last_extra_flag)
+	{
+	  	if (extra_flag) 
+		{
+			sprintf(prnbuf, "!flag_OFF\n\r");
+			usart1_putstr();
+		}
+		else 
+		{
+			sprintf(prnbuf, "!flag_ON\n\r");
+			usart1_putstr();
+        }
+		last_extra_flag = extra_flag;
+	}
 }
 
 
@@ -122,13 +146,24 @@ void obstacle_avoidance(void)
     static uint8_t which_sensor = 0;	    
 	static int8_t seen_obstacle = 0;
 
+    //sprintf(prnbuf, "_oa:");usart1_putstr();
+    //!!!!!!!!
+    // dist[4] = 200;
+
+
 	srf08_sample(SRF08_ADDR + 4);  // always sample center sensor
+	//srf08_echos[0] = 200;
+	
 	wait(14);
 	dist[2] = srf08_echos[0];
 	if (dist[2] < 25) dist[2] = 200;
 
     // and one of the other 4 (round robin)
 	srf08_sample(SRF08_ADDR + which_sensor * 2);
+	
+	// umbrella solution
+	//srf08_echos[0] = 200;
+	
 	wait(14);
 	dist[which_sensor] = srf08_echos[0];
 	if (dist[which_sensor] < 10) dist[which_sensor] = 200;
@@ -136,6 +171,8 @@ void obstacle_avoidance(void)
 	which_sensor++;
 	if (which_sensor == 2) which_sensor++;
 	else if (which_sensor == 5) which_sensor = 0;
+	//!!!!!!!!!!
+	//else if (which_sensor == 4) which_sensor = 0;
 
 	//detect obstacle
 	if ((dist[0] < THRESHOLD_OBSTACLE_SIDE) || (dist[1] < THRESHOLD_OBSTACLE_LR) || (dist[2] < THRESHOLD_OBSTACLE_M)
@@ -162,6 +199,7 @@ void obstacle_avoidance(void)
 	}
 
 	wait(1);
+	//sprintf(prnbuf,"ok_");usart1_putstr();
 }
 
 void status_reporting()
@@ -182,12 +220,6 @@ void status_reporting()
       // send it (in the background)
 	  usart1_putstr();
 }
-
-///////////////////////////////////////////////////////////////////////////////
-int main(void)
-{
-	int i;
-	initialization();
 
 /*	for (i = SERVO_STOP; i < SERVO_FW; i++)
 	{
@@ -214,6 +246,13 @@ int main(void)
 	    status_reporting();
     }
 */
+
+///////////////////////////////////////////////////////////////////////////////
+int main(void)
+{
+	int i;
+	initialization();
+
 	while(1)
 	{
 	  remote_controll();

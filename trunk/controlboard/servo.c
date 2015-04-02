@@ -34,7 +34,7 @@ void slow_set_servo(unsigned char which, unsigned int value)
 			news = s3 + delta3 * i * d3 / d;
 			set_servo(3, (int)news);
 			wait(12);
-		}
+		} 
 		set_servo(0, value);
 	}
 	else 
@@ -46,6 +46,7 @@ void slow_set_servo(unsigned char which, unsigned int value)
 			set_servo(which, srvo[which] + delta);
 			wait(12);
 		}
+		set_servo(which, value);
 	}
 }
 
@@ -97,3 +98,4 @@ void set_servo(unsigned char which, unsigned int value)	//this function sets the
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 

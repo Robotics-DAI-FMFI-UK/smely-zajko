@@ -108,7 +108,7 @@ void process_char(char c)
 	// execute the previous command
 	switch (command)
 	{
-	  case 's': if (value > 10) value = 10;
+	  case 's': if (value > MAXSPEED) value = MAXSPEED;
 	            value *= sign;
 				if ((speed != value) && (!remote_override))
 				{
@@ -135,6 +135,9 @@ void process_char(char c)
       case 'b': THRESHOLD_OBSTACLE_M = value;
 	            set_leds(0);
 				expect_value = 0;
+				break;
+      case 'm': MAXSPEED = value;
+	  			expect_value = 0;
 				break;
 	}
   }
@@ -173,6 +176,11 @@ void process_char(char c)
 		          break;
         case 'o': ignore_obstacles = 0;
 		          break;
+        case 'm': command = 'm';
+		          expect_command = 0;
+				  value = 0;
+				  expect_value = 1;
+				  break;
         default: command = ' ';
 		           break;
 	  }

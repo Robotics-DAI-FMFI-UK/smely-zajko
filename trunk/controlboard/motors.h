@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 
-#define POSITION_RESET_INTERVAL 2500
+#define POSITION_RESET_INTERVAL 15000
 
 
 extern volatile int8_t speed;
