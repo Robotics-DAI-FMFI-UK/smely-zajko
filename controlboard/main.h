@@ -58,7 +58,8 @@ static inline void io_init(void)
     DDRE = _BV(2);//enable the pwm signals for the servo power enabler only
     PORTE = 0;
 
-	DDRF = 8;    // relay for switching off US distance sensors
+	DDRF = 16;    // relay for switching off US distance sensors
+    PORTF = 0;
 
     // INT4 and INT5 (remote control receiver) generate INT4/5 on toggle
 	// (INT4 = OC3B = PE4)
@@ -87,7 +88,7 @@ static inline void io_init(void)
 
 	// Set register values
 	ICR1 = PWM_TOP;
-	ICR3   = 4000;
+	ICR3   = 800;
 
 	ETIMSK |= (1 << TOIE3);
 

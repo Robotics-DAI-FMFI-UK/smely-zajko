@@ -99,8 +99,8 @@ inline uint8_t i2cWaitForComplete(void)
 	while(( !(inb(TWCR) & BV(TWINT)) ) && (--waiting));
 	if (waiting <= 0)
 	{
-	   PORTF = 8; // turn off US distance sensors
-	   wait(200);
+	   PORTF = 16; // turn off US distance sensors
+	   long_wait(200);
 	   PORTF = 0; // turn them ON again
 	   return 0;
     }
@@ -192,8 +192,8 @@ u08 i2cMasterSendNI(u08 deviceAddr, u08 length, u08* data)
 
 	if (waitin <= 0) 
 	{
-		PORTF = 8;   // turn US distance sensors OFF
-		wait(200);
+		PORTF = 16;   // turn US distance sensors OFF
+		long_wait(200);
 		PORTF = 0;   // and back ON again
 		retval = I2C_ERROR_NODEV;
 	}
