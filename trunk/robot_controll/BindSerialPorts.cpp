@@ -1,10 +1,3 @@
-/* 
- * File:   BindSerialPorts.cpp
- * Author: myron
- * 
- * Created on Streda, 2010, november 24, 23:03
- */
-
 #include "BindSerialPorts.h"
 
 BindSerialPorts::BindSerialPorts() {

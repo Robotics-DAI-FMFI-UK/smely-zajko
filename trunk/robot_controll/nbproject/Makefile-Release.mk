@@ -35,12 +35,15 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/EvalDireciton.o \
+	${OBJECTDIR}/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Coordinate.o \
 	${OBJECTDIR}/GpsThread.o \
 	${OBJECTDIR}/ImuThread.o \
 	${OBJECTDIR}/SbotThread.o \
+	${OBJECTDIR}/SensorManagement.o \
+	${OBJECTDIR}/Subroutines.o \
 	${OBJECTDIR}/LocalizationAndPlaning.o
 
 
@@ -73,6 +76,11 @@ ${OBJECTDIR}/EvalDireciton.o: EvalDireciton.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/EvalDireciton.o EvalDireciton.cpp
 
+${OBJECTDIR}/HokuyoThread.o: HokuyoThread.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/HokuyoThread.o HokuyoThread.cpp
+
 ${OBJECTDIR}/BindSerialPorts.o: BindSerialPorts.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -102,6 +110,16 @@ ${OBJECTDIR}/SbotThread.o: SbotThread.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
+
+${OBJECTDIR}/SensorManagement.o: SensorManagement.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/SensorManagement.o SensorManagement.cpp
+
+${OBJECTDIR}/Subroutines.o: Subroutines.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Subroutines.o Subroutines.cpp
 
 ${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp 
 	${MKDIR} -p ${OBJECTDIR}

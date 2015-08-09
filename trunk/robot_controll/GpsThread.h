@@ -1,9 +1,3 @@
-/* 
- * File:   GpsThread.h
- * Author: myron
- *
- * Created on Streda, 2010, september 8, 16:26
- */
 
 #ifndef GPSTHREAD_H
 #define	GPSTHREAD_H

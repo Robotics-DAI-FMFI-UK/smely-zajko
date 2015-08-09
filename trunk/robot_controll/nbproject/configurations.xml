@@ -8,11 +8,12 @@
       <itemPath>DataTypes.h</itemPath>
       <itemPath>EvalDireciton.h</itemPath>
       <itemPath>GpsThread.h</itemPath>
+      <itemPath>HokuyoThread.h</itemPath>
       <itemPath>ImuThread.h</itemPath>
-      <itemPath>JoystickThread.h</itemPath>
       <itemPath>LocalizationAndPlaning.h</itemPath>
-      <itemPath>PhoneThread.h</itemPath>
       <itemPath>SbotThread.h</itemPath>
+      <itemPath>SensorManagement.h</itemPath>
+      <itemPath>Subroutines.h</itemPath>
       <itemPath>../../fann-2.1.0/src/include/fann.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -27,9 +28,12 @@
       <itemPath>Coordinate.h</itemPath>
       <itemPath>EvalDireciton.cpp</itemPath>
       <itemPath>GpsThread.cpp</itemPath>
+      <itemPath>HokuyoThread.cpp</itemPath>
       <itemPath>ImuThread.cpp</itemPath>
       <itemPath>LocalizationAndPlaning.cpp</itemPath>
       <itemPath>SbotThread.cpp</itemPath>
+      <itemPath>SensorManagement.cpp</itemPath>
+      <itemPath>Subroutines.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"

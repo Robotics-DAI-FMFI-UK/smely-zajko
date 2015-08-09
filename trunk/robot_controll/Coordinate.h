@@ -1,10 +1,3 @@
-/* 
- * File:   Coordinate.h
- * Author: myron
- *
- * Created on Piatok, 2011, máj 6, 12:10
- */
-
 #ifndef COORDINATE_H
 #define	COORDINATE_H
 

@@ -1,10 +1,3 @@
-/* 
- * File:   GpsThread.cpp
- * Author: myron
- * 
- * Created on Streda, 2010, september 8, 16:26
- */
-
 #include "GpsThread.h"
 
 #include <stdio.h>
@@ -188,19 +181,15 @@ void* GpsThread::mainLoop(void*){
    fclose(inlog);
 }
 
-void GpsThread::run(){
-
-    if (end) {
-        return;
-    }
-
+void GpsThread::run()
+{
+    if (end) return;
     pthread_mutex_init( &m_read, NULL );
-
     pthread_create( &t, NULL, mainLoop, NULL );
-    pthread_detach( t );
 }
 
-void GpsThread::stop(){
+void GpsThread::stop()
+{
     if(!end){
         end = true;
 

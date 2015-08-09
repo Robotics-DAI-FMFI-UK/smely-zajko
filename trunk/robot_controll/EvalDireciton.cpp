@@ -1,10 +1,3 @@
-/* 
- * File:   EvalDireciton.cpp
- * Author: myron
- * 
- * Created on Sobota, 2010, august 14, 17:27
- */
-
 #include "EvalDireciton.h"
 #include <stdio.h>
 #include <highgui.h>

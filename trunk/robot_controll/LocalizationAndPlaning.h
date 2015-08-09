@@ -1,7 +1,3 @@
-/* 
- * File:   Localization.h
- */
-
 #ifndef LOCALIZATION_H
 #define	LOCALIZATION_H
 

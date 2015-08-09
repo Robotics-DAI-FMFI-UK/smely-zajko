@@ -1,7 +1,3 @@
-/* 
- * File:   Localization.cpp
- */
-
 #include "LocalizationAndPlaning.h"
 #include "../rapidxml-1.13/rapidxml.hpp"
 #include "../rapidxml-1.13/rapidxml_utils.hpp"
@@ -9,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <list>1
+#include <list>
 #include <set>
 
 #include <cmath>
@@ -34,7 +30,7 @@ LocalizationAndPlaning::LocalizationAndPlaning(int guiWidth, int guiHeight) {
     ell_a = 0;
     ell_b = 0;
     EarthRadius = 6376.5;
-    heading_search_radius = 0.004;
+    heading_search_radius = 0.006;
     cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.3);
     cvInitFont(&fontBig, CV_FONT_HERSHEY_SIMPLEX, 0.6, 0.6);
 }
@@ -505,6 +501,8 @@ IplImage* LocalizationAndPlaning::getGui() {
 }
 
 double LocalizationAndPlaning::distance(Ll p1, Ll p2) {
+    //printf("p1=%lf, %lf   p2=%lf, %lf\n", p1.latitude, p1.longitude, p2.latitude, p2.longitude);
+    
     //degrees to radians
     p1.latitude *= (M_PI / 180);
     p1.longitude *= (M_PI / 180);
