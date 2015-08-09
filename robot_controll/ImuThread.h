@@ -1,10 +1,3 @@
-/* 
- * File:   ImuThread.h
- * Author: myron
- *
- * Created on Streda, 2010, september 8, 14:56
- */
-
 #ifndef IMUTHREAD_H
 #define	IMUTHREAD_H
 
@@ -12,7 +5,10 @@
 #include <ios>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string>
+
+#define COMPASS_ALIGNMENT 900
 
 using namespace std;
 
@@ -48,6 +44,8 @@ private:
     pthread_t t;
    
     static void* mainLoop(void*);
+    static int readLine(char *s);
+    static int imuOpen(char *filename);
 };
 
 #endif	/* IMUTHREAD_H */

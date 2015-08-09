@@ -1,10 +1,3 @@
-/* 
- * File:   SbotThread.h
- * Author: myron
- *
- * Created on Utorok, 2010, september 7, 10:15
- */
-
 #ifndef SBOTTHREAD_H
 #define	SBOTTHREAD_H
 

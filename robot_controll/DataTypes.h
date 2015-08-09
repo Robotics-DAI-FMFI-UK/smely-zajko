@@ -1,10 +1,3 @@
-/* 
- * File:   DataTypes.h
- * Author: myron
- *
- * Created on Štvrtok, 2010, september 2, 14:39
- */
-
 #ifndef DATATYPES_H
 #define	DATATYPES_H
 

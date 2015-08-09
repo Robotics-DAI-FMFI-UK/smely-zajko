@@ -1,10 +1,3 @@
-/* 
- * File:   BindSerialPorts.h
- * Author: myron
- *
- * Created on Streda, 2010, november 24, 23:03
- */
-
 #ifndef BINDSERIALPORTS_H
 #define	BINDSERIALPORTS_H
 

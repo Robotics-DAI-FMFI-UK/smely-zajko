@@ -504,14 +504,15 @@ IplImage* LocalizationAndPlaning::getGui() {
 }
 
 double LocalizationAndPlaning::distance(Ll p1, Ll p2) {
+    printf("p1=%lf, %lf   p2=%lf, %lf\n", p1.latitude, p1.longitude, p2.latitude, p2.longitude);
     //degrees to radians
     p1.latitude *= (M_PI / 180);
     p1.longitude *= (M_PI / 180);
     p2.latitude *= (M_PI / 180);
     p2.longitude *= (M_PI / 180);
 
-    double dlon = p2.longitude - p1.longitude;
-    double dlat = p2.latitude - p1.latitude;
+    double dlon = fabs(p2.longitude - p1.longitude);
+    double dlat = fabs(p2.latitude - p1.latitude);
     //earth radius * (radial distance)
     return EarthRadius*2*asin( sqrt( pow(sin(dlat/2),2) + cos(p1.latitude)*cos(p2.latitude)*pow(sin(dlon/2),2) ) );
 }

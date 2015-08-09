@@ -1,10 +1,3 @@
-/* 
- * File:   Coordinate.cpp
- * Author: myron
- * 
- * Created on Piatok, 2011, máj 6, 12:10
- */
-
 #include "Coordinate.h"
 
 extern int away_from_left;
@@ -60,8 +53,8 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
 		wrong_dir = 0;
 	}
 	//significantly off course(> 110deg), turn
-	if(abs(delta)> 110 || wrong_dir ){
-		printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Going in wrong direction, delta %f turning...\n",delta);
+	if(abs(delta)> 150 || wrong_dir ){
+		//printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Going in wrong direction, delta %f turning...\n",delta);
 		wrong_dir = 1;
         if(delta>0)
         {
@@ -88,14 +81,14 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
         {
             if(autonomy){
                 sbot->setDirection( 40 );
-                sbot->setSpeed( 1 );
+                sbot->setSpeed( -1 );
             }
             display_direction = 5;
         }else
         {
             if(autonomy){
                 sbot->setDirection( -40 );
-                sbot->setSpeed( 1 );
+                sbot->setSpeed( -1 );
             }
             display_direction = -5;
         }

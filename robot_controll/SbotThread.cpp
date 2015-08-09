@@ -1,10 +1,3 @@
-/* 
- * File:   SbotThread.cpp
- * Author: myron
- * 
- * Created on Utorok, 2010, september 7, 10:15
- */
-
 #include <string.h>
 
 #include "SbotThread.h"
@@ -260,7 +253,6 @@ void SbotThread::run(){
     pthread_mutex_init( &m_write, NULL );
 
     pthread_create( &t, NULL, mainLoop, NULL );
-    pthread_detach( t );
 }
 
 void SbotThread::stop(){
