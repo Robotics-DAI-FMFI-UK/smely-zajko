@@ -77,12 +77,21 @@ void loc_mouse_callback(int event, int x, int y, int flags, void* param) {
         if(start_time > time(0)){
             if(x>(locwin_width-150) && x<(locwin_width-110) ){
                 if((y) > (locwin_map_height+25) && (y)<(locwin_map_height+50)){
-                    start_time -=60;
+                    start_time -= 60;
                 }
                 else if((y) > (locwin_map_height) && (y)<(locwin_map_height+25)){
-                    start_time +=60;
+                    start_time += 60;
                 }
             }
+            
+            if(x>(locwin_width-110) && x<(locwin_width-20) ){
+                if((y) > (locwin_map_height+25) && (y)<(locwin_map_height+50)){
+                    start_time -= 5;
+                }
+                else if((y) > (locwin_map_height) && (y)<(locwin_map_height+25)){
+                    start_time += 5;
+                }
+            }            
         }
     }
 }
@@ -200,8 +209,9 @@ int main(int argc, char** argv)
     //sm.loc->readMap( (char *)"../maps/stromovka.osm" );
     //sm.loc->readMap( (char *)"../maps/lodz.osm" );
     //sm.loc->readMap( (char .maps/homologacie_fei.osm" );
-    sm.loc->readMap( (char *)"../maps/botanicka.osm" );
+    //sm.loc->readMap( (char *)"../maps/botanicka.osm" );
     //sm.loc->readMap( (char *)"../maps/borsky2.osm" );
+    sm.loc->readMap( (char *)"../maps/pisek.osm" );
     
     sm.loc->readDestination( (char *)"../destination.txt");
     
@@ -214,7 +224,7 @@ int main(int argc, char** argv)
 	{
         //init_video();
         printf("mplayer init video done.\n");
-        capture = cvCaptureFromCAM(1);  //(1);
+        capture = cvCaptureFromCAM( 1);  //(1);
     }else
 	{ 
         //debug
@@ -256,7 +266,7 @@ int main(int argc, char** argv)
             //save jpeg img
             char str[100];
             sprintf(str, "../runPhotos/cameraimg%ld.jpg", photoTime);
-            cvSaveImage(str ,rgb_frame);
+            cvSaveImage(str, rgb_frame);
             
             //hokuyo log
             sprintf(str, "../runHokuyo/hokuLog%ld.txt", photoTime);
@@ -264,7 +274,7 @@ int main(int argc, char** argv)
             photoTime = time(0) + 5;
         }
         //starting timer
-        while( time(0)< start_time ){
+        while(time(0) < start_time){
             //printf("%d seconds to start\n", (int)(start_time - time(NULL)) );
             
             localizationFrame = sm.loc->getGui();
@@ -297,7 +307,11 @@ int main(int argc, char** argv)
         cvShowImage( "laser", sm.getLaserFrame() );
         cvShowImage( "path", sm.predicted_data );
         cvShowImage( "localization", localizationFrame );
-
+        
+        
+        // cvReleaseImage( &frame );
+       
+        cvReleaseImage( &rgb_frame );
         cvReleaseImage( &tmp_frame );
         cvReleaseImage( &localizationFrame );
 

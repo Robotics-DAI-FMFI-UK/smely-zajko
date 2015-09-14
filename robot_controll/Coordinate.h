@@ -19,7 +19,7 @@ public:
 	int wrong_dir;
     Coordinate();
 
-    int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed );
+    int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed, int* laserData  );
 
 private:
 

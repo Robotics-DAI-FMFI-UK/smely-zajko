@@ -8,7 +8,7 @@ Coordinate::Coordinate() {
 }
 
 
-int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed ){ //returns direction as integer
+int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed, int* laserData ){ //returns direction as integer
 
 //    if( !USE_LOCALIZATION ){
 //        mapAngle = 0;
@@ -18,45 +18,52 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
 
     double delta;
     vector<double> vDist;
+    vector<double> lDist;
     int isChodnik = 0;
 
     //threshold
-
+    
+    printf("evalLaser: ");
     for(int i=0; i<=ed->dir_count; i++){
         double f = ed->eval( predicted_data, i )-0.4;
-
+        double g = ed->evalLaser( laserData, i );
         if( f<0){
             f=0;
-        }else  if( f>0 ){
+        }else  if( f > 0 && g > 0.5 ){
             isChodnik = 1;
         }
         vDist.push_back( f );
+        lDist.push_back( g );
+        printf("%.3f ", g);
     }
+    printf("\n");
+    
+    
     //in destination vicinity
-    if( mapAngle==DBL_MAX ){
+    if (mapAngle == DBL_MAX){
         sbot->setDirection( 0 );
         sbot->setSpeed(0);
         return 0;
     }
 
     //delta
-    if( mapAngle==DBL_MIN ){
+    if (mapAngle == DBL_MIN){
         delta = 0;
-    }else{
+    } else {
      //   delta = ((int)(mapAngle /* - (imuData.xAngle/10) */ + 360))%360 ;
         delta = ((int)(mapAngle - imuAngle/10 + 360))%360 ;
     }
     if (delta >180) delta = delta - 360;
 
 	//heading roughly the right way
-	if(abs(delta) < 40){
+	if (abs(delta) < 40){
 		wrong_dir = 0;
 	}
-	//significantly off course(> 110deg), turn
-	if(abs(delta)> 150 || wrong_dir ){
+	//significantly off course(> 150deg), turn
+	if (abs(delta)> 150 || wrong_dir ){
 		//printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Going in wrong direction, delta %f turning...\n",delta);
 		wrong_dir = 1;
-        if(delta>0)
+        if (delta>0)
         {
             if(autonomy){
                 sbot->setDirection( 80 );
@@ -74,7 +81,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
 		
 		
 	}
-	else if( isChodnik==0 ) //no valid direction from vision
+        else if( isChodnik==0 ) //no valid direction from vision//TODO presun do subroutines 
     {
         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Chodnik missing searching..\n");
         if(delta>0)
@@ -110,7 +117,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
           if (coeff < 0.0) coeff = 0.1;
           coeff /= 25.0;//vyskusat 5, 12 ...
           coeff += 1.0;
-          double f = vDist[i]*coeff;
+          double f = vDist[i] * coeff * lDist[i]; //TODO x 1if hoku sez > 1.5m else 0.1
           if( f>fmax ){
               fmax = f;
               maxdir = i;

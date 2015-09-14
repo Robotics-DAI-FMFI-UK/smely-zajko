@@ -65,7 +65,7 @@ void SensorManagement::stop()
 
 int SensorManagement::move()
 { 
-    return coor->move(predicted_data, sbot, angles.map, idata.xAngle, ed );
+    return coor->move(predicted_data, sbot, angles.map, idata.xAngle, ed, laser );
 }
 
 double SensorManagement::evalNeuralForDirection(int dir)

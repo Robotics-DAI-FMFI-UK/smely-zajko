@@ -16,6 +16,8 @@ EvalDireciton::EvalDireciton( int triangle_w, int triangle_h, int dir_count, int
     C = cvPoint( frame_w/2, frame_h - triangle_h);
 
     S = (triangle_h*triangle_w)/2;
+
+    this->laser_vals_per_direction = (LASER_VALS_END - LASER_VALS_START) / dir_count;
 }
 
 EvalDireciton::~EvalDireciton() {
@@ -94,4 +96,57 @@ int EvalDireciton::get_best( CvMat* frame ){
     }
 
     return best_i;
+}
+
+//TODO eval direction from hokuyo
+double EvalDireciton::evalLaser(int* laserData, int direction){
+        
+    int start = LASER_VALS_START + (direction * laser_vals_per_direction);
+    int end = LASER_VALS_START + ((direction+1)  * laser_vals_per_direction);
+    
+    int min_distance = laserData[start];
+    for (int i = start; i < end; ++i) {
+        int curr_distance = laserData[i];
+        if (curr_distance <= MIN_OBSTACLE_DISTANCE_MM) {
+            continue;
+        }
+
+        if (curr_distance < min_distance) {
+            min_distance = curr_distance;  
+        }
+    }
+    
+    if (direction < dir_count / 3)
+    {
+        for (int i = 180; i < LASER_VALS_START; ++i) {
+            int curr_distance = laserData[i];
+            if (curr_distance <= MIN_OBSTACLE_DISTANCE_MM) {
+                continue;
+            }
+
+            if (curr_distance < min_distance) {
+                min_distance = curr_distance;  
+            }
+        }        
+    }
+    else if (direction > 2 * dir_count / 3)
+    {
+        for (int i = LASER_VALS_END; i < 901; ++i) 
+        {
+            int curr_distance = laserData[i];
+            if (curr_distance <= MIN_OBSTACLE_DISTANCE_MM) {
+                continue;
+            }
+
+            if (curr_distance < min_distance) {
+                min_distance = curr_distance;  
+            }
+        }
+    }
+
+    if (min_distance < MAX_OBSTACLE_DISTANCE_MM) {
+        return PROB_NO_GO;
+    } else {
+        return PROB_GO;
+    }
 }

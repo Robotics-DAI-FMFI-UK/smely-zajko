@@ -92,10 +92,11 @@ public:
 
     //bool distCompare(IdDist i, IdDist j);
     Ll reverse(Point location);
-
-private:
     //shortest path to destination
     vector<double> bestWay;
+
+private:
+    
     
     //ellipse parameters
     double ell_a;

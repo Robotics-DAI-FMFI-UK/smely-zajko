@@ -55,7 +55,7 @@ void Subroutines::manageObstacles(SensorManagement sm)
 		sbot->setDirection( bakdir );
 		sbot->setSpeed( 2 );
 		sleep(2);
-		sbot->setDirection( 0 );
+		sbot->setDirection( 0 );                                                                                       
 		sbot->setSpeed( 0 );
 		sleep(2);
 		sbot->ignoreObstacle(false);
@@ -92,6 +92,7 @@ int Subroutines::manageFinish(SensorManagement sm)
 					printf("FINISH REACHED GOING BACK TO START\n");
 			//TODO set next dest
 			sm.loc->setDestination(startpos);
+                        sm.loc->bestWay.clear();
 			finnumber = 2;
 		}
 	}
