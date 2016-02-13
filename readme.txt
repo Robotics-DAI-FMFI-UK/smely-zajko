@@ -11,6 +11,7 @@ robot_controll/ - the main application running on the linux with ubuntu linux
 nn_lib/ - the library for running a neural network
 nn_train/ - the application to train a neural network
 gen_train_data/ - the application to generate the training data - unfortunately built using some outdated QT library (needs refreshing)
+TrainingCrt/ - the application to create the trainig data
 
 destination.txt - contains GPS coordinates of the robot destination location
 *.net - a trained neural network
