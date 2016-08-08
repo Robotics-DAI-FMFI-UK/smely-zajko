@@ -22,20 +22,37 @@ SbotThread* sbot;
 HokuyoThread *hokuyo;
 
 char running = 1;
+bool obchadzam = false;
 
 
 void cuvat()
 {
     printf("cuvam\n");
     sbot->setSpeed(-2);
-        sbot->setDirection(0);
+    sbot->setDirection(0);
 
+}
+
+void okolo()
+{
+    printf("obchadzam prekazku\n");
+    sbot->setDirection(60);
+    sbot->setSpeed(1);
+    obchadzam = true;
+}
+
+void vyvaz()
+{
+    printf("vraciam sa\n");
+    sbot->setDirection(-60);
+    sbot->setSpeed(1);
+    obchadzam = false;
 }
 
 void chod()
 {
     printf("idem\n");
-    sbot->setSpeed(2);
+    sbot->setSpeed(4);
     sbot->setDirection(0);
 }
 
@@ -73,17 +90,33 @@ int main(int argc, char** argv)
             for (int j = 0; j < 1080/20; j++)
                 sum += laser[i * (1080/20) + j];
             printf("%d ", sum / (1080/20));
-            if (i == 10)
+            if (i == 10 || i == 9 || i == 11)
             {
                 printf("<- ");            
-                if (sum / (1080/20) < 1000)
+                if ((sum / (1080/20)) < 1000)
                     cuvaj = 1;
+                else if ((sum / (1080/20)) < 1500)
+                    cuvaj = 2;
+                else if ((sum / (1080/20)) > 3000 && obchadzam)
+                    cuvaj = 3;
             }
         }
         printf("\n");
         
-        if (cuvaj) cuvat();
-        else chod();
+        if (cuvaj == 1){
+            cuvat();
+        }
+        else if(cuvaj == 2){
+            okolo();
+            usleep(300000);
+        }
+        else if(cuvaj == 3){
+            vyvaz();
+            usleep(300000);
+        }
+        else {
+            chod();
+        }
                 
         usleep(300000);
     }
