@@ -227,7 +227,13 @@ IplImage* HokuyoThread::getGuiFrame(int* dataArr){
     {
         x = (int)(- dataArr[i] * sin(brkAngle + i * deltaAngle)/35  +guiWidth/2);
         y = (int)(dataArr[i] * cos(brkAngle + i * deltaAngle)/35 + guiHeight/2);
-        cvCircle(result, cvPoint(x, guiHeight-y), 2, cvScalar(1, 1, 0),-1);
+        cvLine(result, cvPoint(guiWidth / 2, guiHeight / 2), cvPoint(x, guiHeight-y), cvScalar(0.4, 0.4, 0.4));
+    }
+    for(int i = 0; i < RANGE_DATA_COUNT; i++)
+    {
+        x = (int)(- dataArr[i] * sin(brkAngle + i * deltaAngle)/35  +guiWidth/2);
+        y = (int)(dataArr[i] * cos(brkAngle + i * deltaAngle)/35 + guiHeight/2);
+        cvCircle(result, cvPoint(x, guiHeight-y), 2, cvScalar(0.6, 0.8, 0),-1);
     }
     return result;
 }
