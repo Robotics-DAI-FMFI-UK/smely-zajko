@@ -208,10 +208,11 @@ int main(int argc, char** argv)
     //sm.loc->readMap( "../maps/wien.osm" );
     //sm.loc->readMap( (char *)"../maps/stromovka.osm" );
     //sm.loc->readMap( (char *)"../maps/lodz.osm" );
-    //sm.loc->readMap( (char .maps/homologacie_fei.osm" );
+    //sm.loc->readMap( (char *) "../maps/homologacie_fei.osm" );
+    sm.loc->readMap( (char *) "../maps/deggendorf.osm" );
     //sm.loc->readMap( (char *)"../maps/botanicka.osm" );
     //sm.loc->readMap( (char *)"../maps/borsky2.osm" );
-    sm.loc->readMap( (char *)"../maps/pisek.osm" );
+    //sm.loc->readMap( (char *)"../maps/pisek.osm" );
     
     sm.loc->readDestination( (char *)"../destination.txt");
     
