@@ -33,8 +33,8 @@ namespace TrainingCrt
 
 			Image im = Image.FromFile(file);
 			f.Width = im.Width+panel.Width;
-			f.Height = im.Height+ SystemInformation.CaptionHeight +30*SystemInformation.BorderSize.Height;
-			panel.Height =im.Height;
+            panel.Height = Math.Max(450, im.Height);
+			f.Height = panel.Height+ SystemInformation.CaptionHeight +30*SystemInformation.BorderSize.Height;
 			panel.Location = new Point(im.Width,0);
 			g.DrawImage(im, new Point(0, 0));
 			
