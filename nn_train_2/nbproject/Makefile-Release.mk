@@ -43,7 +43,7 @@ CFLAGS=
 
 # CC Compiler Flags
 CCFLAGS=
-CXXFLAGS=
+CXXFLAGS=-march=corei7 -I../nn_lib_2 `pkg-config --cflags opencv` `pkg-config --cflags fann` -std=c++11 -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d"
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../nn_lib_2/dist/Release/GNU-Linux/libnn_lib_2.a `pkg-config --libs opencv` `pkg-config --libs fann`  
+LDLIBSOPTIONS=../nn_lib_2/dist/Release/GNU-Linux/libnn_lib_2.a `pkg-config --libs opencv` `pkg-config --libs fann` -march=corei7
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -67,7 +67,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -I../nn_lib_2 `pkg-config --cflags opencv` `pkg-config --cflags fann` -std=c++11 -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
