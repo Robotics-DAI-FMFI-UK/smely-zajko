@@ -37,6 +37,7 @@ void SensorManagement::init()
 	//nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
     //nn.load("../555511.net");
     nn->load("../555511.net");
+    //nn->load("../net62.net");
 }
 
 int SensorManagement::update()
