@@ -145,12 +145,12 @@ void* HokuyoThread::mainLoop(void*){
            continue;
        }
        
-       int beam_index = 0;
+       int beam_index = RANGE_DATA_COUNT - 1;
        readptr = searchptr;
        pthread_mutex_lock( &m_read);
        //printf("HOK6\n");
        int counter = 0;
-       while (beam_index < RANGE_DATA_COUNT)
+       while (beam_index >= 0)
        {
            //printf("%d (%d %d %d)", counter++, (int)readbuf[searchptr], (int)readbuf[searchptr + 1], (int)readbuf[searchptr + 2]);
            int pos = (searchptr - readptr) % 66;
@@ -171,7 +171,7 @@ void* HokuyoThread::mainLoop(void*){
                searchptr += 3;
            }
            //printf("  => %d; ", data[beam_index]);
-           beam_index ++;
+           beam_index--;
        }
        //printf("HOK7\n");
        
