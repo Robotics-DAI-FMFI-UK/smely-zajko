@@ -21,7 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
+CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -34,14 +35,13 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/VisionBaseNew.o \
-	${OBJECTDIR}/VisionBase.o \
 	${OBJECTDIR}/ContextHistogram.o \
-	${OBJECTDIR}/VisionRegionReduced.o \
-	${OBJECTDIR}/ModKMeans.o \
-	${OBJECTDIR}/VisionRegion.o \
 	${OBJECTDIR}/ContextProbableRectangle.o \
-	${OBJECTDIR}/VisionHistogram.o
+	${OBJECTDIR}/ModKMeans.o \
+	${OBJECTDIR}/VisionBaseNew.o \
+	${OBJECTDIR}/VisionHistogram.o \
+	${OBJECTDIR}/VisionRegion.o \
+	${OBJECTDIR}/VisionRegionReduced.o
 
 
 # C Compiler Flags
@@ -70,45 +70,40 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a
 
-${OBJECTDIR}/VisionBaseNew.o: VisionBaseNew.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionBaseNew.o VisionBaseNew.cpp
-
-${OBJECTDIR}/VisionBase.o: VisionBase.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionBase.o VisionBase.cpp
-
 ${OBJECTDIR}/ContextHistogram.o: ContextHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
-
-${OBJECTDIR}/VisionRegionReduced.o: VisionRegionReduced.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
-
-${OBJECTDIR}/ModKMeans.o: ModKMeans.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
-
-${OBJECTDIR}/VisionRegion.o: VisionRegion.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
 
 ${OBJECTDIR}/ContextProbableRectangle.o: ContextProbableRectangle.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
+
+${OBJECTDIR}/ModKMeans.o: ModKMeans.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
+
+${OBJECTDIR}/VisionBaseNew.o: VisionBaseNew.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionBaseNew.o VisionBaseNew.cpp
 
 ${OBJECTDIR}/VisionHistogram.o: VisionHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/VisionHistogram.o VisionHistogram.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionHistogram.o VisionHistogram.cpp
+
+${OBJECTDIR}/VisionRegion.o: VisionRegion.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
+
+${OBJECTDIR}/VisionRegionReduced.o: VisionRegionReduced.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -I/usr/include -I/usr/include/opencv -I/usr/local/include -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
 
 # Subprojects
 .build-subprojects:

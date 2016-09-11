@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -52,13 +52,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../nn_lib_2/dist/Debug/GNU-Linux-x86/libnn_lib_2.a `pkg-config --libs opencv` `pkg-config --libs fann`  
+LDLIBSOPTIONS=../nn_lib_2/dist/Debug/GNU-Linux/libnn_lib_2.a `pkg-config --libs opencv` `pkg-config --libs fann`  
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ../nn_lib_2/dist/Debug/GNU-Linux-x86/libnn_lib_2.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ../nn_lib_2/dist/Debug/GNU-Linux/libnn_lib_2.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}

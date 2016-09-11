@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Release
 CND_DISTDIR=dist
@@ -71,27 +71,27 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib_2.a: ${OBJECTFILES}
 ${OBJECTDIR}/ContextHistPlusRect.o: ContextHistPlusRect.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextHistPlusRect.o ContextHistPlusRect.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I/usr/include/opencv2 -I/usr/local/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextHistPlusRect.o ContextHistPlusRect.cpp
 
 ${OBJECTDIR}/ContextHistogram.o: ContextHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I/usr/include/opencv2 -I/usr/local/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
 
 ${OBJECTDIR}/ContextProbableRectangle.o: ContextProbableRectangle.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I/usr/include/opencv2 -I/usr/local/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
 
 ${OBJECTDIR}/ModKMeans.o: ModKMeans.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I/usr/include/opencv2 -I/usr/local/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
 
 ${OBJECTDIR}/VisionBase.o: VisionBase.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionBase.o VisionBase.cpp
+	$(COMPILE.cc) -O2 -I/usr/include -I/usr/include/opencv2 -I/usr/local/include -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionBase.o VisionBase.cpp
 
 # Subprojects
 .build-subprojects:

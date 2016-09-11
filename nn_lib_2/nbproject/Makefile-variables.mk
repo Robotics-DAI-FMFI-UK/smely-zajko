@@ -7,21 +7,21 @@ CND_BASEDIR=`pwd`
 CND_BUILDDIR=build
 CND_DISTDIR=dist
 # Debug configuration
-CND_PLATFORM_Debug=GNU-Linux-x86
-CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
+CND_PLATFORM_Debug=GNU-Linux
+CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux
 CND_ARTIFACT_NAME_Debug=libnn_lib_2.a
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/libnn_lib_2.a
-CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux/libnn_lib_2.a
+CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux/package
 CND_PACKAGE_NAME_Debug=nnlib2.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/nnlib2.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux/package/nnlib2.tar
 # Release configuration
-CND_PLATFORM_Release=GNU-Linux-x86
-CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
+CND_PLATFORM_Release=GNU-Linux
+CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux
 CND_ARTIFACT_NAME_Release=libnn_lib_2.a
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/libnn_lib_2.a
-CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux/libnn_lib_2.a
+CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux/package
 CND_PACKAGE_NAME_Release=nnlib2.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/nnlib2.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux/package/nnlib2.tar
 #
 # include compiler specific variables
 #

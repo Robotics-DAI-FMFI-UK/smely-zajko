@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="80">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -52,8 +52,9 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -71,25 +72,14 @@
         </ccTool>
         <linkerTool>
           <linkerAddLib>
-            <pElem>/usr/lib/i386-linux-gnu</pElem>
-            <pElem>../../fann-2.1.0/src</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu</pElem>
+            <pElem>/usr/lib</pElem>
           </linkerAddLib>
           <linkerLibItems>
+            <linkerLibFileItem>../nn_lib/dist/Debug/GNU-Linux/libnn_lib.a</linkerLibFileItem>
             <linkerLibLibItem>opencv_core</linkerLibLibItem>
             <linkerLibLibItem>opencv_highgui</linkerLibLibItem>
             <linkerLibLibItem>opencv_ml</linkerLibLibItem>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../nn_lib"
-                            CT="3"
-                            CN="Debug"
-                            AC="true"
-                            BL="true"
-                            WD="../nn_lib"
-                            BC="${MAKE}  -f Makefile CONF=Debug"
-                            CC="${MAKE}  -f Makefile CONF=Debug clean"
-                            OP="dist/Debug/GNU-Linux-x86/libnn_lib.a">
-              </makeArtifact>
-            </linkerLibProjectItem>
             <linkerLibLibItem>fann</linkerLibLibItem>
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibLibItem>opencv_imgproc</linkerLibLibItem>
@@ -97,11 +87,61 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="../../fann-2.1.0/src/include/fann.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="BindSerialPorts.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="BindSerialPorts.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Coordinate.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Coordinate.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="DataTypes.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EvalDireciton.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="EvalDireciton.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="GpsThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="GpsThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="HokuyoThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="HokuyoThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ImuThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ImuThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="LocalizationAndPlaning.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="LocalizationAndPlaning.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="SbotThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="SbotThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="SensorManagement.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="SensorManagement.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Subroutines.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Subroutines.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -117,6 +157,55 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="../../fann-2.1.0/src/include/fann.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="BindSerialPorts.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="BindSerialPorts.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Coordinate.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Coordinate.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="DataTypes.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="EvalDireciton.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="EvalDireciton.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="GpsThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="GpsThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="HokuyoThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="HokuyoThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ImuThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ImuThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="LocalizationAndPlaning.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="LocalizationAndPlaning.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="SbotThread.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="SbotThread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="SensorManagement.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="SensorManagement.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Subroutines.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Subroutines.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
     </conf>
   </confs>
 </configurationDescriptor>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="80">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -7,7 +7,6 @@
       <itemPath>ContextHistogram.h</itemPath>
       <itemPath>ContextProbableRectangle.h</itemPath>
       <itemPath>ModKMeans.h</itemPath>
-      <itemPath>VisionBase.h</itemPath>
       <itemPath>VisionBaseNew.h</itemPath>
       <itemPath>VisionContext.h</itemPath>
       <itemPath>VisionHistogram.h</itemPath>
@@ -26,7 +25,6 @@
       <itemPath>ContextHistogram.cpp</itemPath>
       <itemPath>ContextProbableRectangle.cpp</itemPath>
       <itemPath>ModKMeans.cpp</itemPath>
-      <itemPath>VisionBase.cpp</itemPath>
       <itemPath>VisionBaseNew.cpp</itemPath>
       <itemPath>VisionHistogram.cpp</itemPath>
       <itemPath>VisionRegion.cpp</itemPath>
@@ -48,8 +46,9 @@
   <confs>
     <conf name="Debug" type="3">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -58,22 +57,59 @@
           </incDir>
         </cTool>
         <ccTool>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <incDir>
             <pElem>/usr/include</pElem>
             <pElem>/usr/include/opencv</pElem>
             <pElem>/usr/local/include</pElem>
-            <pElem>../../fann-2.1.0/src/include</pElem>
           </incDir>
         </ccTool>
         <archiverTool>
         </archiverTool>
       </compileType>
+      <item path="../../fann-2.1.0/src/include/fann.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="ContextHistogram.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ContextHistogram.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ContextProbableRectangle.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ContextProbableRectangle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ModKMeans.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ModKMeans.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionBaseNew.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionBaseNew.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionHistogram.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionHistogram.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionModifier.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionRegion.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionRegion.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionRegionReduced.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionRegionReduced.h" ex="false" tool="3" flavor2="0">
+      </item>
     </conf>
     <conf name="Release" type="3">
       <toolsSet>
-        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
@@ -91,6 +127,43 @@
         <archiverTool>
         </archiverTool>
       </compileType>
+      <item path="../../fann-2.1.0/src/include/fann.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="ContextHistogram.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ContextHistogram.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ContextProbableRectangle.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ContextProbableRectangle.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="ModKMeans.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ModKMeans.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionBaseNew.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionBaseNew.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionContext.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionHistogram.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionHistogram.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionModifier.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionRegion.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionRegion.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="VisionRegionReduced.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="VisionRegionReduced.h" ex="false" tool="3" flavor2="0">
+      </item>
     </conf>
   </confs>
 </configurationDescriptor>
