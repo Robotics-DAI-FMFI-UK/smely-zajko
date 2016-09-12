@@ -1,6 +1,6 @@
 #include "SensorManagement.h"
 
-SensorManagement::SensorManagement() 
+SensorManagement::SensorManagement()
 {
     predicted_data = 0;
     laser = new int[RANGE_DATA_COUNT];
@@ -20,23 +20,23 @@ void SensorManagement::init()
     imu = new ImuThread();
     sbot = new SbotThread();
     hokuyo = new HokuyoThread();
-    	
+
     BindSerialPorts bs;
     bs.bind( sbot, gps, imu );
-	
+
     gps->init();
     imu->init();
     hokuyo->init();
-     
+
     sbot->run();
     gps->run();
     imu->run();
     hokuyo->run();
-   
-	
+
+
 	//nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
     //nn.load("../555511.net");
-    nn->load("../555511.net");
+    //nn->load("../555511.net");
     //nn->load("../net62.net");
 }
 
@@ -65,7 +65,7 @@ void SensorManagement::stop()
 }
 
 int SensorManagement::move()
-{ 
+{
     return coor->move(predicted_data, sbot, angles.map, idata.xAngle, ed, laser );
 }
 
@@ -98,5 +98,5 @@ void SensorManagement::saveHokuyoLog(char* path)
       if (i < RANGE_DATA_COUNT - 1) fprintf(f, " ");
     }
     fprintf(f, "\n");
-    fclose(f);    
+    fclose(f);
 }
