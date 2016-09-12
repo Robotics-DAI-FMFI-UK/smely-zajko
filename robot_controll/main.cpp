@@ -277,7 +277,7 @@ int main(int argc, char** argv)
             photoTime = time(0) + 5;
         }
         //starting timer
-        while(time(0) < start_time){
+        /*while(time(0) < start_time){
             //printf("%d seconds to start\n", (int)(start_time - time(NULL)) );
             
             localizationFrame = sm.loc->getGui();
@@ -286,7 +286,7 @@ int main(int argc, char** argv)
             cvReleaseImage( &localizationFrame );
 
             char c = cvWaitKey(33);
-        }
+        }*/
                 sm.update();
         
 		sm.neuralPredict(tmp_frame);
@@ -297,9 +297,13 @@ int main(int argc, char** argv)
 			break;
 		
         log_data( sm.sdata, sm.gdata, sm.idata, sm.angles.map, sm.angles.dstToFin);
-
-        int display_direction = sm.move();
-
+    
+        int display_direction = 0;
+        if(time(0) >= start_time) {
+            display_direction = sm.move();
+        } else {
+            printf("%d seconds to start\n", (int)(start_time - time(NULL)) );
+        }
         //draw result
         int sizeC = tmp_frame->width / sm.ed->dir_count;        
         cvLine( rgb_frame, cvPoint( sizeC*(display_direction), (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 0,255 ), 5);
