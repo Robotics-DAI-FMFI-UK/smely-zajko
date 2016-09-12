@@ -8,6 +8,7 @@ SensorManagement::SensorManagement()
 
 void SensorManagement::init()
 {
+    //VisionContext* con = new ContextHistogram();
     VisionContext* con = new VisionContext();//new VisionContext(); je prazdny kontext
     VisionModifier* mod = new VisionModifier(); //new VisionModifier(); je prazdny modifier
     vector<int> vmod;
@@ -32,11 +33,11 @@ void SensorManagement::init()
     gps->run();
     imu->run();
     hokuyo->run();
-   
 	
 	//nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
-    //nn.load("../555511.net");
-    nn->load("../555511.net");
+    //nn->load("../555511.net");
+    //nn->load("../prva.net");
+    nn->load("../jednavrstva.net");
     //nn->load("../net62.net");
 }
 

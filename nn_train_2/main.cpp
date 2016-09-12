@@ -139,8 +139,9 @@ int main(int argc, char** argv) {
     printf("start\n");
 
     //load input and corresponding output files into array
-    string dir("parky/");//z nejakeho dovodu nevie ist von zo svojho adresara a mat pristup..
+    //string dir("parky/");//z nejakeho dovodu nevie ist von zo svojho adresara a mat pristup..
     //string dir("test/");
+    string dir("all/");
     vector<string> files = getfiles(dir);
     if (files.empty()) {
         printf("No train files found\n");
@@ -248,7 +249,9 @@ int main(int argc, char** argv) {
     vector<int> vmod;
     vector<int> vcon;
     */
-    VisionContext* con = new ContextHistPlusRect();//new VisionContext();
+    //VisionContext* con = new ContextHistPlusRect();//new VisionContext();
+    //VisionContext* con = new ContextHistogram();//new VisionContext();
+    VisionContext* con = new VisionContext();
     VisionModifier* mod = new VisionModifier(); //new ModKMeans();
     vector<int> vmod;
     vector<int> vcon;// = {8,10,1};
@@ -257,8 +260,12 @@ int main(int argc, char** argv) {
     //par.push_back({5,5,5,5,1,1,8,1});
     //par.push_back({5,5,5,5,1,1,12,1});
     //par.push_back({5,5,5,5,1,1,20,1});
-    par.push_back({5,5,5,5,1,1,6,2});
-    par.push_back({5,5,5,5,1,1,10,2});
+    //par.push_back({5,5,5,5,1,1,6,2});
+    //par.push_back({5,5,5,5,1,1,10,2});
+    par.push_back({5,5,5,5,1,1,12,1});
+    par.push_back({5,5,5,5,1,1,8,1});
+    par.push_back({5,5,5,5,1,1,12,2});
+    par.push_back({5,5,5,5,1,1,12,3});
     printf("cross valid started\n");
     for(int p = 0; p < par.size(); p++){
         params.clear();

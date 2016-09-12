@@ -1,0 +1,9 @@
+runHokuyo/
+runPhotos/
+*/build/
+*/dist/
+*/nbproject/private
+*/.dep.inc
+nn_train_2/*666*
+nn_train_2/output
+logs/
