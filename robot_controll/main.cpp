@@ -8,8 +8,7 @@
 #include <string.h>
 #include <opencv/highgui.h>
 #include <sys/time.h>
-
-
+#include "yaml-cpp/yaml.h"
 
 #include "Subroutines.h"
 #include "SensorManagement.h"
@@ -20,6 +19,7 @@
 #include "GpsThread.h"
 //#include "PhoneThread.h"
 #include "Coordinate.h"
+#include "DataTypes.h"
 //#include "JoystickThread.h"
 
 const bool START_CAM = 1;
@@ -164,6 +164,7 @@ void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle, double k
 int main(int argc, char** argv)
 {
     IplImage* localizationFrame;
+    YAML::Node config = YAML::LoadFile("../config.yaml");
 
     setlocale(LC_ALL, "C");
     time_t t;
@@ -214,9 +215,18 @@ int main(int argc, char** argv)
     //sm.loc->readMap( (char *)"../maps/botanicka.osm" );
     //sm.loc->readMap( (char *)"../maps/borsky2.osm" );
     //sm.loc->readMap( (char *)"../maps/pisek.osm" );
-    sm.loc->readMap( (char *)"../maps/matfyz.osm" );
+    const std::string map_file = config["map"].as<std::string>();
+    sm.loc->readMap( (char *) map_file.c_str() );
 
-    sm.loc->readDestination( (char *)"../destination.txt");
+    const double longitude = config["longitude"].as<double>();
+    const double latitude = config["latitude"].as<double>();
+    Ll point;
+    point.longitude = longitude;
+    point.latitude = latitude;
+    sm.loc->setDestination(point);
+
+    const std::string neural_net = config["neural_net"].as<std::string>();
+    sm.nn->load( (char *) neural_net.c_str() );
 
     Subroutines subroutine;
     subroutine.setup(sm.loc, sm.sbot);
