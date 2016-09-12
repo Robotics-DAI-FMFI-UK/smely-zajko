@@ -21,7 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
+CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -34,11 +35,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
-	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/HokuyoThread.o \
 	${OBJECTDIR}/ImuThread.o \
-	${OBJECTDIR}/SbotThread.o
+	${OBJECTDIR}/SbotThread.o \
+	${OBJECTDIR}/main.o
 
 
 # C Compiler Flags
@@ -63,32 +64,32 @@ LDLIBSOPTIONS=-L/usr/lib/i386-linux-gnu -L../../fann-2.1.0/src -lpthread
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/hokuyonavigation: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/hokuyonavigation ${OBJECTFILES} ${LDLIBSOPTIONS} 
-
-${OBJECTDIR}/HokuyoThread.o: HokuyoThread.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/HokuyoThread.o HokuyoThread.cpp
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/hokuyonavigation ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/BindSerialPorts.o: BindSerialPorts.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
 
-${OBJECTDIR}/main.o: main.cpp 
+${OBJECTDIR}/HokuyoThread.o: HokuyoThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/HokuyoThread.o HokuyoThread.cpp
 
 ${OBJECTDIR}/ImuThread.o: ImuThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
 
 ${OBJECTDIR}/SbotThread.o: SbotThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
+
+${OBJECTDIR}/main.o: main.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
