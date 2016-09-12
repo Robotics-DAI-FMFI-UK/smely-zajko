@@ -17,6 +17,8 @@ extern bool autonomy;
 class Coordinate {
 public:
 	int wrong_dir;
+    double running_mean;
+    double predicted_dir;
     Coordinate();
 
     int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed, int* laserData  );

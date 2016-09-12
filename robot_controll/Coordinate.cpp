@@ -5,6 +5,8 @@ extern int away_from_right;
 
 Coordinate::Coordinate() {
 	wrong_dir =0;
+    running_mean = 0.0;
+    predicted_dir = 0.0;
 }
 
 
@@ -22,7 +24,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
     int isChodnik = 0;
 
     //threshold
-    
+
     printf("evalLaser: ");
     for(int i=0; i<=ed->dir_count; i++){
         double f = ed->eval( predicted_data, i )-0.4;
@@ -37,8 +39,8 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
         printf("%.3f ", g);
     }
     printf("\n");
-    
-    
+
+
     //in destination vicinity
     if (mapAngle == DBL_MAX){
         sbot->setDirection( 0 );
@@ -78,10 +80,10 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
             }
             display_direction = -5;
         }
-		
-		
+
+
 	}
-        else if( isChodnik==0 ) //no valid direction from vision//TODO presun do subroutines 
+        else if( isChodnik==0 ) //no valid direction from vision//TODO presun do subroutines
     {
         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Chodnik missing searching..\n");
         if(delta>0)
@@ -131,6 +133,12 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
       if (sdir > 40) sdir = 40;
       if (away_from_right) sdir -= 20;
       if (sdir < -40) sdir = -40;
+
+      predicted_dir = running_mean * 0.7 + sdir * 0.3;
+      running_mean = (running_mean * 5.0 + predicted_dir) / 6.0;
+
+      printf("Inferred dir: %d\tProposed dir: %f\n", sdir, predicted_dir);
+
       if (autonomy){
         sbot->setDirection( sdir );
         sbot->setSpeed(5);
