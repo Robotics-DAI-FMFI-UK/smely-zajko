@@ -63,8 +63,8 @@ double EvalDireciton::eval( CvMat* frame, int direction ){
         return -1;
     }
 
-    int sizeC = frame_w / dir_count;
-    int sizeA = (frame_w-triangle_w) / (dir_count);
+    int sizeC = frame_w / (dir_count + 1);
+    int sizeA = (frame_w-triangle_w) / (dir_count+1);
     A.x = sizeA*direction;
     B.x = frame_w - sizeA*(dir_count - direction);
     C.x = sizeC*direction;
@@ -73,6 +73,9 @@ double EvalDireciton::eval( CvMat* frame, int direction ){
 
     double r = comp_sum( frame );
 
+    cvLine(frame, cvPoint(A.x, A.y), cvPoint(C.x, C.y), cvScalar(0, 0, 0), 1);
+    cvLine(frame, cvPoint(C.x, C.y), cvPoint(B.x, B.y), cvScalar(1, 1, 1), 1);
+    
     //printf("eval direction: %d sum: %f  \n", direction,r);
 
     double result = r/S;
@@ -101,6 +104,7 @@ int EvalDireciton::get_best( CvMat* frame ){
 //TODO eval direction from hokuyo
 double EvalDireciton::evalLaser(int* laserData, int direction){
         
+    direction = 10 - direction;
     int start = LASER_VALS_START + (direction * laser_vals_per_direction);
     int end = LASER_VALS_START + ((direction+1)  * laser_vals_per_direction);
     

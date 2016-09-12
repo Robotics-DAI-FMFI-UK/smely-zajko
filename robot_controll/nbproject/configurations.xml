@@ -28,7 +28,7 @@
       <itemPath>Coordinate.h</itemPath>
       <itemPath>EvalDireciton.cpp</itemPath>
       <itemPath>GpsThread.cpp</itemPath>
-      <itemPath>HokuyoThread.cpp</itemPath>
+      <itemPath>/home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp</itemPath>
       <itemPath>ImuThread.cpp</itemPath>
       <itemPath>LocalizationAndPlaning.cpp</itemPath>
       <itemPath>SbotThread.cpp</itemPath>
@@ -48,6 +48,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>/home/navigation/src/smely-zajko/robot_controll</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -92,6 +95,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="BindSerialPorts.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="BindSerialPorts.h" ex="false" tool="3" flavor2="0">
@@ -109,8 +117,6 @@
       <item path="GpsThread.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="GpsThread.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="HokuyoThread.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="HokuyoThread.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -162,6 +168,11 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="BindSerialPorts.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="BindSerialPorts.h" ex="false" tool="3" flavor2="0">
@@ -179,8 +190,6 @@
       <item path="GpsThread.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="GpsThread.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="HokuyoThread.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="HokuyoThread.h" ex="false" tool="3" flavor2="0">
       </item>

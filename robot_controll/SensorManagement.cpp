@@ -35,9 +35,9 @@ void SensorManagement::init()
     hokuyo->run();
 	
 	//nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
-    //nn->load("../555511.net");
+    nn->load("../555511.net");
     //nn->load("../prva.net");
-    nn->load("../jednavrstva.net");
+    //nn->load("../jednavrstva.net");
     //nn->load("../net62.net");
 }
 

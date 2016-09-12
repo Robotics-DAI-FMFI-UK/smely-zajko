@@ -788,6 +788,7 @@ GpsAngles LocalizationAndPlaning::update(Ll gps){
     //checkneme ciel a vratime data
     result.dstToFin = distance(destinationPoint, curPoint);
     result.map = calc_bearing(curPoint,headingPoint);//bearing in degrees to heading point
+    
     if (result.dstToFin < 0.002) {//dst v km
         printf("SME V CIELI ( %f m ) \n", result.dstToFin * 1000);
         result.map = DBL_MAX;

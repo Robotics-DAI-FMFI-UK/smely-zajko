@@ -62,7 +62,8 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
 		wrong_dir = 0;
 	}
 	//significantly off course(> 150deg), turn
-	if (abs(delta)> 150 || wrong_dir ){
+	if (abs(delta)> 150 || wrong_dir )
+        {
 		//printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Going in wrong direction, delta %f turning...\n",delta);
 		wrong_dir = 1;
         if (delta>0)
@@ -138,7 +139,9 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
       running_mean = (running_mean * 5.0 + predicted_dir) / 6.0;
 
       printf("Inferred dir: %d\tProposed dir: %f\n", sdir, predicted_dir);
-
+      
+      computed_dir = sdir;
+      
       if (autonomy){
         sbot->setDirection( sdir );
         sbot->setSpeed(5);

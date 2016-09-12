@@ -35,11 +35,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
 	${OBJECTDIR}/Coordinate.o \
 	${OBJECTDIR}/EvalDireciton.o \
 	${OBJECTDIR}/GpsThread.o \
-	${OBJECTDIR}/HokuyoThread.o \
 	${OBJECTDIR}/ImuThread.o \
 	${OBJECTDIR}/LocalizationAndPlaning.o \
 	${OBJECTDIR}/SbotThread.o \
@@ -74,6 +74,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS}
 
+${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o: /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp
+
 ${OBJECTDIR}/BindSerialPorts.o: BindSerialPorts.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -93,11 +98,6 @@ ${OBJECTDIR}/GpsThread.o: GpsThread.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
-
-${OBJECTDIR}/HokuyoThread.o: HokuyoThread.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/HokuyoThread.o HokuyoThread.cpp
 
 ${OBJECTDIR}/ImuThread.o: ImuThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}

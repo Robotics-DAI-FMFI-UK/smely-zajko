@@ -35,11 +35,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
 	${OBJECTDIR}/Coordinate.o \
 	${OBJECTDIR}/EvalDireciton.o \
 	${OBJECTDIR}/GpsThread.o \
-	${OBJECTDIR}/HokuyoThread.o \
 	${OBJECTDIR}/ImuThread.o \
 	${OBJECTDIR}/LocalizationAndPlaning.o \
 	${OBJECTDIR}/SbotThread.o \
@@ -53,7 +53,7 @@ CFLAGS=
 
 # CC Compiler Flags
 CCFLAGS=
-CXXFLAGS=-march=corei7 -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d"
+CXXFLAGS=
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -62,71 +62,70 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/lib/x86_64-linux-gnu -L/usr/lib ../nn_lib/dist/Release/GNU-Linux/libnn_lib.a -lopencv_core -lopencv_highgui -lopencv_ml -lfann -lpthread -lopencv_imgproc -lopencv_legacy -march=corei7
-
+LDLIBSOPTIONS=
 
 # Build Targets
-.build-conf:	${BUILD_SUBPROJECTS}
+.build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES} ../nn_lib/dist/Release/GNU-Linux/libnn_lib.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o: /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp
 
 ${OBJECTDIR}/BindSerialPorts.o: BindSerialPorts.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
 
 ${OBJECTDIR}/Coordinate.o: Coordinate.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
 
 ${OBJECTDIR}/EvalDireciton.o: EvalDireciton.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/EvalDireciton.o EvalDireciton.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EvalDireciton.o EvalDireciton.cpp
 
 ${OBJECTDIR}/GpsThread.o: GpsThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
-
-${OBJECTDIR}/HokuyoThread.o: HokuyoThread.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/HokuyoThread.o HokuyoThread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
 
 ${OBJECTDIR}/ImuThread.o: ImuThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
 
 ${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
 
 ${OBJECTDIR}/SbotThread.o: SbotThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
 
 ${OBJECTDIR}/SensorManagement.o: SensorManagement.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/SensorManagement.o SensorManagement.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SensorManagement.o SensorManagement.cpp
 
 ${OBJECTDIR}/Subroutines.o: Subroutines.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/Subroutines.o Subroutines.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Subroutines.o Subroutines.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

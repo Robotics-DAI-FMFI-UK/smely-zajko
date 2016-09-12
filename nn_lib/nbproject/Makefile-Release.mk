@@ -49,7 +49,7 @@ CFLAGS=
 
 # CC Compiler Flags
 CCFLAGS=
-CXXFLAGS=-march=corei7 -I/usr/include -I/usr/include/opencv -I/usr/local/include -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d"
+CXXFLAGS=
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -73,37 +73,37 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnn_lib.a: ${OBJECTFILES}
 ${OBJECTDIR}/ContextHistogram.o: ContextHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextHistogram.o ContextHistogram.cpp
 
 ${OBJECTDIR}/ContextProbableRectangle.o: ContextProbableRectangle.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ContextProbableRectangle.o ContextProbableRectangle.cpp
 
 ${OBJECTDIR}/ModKMeans.o: ModKMeans.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ModKMeans.o ModKMeans.cpp
 
 ${OBJECTDIR}/VisionBaseNew.o: VisionBaseNew.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/VisionBaseNew.o VisionBaseNew.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionBaseNew.o VisionBaseNew.cpp
 
 ${OBJECTDIR}/VisionHistogram.o: VisionHistogram.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/VisionHistogram.o VisionHistogram.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionHistogram.o VisionHistogram.cpp
 
 ${OBJECTDIR}/VisionRegion.o: VisionRegion.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionRegion.o VisionRegion.cpp
 
 ${OBJECTDIR}/VisionRegionReduced.o: VisionRegionReduced.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/VisionRegionReduced.o VisionRegionReduced.cpp
 
 # Subprojects
 .build-subprojects:

@@ -305,10 +305,15 @@ int main(int argc, char** argv)
         cvLine( rgb_frame, cvPoint( sizeC*(display_direction), (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 0,255 ), 5);
 
         //draw proposed line
-        cvLine( rgb_frame, cvPoint( sizeC*(sm.coord.predicted_dir), (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 255,255 ), 5);
+        cvLine( rgb_frame, cvPoint( (int)(sizeC*(sm.coor->predicted_dir / 8.0 + 5)), 
+                                    (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), 
+                           cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 255,255 ), 5);
 
+        cvLine( rgb_frame, cvPoint( (int)(sizeC*(sm.coor->computed_dir / 8.0 + 5)), 
+                                    (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), 
+                           cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 255,0 ), 5);
 
-
+        
         localizationFrame = sm.loc->getGui();
         add_debug_to_image(&localizationFrame,locwin_map_height, locwin_width, sm.sdata);
         cvShowImage( "camera", rgb_frame );
