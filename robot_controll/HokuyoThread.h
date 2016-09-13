@@ -1,6 +1,6 @@
 
 #ifndef HOKUYOTHREAD_H
-#define	HOKUYOTHREAD_H
+#define HOKUYOTHREAD_H
 
 #include "DataTypes.h"
 #include "LocalizationAndPlaning.h"
@@ -14,32 +14,28 @@ using namespace std;
 
 class HokuyoThread {
 
-public:
+  public:
     HokuyoThread();
 
     void init();
     void run();
     void stop();
 
-    void getData(int *buffer);
-    IplImage* getGuiFrame(int* dataArr);    
+    void getData(int* buffer);
+    IplImage* getGuiFrame(int* dataArr);
 
-private:
-
-    
+  private:
     static bool end;
     static pthread_mutex_t m_read;
-    static int *data;
+    static int* data;
     static int sockfd;
     static int guiWidth;
     static int guiHeight;
     static IplImage* result;
-    
+
     pthread_t t;
 
     static void* mainLoop(void*);
-    
 };
 
-#endif	/* HOKUYOTHREAD_H */
-
+#endif /* HOKUYOTHREAD_H */

@@ -1,18 +1,17 @@
 #ifndef SBOTTHREAD_H
-#define	SBOTTHREAD_H
+#define SBOTTHREAD_H
 
-#include <pthread.h>
 #include <ios>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
 using namespace std;
 
-class SbotData{
-public:
-
-    SbotData(){
+class SbotData {
+  public:
+    SbotData() {
         lstep = 0;
         rstep = 0;
         lspeed = 0;
@@ -41,38 +40,36 @@ public:
     int distM;
 };
 
-class SbotThread{
+class SbotThread {
 
-public:
+  public:
     SbotThread();
-    
+
     void run();
     void stop();
 
-    //PC->Sbot
+    // PC->Sbot
     void setDirection(int d);
     void setSpeed(int s);
     void unblock();
     void ignoreObstacle(bool val);
 
-    //Sbot->PC
-    //SbotData getData();
+    // Sbot->PC
+    // SbotData getData();
 
     SbotData getData();
 
-    void sendCommand(const char *s);
+    void sendCommand(const char* s);
     int validate(const char* devName);
     void setDeviceName(const char* dev_name);
- /////////
-private:
-    
+    /////////
+  private:
     static void* mainLoop(void*);
-    
 
     static char device_name[32];
 
     pthread_t t;
-    
+
     static FILE* robot;
 
     static bool end;
@@ -86,10 +83,6 @@ private:
 
     static int printingDebugging;
     FILE* outlog;
-
 };
 
-
-
-#endif	/* SBOTTHREAD_H */
-
+#endif /* SBOTTHREAD_H */
