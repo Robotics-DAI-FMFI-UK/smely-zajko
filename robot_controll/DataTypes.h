@@ -26,6 +26,7 @@ class GpsAngles {
   public:
     double map;
     double dstToFin;
+    double dstToHeadingPoint;
     // double gps;
 };
 

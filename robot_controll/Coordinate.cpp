@@ -10,9 +10,10 @@ Coordinate::Coordinate() {
     move_status = "standby";
 }
 // returns direction as integer
-int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle,
+int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
                      double imuAngle, EvalDireciton* ed, int* laserData) {
 
+    double mapAngle = angles.map;
     //    if( !USE_LOCALIZATION ){
     //        mapAngle = 0;
     //    }
@@ -151,7 +152,11 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle,
 
         if (autonomy) {
             sbot->setDirection(sdir);
-            sbot->setSpeed(5);
+            if (angles.dstToHeadingPoint <= 0.001) {
+                sbot->setSpeed(5);
+            } else {
+                sbot->setSpeed(7);
+            }
         }
         display_direction = maxdir;
     }
