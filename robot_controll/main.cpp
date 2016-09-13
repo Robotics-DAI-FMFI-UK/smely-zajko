@@ -171,11 +171,11 @@ CvScalar status_to_color(string status) {
     std::map<string,CvScalar>::iterator it;
 
     status_color_map["standby"] = cvScalar(0, 0, 0);
-    status_color_map["running"] = cvScalar(0, 255, 0);
+    status_color_map["running"] = cvScalar(255, 0, 255);
     status_color_map["searching"] = cvScalar(255, 255, 0);
     status_color_map["turning"] = cvScalar(0, 255, 255);
 
-    it = status_color_map.find(status)
+    it = status_color_map.find(status);
     if (it == status_color_map.end()) {
         return cvScalar(0, 0, 0);
     }
@@ -196,9 +196,12 @@ int main(int argc, char** argv)
     time_t t;
     time(&t);
     start_time = time(0) +5*60;
-
+    CvFont fontHuge;
+    
     cvInitFont(&fontBig, CV_FONT_HERSHEY_SIMPLEX, 0.6, 0.6);
     cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.3, 0.3);
+    cvInitFont(&fontHuge, CV_FONT_HERSHEY_SIMPLEX, 0.7, 0.7, 0, 2);
+
 
     char logname[64];
     sprintf(logname, "../logs/%ld.log", t);
@@ -338,7 +341,9 @@ int main(int argc, char** argv)
         if(time(0) >= start_time) {
             display_direction = sm.move();
         } else {
-            printf("%d seconds to start\n", (int)(start_time - time(NULL)) );
+            if (time(NULL) % 10 == 0) {
+                printf("T-%d seconds\n", (int)(start_time - time(NULL)) );
+            }
         }
         //draw result
         int sizeC = tmp_frame->width / sm.ed->dir_count;
@@ -358,8 +363,8 @@ int main(int argc, char** argv)
         add_debug_to_image(&localizationFrame,locwin_map_height, locwin_width, sm.sdata);
 
         cvPutText(localizationFrame, sm.coor->move_status.c_str(),
-                  cvPoint(locwin_width-337, locwin_map_height+55),
-                  &fontBig, status_to_color(sm.coor->move_status));
+                  cvPoint(locwin_width-337, locwin_map_height+25),
+                  &fontHuge, status_to_color(sm.coor->move_status));
 
         cvShowImage( "camera", rgb_frame );
         cvShowImage( "laser", sm.getLaserFrame() );

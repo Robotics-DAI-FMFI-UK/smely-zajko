@@ -22,10 +22,10 @@ public:
     double predicted_dir;
     double computed_dir;
     string move_status;
+    bool status_from_subroutines;
     Coordinate();
 
     int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed, int* laserData  );
-    CvScalar status_to_color(string status);
 
 private:
 

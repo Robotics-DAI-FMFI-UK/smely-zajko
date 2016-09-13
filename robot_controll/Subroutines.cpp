@@ -30,6 +30,8 @@ void Subroutines::manageObstacles(SensorManagement sm)
 		time_t tobs = time(NULL);
 		found_obstacle = tobs;
 		printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!OBSTACLE\n");
+                sm.coor->move_status = "obstacle";
+                
 	}
 	time_t tmnow = time(NULL);
 	if ((sm.sdata.obstacle) && (tmnow - found_obstacle > 20))
@@ -43,10 +45,12 @@ void Subroutines::manageObstacles(SensorManagement sm)
 		if(lft>rgh){
 			bakdir = -40;
 			printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT\n");
+                        sm.coor->move_status = "back up left";
 		}
 		else{
 			bakdir = 40;
 			printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RIGHT\n");
+                        sm.coor->move_status = "back up right";
 		}
 		sbot->ignoreObstacle(true);
 		sbot->setDirection( 0 );
@@ -64,8 +68,12 @@ void Subroutines::manageObstacles(SensorManagement sm)
 	{
 		printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! %ld\n", tmnow - found_obstacle);
 		fflush(stdout);
+                char str[20];
+                sprintf(str, "obstacle %ld", tmnow - found_obstacle);
+                sm.coor->move_status = str;
 	}
 	was_obstacle = sm.sdata.obstacle;
+        sm.coor->status_from_subroutines = sm.sdata.obstacle;
 }
 
 int Subroutines::manageFinish(SensorManagement sm)
@@ -85,17 +93,23 @@ int Subroutines::manageFinish(SensorManagement sm)
 	if(finishcount>60){
 		if(finnumber == 2){
 			printf("FINISH CONFIRMED with %d readings , TURNING OFF\n",finishcount);
+                        sm.coor->move_status = "finish - turn off";
+                        sm.coor->status_from_subroutines = true;
+                        
 			return true;
 		}
 		else{
 			for(int ghe = 0 ; ghe <7; ghe++)
 					printf("FINISH REACHED GOING BACK TO START\n");
+                        sm.coor->move_status = "finish - go back";
+                        sm.coor->status_from_subroutines = true;
 			//TODO set next dest
 			sm.loc->setDestination(startpos);
                         sm.loc->bestWay.clear();
 			finnumber = 2;
 		}
 	}
+        sm.coor->status_from_subroutines = false;
 	return false;
 }
 

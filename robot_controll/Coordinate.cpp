@@ -49,6 +49,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
         return 0;
     }
 
+    
     //delta
     if (mapAngle == DBL_MIN){
         delta = 0;
@@ -64,7 +65,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
 	}
 	//significantly off course(> 150deg), turn
 	if (abs(delta)> 150 || wrong_dir ) {
-        move_status = "turning";
+        if (!status_from_subroutines) move_status = "turning";
 		//printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Going in wrong direction, delta %f turning...\n",delta);
 		wrong_dir = 1;
         if (delta>0)
@@ -87,7 +88,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
 	}
         else if( isChodnik==0 ) //no valid direction from vision//TODO presun do subroutines
     {
-        move_status = "searching";
+        if (!status_from_subroutines) move_status = "searching";
         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Chodnik missing searching..\n");
         if(delta>0)
         {
@@ -107,7 +108,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, d
     }
     else
     {
-        move_status = "running";
+        if (!status_from_subroutines) move_status = "running";
         if(delta>90){
             delta = 89.3;
         }else if(delta<-90){

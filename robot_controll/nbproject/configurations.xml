@@ -87,6 +87,7 @@
             <linkerLibLibItem>pthread</linkerLibLibItem>
             <linkerLibLibItem>opencv_imgproc</linkerLibLibItem>
             <linkerLibLibItem>opencv_legacy</linkerLibLibItem>
+            <linkerOptionItem>`pkg-config --libs yaml-cpp`</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
