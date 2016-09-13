@@ -177,7 +177,7 @@ void LocalizationAndPlaning::readMap(char* filename) {
 
                 }
 
-                paths.push_back(path);            
+                paths.push_back(path);
 
         }
     }
@@ -787,6 +787,7 @@ GpsAngles LocalizationAndPlaning::update(Ll gps){
     
     //checkneme ciel a vratime data
     result.dstToFin = distance(destinationPoint, curPoint);
+    result.distToHeadingPoint = distance(headingPoint, curPoint);
     result.map = calc_bearing(curPoint,headingPoint);//bearing in degrees to heading point
     
     if (result.dstToFin < 0.002) {//dst v km
