@@ -1,27 +1,27 @@
 #ifndef IMUTHREAD_H
-#define	IMUTHREAD_H
+#define IMUTHREAD_H
 
-#include <pthread.h>
+#include <errno.h>
 #include <ios>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string>
 
 #define COMPASS_ALIGNMENT 900
 
 using namespace std;
 
-class ImuData{
-public:
+class ImuData {
+  public:
     double xAngle;
     double yAngle;
     double zAngle;
 };
 
 class ImuThread {
-    
-public:
+
+  public:
     ImuThread();
 
     void init();
@@ -33,20 +33,19 @@ public:
     int validate(char* devName);
     void setDeviceName(char* dev_name);
 
-private:
+  private:
     static char IMUPORT[32];
 
     static bool end;
     static pthread_mutex_t m_read;
     static int imu;
     static ImuData data;
-    
+
     pthread_t t;
-   
+
     static void* mainLoop(void*);
-    static int readLine(char *s);
-    static int imuOpen(char *filename);
+    static int readLine(char* s);
+    static int imuOpen(char* filename);
 };
 
-#endif	/* IMUTHREAD_H */
-
+#endif /* IMUTHREAD_H */
