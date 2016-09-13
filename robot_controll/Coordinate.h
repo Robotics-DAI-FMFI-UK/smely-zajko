@@ -22,6 +22,8 @@ class Coordinate {
     double running_mean;
     double predicted_dir;
     double computed_dir;
+    double running_mean_weight;
+    double speed_down_dst;
     string move_status;
     bool status_from_subroutines;
     Coordinate();

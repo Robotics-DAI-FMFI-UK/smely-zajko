@@ -275,10 +275,15 @@ int main(int argc, char** argv) {
 
     const double longitude = config["longitude"].as<double>();
     const double latitude = config["latitude"].as<double>();
+
+    sm.coor->running_mean_weight = config["running_mean_weight"].as<double>();
+    sm.coor->speed_down_dst = config["speed_down_dst"].as<double>();
+
     Ll point;
     point.longitude = longitude;
     point.latitude = latitude;
     sm.loc->setDestination(point);
+
 
     const std::string neural_net = config["neural_net"].as<std::string>();
     sm.nn->load((char*)neural_net.c_str());
