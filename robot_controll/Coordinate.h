@@ -10,8 +10,9 @@
 
 using namespace std;
 
-#include "EvalDireciton.h"
+#include "EvalDirection.h"
 #include "SbotThread.h"
+#include "DataTypes.h"
 
 extern bool autonomy;
 
@@ -25,8 +26,8 @@ class Coordinate {
     bool status_from_subroutines;
     Coordinate();
 
-    int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle,
-             double imuAngle, EvalDireciton* ed, int* laserData);
+    int move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
+                     double imuAngle, EvalDirection* ed, int* laserData);
 
   private:
 };

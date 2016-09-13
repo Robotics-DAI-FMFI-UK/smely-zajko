@@ -846,7 +846,7 @@ GpsAngles LocalizationAndPlaning::update(Ll gps) {
 
     // checkneme ciel a vratime data
     result.dstToFin = distance(destinationPoint, curPoint);
-    result.distToHeadingPoint = distance(headingPoint, curPoint);
+    result.dstToHeadingPoint = distance(headingPoint, curPoint);
 
      // bearing in degrees to heading point
     result.map = calc_bearing(curPoint, headingPoint);

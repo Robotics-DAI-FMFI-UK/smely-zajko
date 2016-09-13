@@ -1,8 +1,8 @@
-#include "EvalDireciton.h"
+#include "EvalDirection.h"
 #include <highgui.h>
 #include <stdio.h>
 
-EvalDireciton::EvalDireciton(int triangle_w, int triangle_h, int dir_count,
+EvalDirection::EvalDirection(int triangle_w, int triangle_h, int dir_count,
                              int frame_w, int frame_h) {
     this->dir_count = dir_count;
     this->triangle_w = triangle_w;
@@ -22,9 +22,9 @@ EvalDireciton::EvalDireciton(int triangle_w, int triangle_h, int dir_count,
         (LASER_VALS_END - LASER_VALS_START) / dir_count;
 }
 
-EvalDireciton::~EvalDireciton() {}
+EvalDirection::~EvalDirection() {}
 
-void EvalDireciton::set_mask() {
+void EvalDirection::set_mask() {
 
     if (mask == NULL) {
         mask = cvCreateMat(frame_h, frame_w, CV_32F);
@@ -41,7 +41,7 @@ void EvalDireciton::set_mask() {
     // cvShowImage( "debug", mask );
 }
 
-double EvalDireciton::comp_sum(CvMat* frame) {
+double EvalDirection::comp_sum(CvMat* frame) {
 
     CvMat* tmp_frame2 = cvCreateMat(frame->rows, frame->cols, frame->type);
 
@@ -59,7 +59,7 @@ double EvalDireciton::comp_sum(CvMat* frame) {
     return s.val[0];
 }
 
-double EvalDireciton::eval(CvMat* frame, int direction) {
+double EvalDirection::eval(CvMat* frame, int direction) {
     if (direction > dir_count || direction < 0) {
         printf("bad parameter direciton in EvalDireciton::eval");
         return -1;
@@ -87,7 +87,7 @@ double EvalDireciton::eval(CvMat* frame, int direction) {
     return result; //*(5-abs(direction-5))/25;
 }
 
-int EvalDireciton::get_best(CvMat* frame) {
+int EvalDirection::get_best(CvMat* frame) {
     double best = 0;
     int best_i = 0;
 
@@ -105,7 +105,7 @@ int EvalDireciton::get_best(CvMat* frame) {
 }
 
 // TODO eval direction from hokuyo
-double EvalDireciton::evalLaser(int* laserData, int direction) {
+double EvalDirection::evalLaser(int* laserData, int direction) {
 
     direction = 10 - direction;
     int start = LASER_VALS_START + (direction * laser_vals_per_direction);

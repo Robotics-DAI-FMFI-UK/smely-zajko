@@ -11,7 +11,7 @@ Coordinate::Coordinate() {
 }
 // returns direction as integer
 int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
-                     double imuAngle, EvalDireciton* ed, int* laserData) {
+                     double imuAngle, EvalDirection* ed, int* laserData) {
 
     double mapAngle = angles.map;
     //    if( !USE_LOCALIZATION ){

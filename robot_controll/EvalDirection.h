@@ -12,7 +12,7 @@
 
 #include <cv.h>
 
-class EvalDireciton {
+class EvalDirection {
     CvPoint A, B, C;
     int S;
 
@@ -30,14 +30,14 @@ class EvalDireciton {
     int frame_w;
     int frame_h;
 
-    EvalDireciton(int triangle_w, int triangle_h, int dir_count, int frame_w,
+    EvalDirection(int triangle_w, int triangle_h, int dir_count, int frame_w,
                   int frame_h);
 
     double eval(CvMat* frame, int direction);
     double evalLaser(int* laserData, int direction);
     int get_best(CvMat* frame);
 
-    virtual ~EvalDireciton();
+    virtual ~EvalDirection();
 
   private:
 };

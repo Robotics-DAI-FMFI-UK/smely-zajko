@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 #include "BindSerialPorts.h"
-#include "EvalDireciton.h"
+#include "EvalDirection.h"
 #include "GpsThread.h"
 #include "ImuThread.h"
 #include "SbotThread.h"

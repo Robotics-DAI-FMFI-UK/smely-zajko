@@ -13,7 +13,7 @@ using namespace std;
 #include "ContextHistogram.h"
 #include "ContextProbableRectangle.h"
 #include "Coordinate.h"
-#include "EvalDireciton.h"
+#include "EvalDirection.h"
 #include "GpsThread.h"
 #include "HokuyoThread.h"
 #include "ImuThread.h"
@@ -30,7 +30,7 @@ class SensorManagement {
     HokuyoThread* hokuyo;
     LocalizationAndPlaning* loc;
     VisionBase* nn;
-    EvalDireciton* ed;
+    EvalDirection* ed;
 
     SbotData sdata;
     ImuData idata;
