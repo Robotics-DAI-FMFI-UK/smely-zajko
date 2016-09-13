@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <cv.h>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -20,9 +21,11 @@ public:
     double running_mean;
     double predicted_dir;
     double computed_dir;
+    string move_status;
     Coordinate();
 
     int move(CvMat* predicted_data, SbotThread* sbot, double mapAngle, double imuAngle, EvalDireciton* ed, int* laserData  );
+    CvScalar status_to_color(string status);
 
 private:
 

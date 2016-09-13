@@ -8,6 +8,7 @@
 #include <string.h>
 #include <opencv/highgui.h>
 #include <sys/time.h>
+#include <map>
 #include "yaml-cpp/yaml.h"
 
 #include "Subroutines.h"
@@ -113,7 +114,12 @@ void add_debug_to_image(IplImage** img,int top_margin,int maxwidth,SbotData sdat
 
         diststr.str("");
         diststr << se[i];
-        cvPutText(*img,diststr.str().c_str(),cvPoint(237+(i*15),top_margin + 43 -( 26-13*abs(i - 2))),&font,cvScalar(0,0,0));
+        cvPutText(*img,
+                  diststr.str().c_str(),
+                  cvPoint(237+(i*15),
+                  top_margin + 43 -( 26-13*abs(i - 2))),
+                  &font,
+                  cvScalar(0,0,0));
     }
     //curtime and start time
     time_t t1 = time(0);
@@ -155,6 +161,26 @@ void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle, double k
         printf("data > %d %d %d %d %d %d %d %d %d %d %d %f %3.3f\n", sdata.lstep, sdata.rstep, sdata.lspeed,
            sdata.rspeed, sdata.blocked, sdata.obstacle, sdata.distRL, sdata.distFL, sdata.distM, sdata.distFR, sdata.distRR, kmtotarget*1000, idata.xAngle);
     }
+}
+
+/*
+ * Converts status string to an appropriate color.
+ */
+CvScalar status_to_color(string status) {
+    std::map<string,CvScalar> status_color_map;
+    std::map<string,CvScalar>::iterator it;
+
+    status_color_map["standby"] = cvScalar(0, 0, 0);
+    status_color_map["running"] = cvScalar(0, 255, 0);
+    status_color_map["searching"] = cvScalar(255, 255, 0);
+    status_color_map["turning"] = cvScalar(0, 255, 255);
+
+    it = status_color_map.find(status)
+    if (it == status_color_map.end()) {
+        return cvScalar(0, 0, 0);
+    }
+
+    return it->second;
 }
 
 /*
@@ -307,7 +333,7 @@ int main(int argc, char** argv)
 			break;
 
         log_data( sm.sdata, sm.gdata, sm.idata, sm.angles.map, sm.angles.dstToFin);
-    
+
         int display_direction = 0;
         if(time(0) >= start_time) {
             display_direction = sm.move();
@@ -319,17 +345,22 @@ int main(int argc, char** argv)
         cvLine( rgb_frame, cvPoint( sizeC*(display_direction), (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 0,255 ), 5);
 
         //draw proposed line
-        cvLine( rgb_frame, cvPoint( (int)(sizeC*(sm.coor->predicted_dir / 8.0 + 5)), 
-                                    (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), 
+        cvLine( rgb_frame, cvPoint( (int)(sizeC*(sm.coor->predicted_dir / 8.0 + 5)),
+                                    (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ),
                            cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 255,255 ), 5);
 
-        cvLine( rgb_frame, cvPoint( (int)(sizeC*(sm.coor->computed_dir / 8.0 + 5)), 
-                                    (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ), 
+        cvLine( rgb_frame, cvPoint( (int)(sizeC*(sm.coor->computed_dir / 8.0 + 5)),
+                                    (rgb_frame->height - sm.ed->triangle_h*sm.nn->step_y) ),
                            cvPoint( rgb_frame->width/2, rgb_frame->height ), cvScalar( 0, 255,0 ), 5);
 
-        
+
         localizationFrame = sm.loc->getGui();
         add_debug_to_image(&localizationFrame,locwin_map_height, locwin_width, sm.sdata);
+
+        cvPutText(localizationFrame, sm.coor->move_status.c_str(),
+                  cvPoint(locwin_width-337, locwin_map_height+55),
+                  &fontBig, status_to_color(sm.coor->move_status));
+
         cvShowImage( "camera", rgb_frame );
         cvShowImage( "laser", sm.getLaserFrame() );
         cvShowImage( "path", sm.predicted_data );
