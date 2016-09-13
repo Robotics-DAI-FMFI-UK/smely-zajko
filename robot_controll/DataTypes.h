@@ -1,45 +1,44 @@
 #ifndef DATATYPES_H
-#define	DATATYPES_H
+#define DATATYPES_H
 
 #include <vector>
 
-class Ecef{
+class Ecef {
     double x;
     double y;
     double z;
 };
 
-class Lla{
+class Lla {
     double latitude;
     double longitude;
     double altitude;
 };
 
-class Ll{
-public:
+class Ll {
+  public:
     double latitude;
     double longitude;
 };
 
-//TODO: get rid of this
-class GpsAngles{
-public:
+// TODO: get rid of this
+class GpsAngles {
+  public:
     double map;
-	double dstToFin;
-    //double gps;
+    double dstToFin;
+    // double gps;
 };
 
-//class LlAngle: public Ll{
-//public:
+// class LlAngle: public Ll{
+// public:
 //    double angle;//loc
 //    //double angleGps;
 //};
 
-
-class Point{
-public:
+class Point {
+  public:
     int x;
     int y;
 };
 
-#endif	/* DATATYPES_H */
+#endif /* DATATYPES_H */
