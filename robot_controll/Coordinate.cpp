@@ -8,7 +8,10 @@ Coordinate::Coordinate() {
     running_mean = 0.0;
     predicted_dir = 0.0;
     move_status = "standby";
+    running_mean_weight = 0.0;
+    speed_down_dst = 0.0;
 }
+
 // returns direction as integer
 int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
                      double imuAngle, EvalDireciton* ed, int* laserData) {
@@ -143,7 +146,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
         if (sdir < -40)
             sdir = -40;
 
-        predicted_dir = running_mean * 0.7 + sdir * 0.3;
+        predicted_dir = (running_mean * running_mean_weight) + (sdir * (1-running_mean_weight));
         running_mean = (running_mean * 5.0 + predicted_dir) / 6.0;
 
         printf("Inferred dir: %d\tProposed dir: %f\n", sdir, predicted_dir);
@@ -152,7 +155,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
 
         if (autonomy) {
             sbot->setDirection(sdir);
-            if (angles.dstToHeadingPoint <= 0.001) {
+            if (angles.dstToHeadingPoint <= speed_down_dst) {
                 sbot->setSpeed(5);
             } else {
                 sbot->setSpeed(7);
