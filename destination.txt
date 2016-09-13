@@ -1,3 +1,0 @@
-latitude 48.14598
-longitude 17.07227
-

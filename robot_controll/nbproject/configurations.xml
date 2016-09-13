@@ -6,7 +6,7 @@
                    projectFiles="true">
       <itemPath>BindSerialPorts.h</itemPath>
       <itemPath>DataTypes.h</itemPath>
-      <itemPath>EvalDireciton.h</itemPath>
+      <itemPath>/home/navigation/src/smely-zajko/robot_controll/EvalDirection.h</itemPath>
       <itemPath>GpsThread.h</itemPath>
       <itemPath>HokuyoThread.h</itemPath>
       <itemPath>ImuThread.h</itemPath>
@@ -26,7 +26,7 @@
       <itemPath>BindSerialPorts.cpp</itemPath>
       <itemPath>Coordinate.cpp</itemPath>
       <itemPath>Coordinate.h</itemPath>
-      <itemPath>EvalDireciton.cpp</itemPath>
+      <itemPath>/home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp</itemPath>
       <itemPath>GpsThread.cpp</itemPath>
       <itemPath>/home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp</itemPath>
       <itemPath>ImuThread.cpp</itemPath>
@@ -96,6 +96,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/EvalDirection.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp"
             ex="false"
             tool="1"
@@ -110,10 +120,6 @@
       <item path="Coordinate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="DataTypes.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="EvalDireciton.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="EvalDireciton.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="GpsThread.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -169,6 +175,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/EvalDirection.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp"
             ex="false"
             tool="1"
@@ -183,10 +199,6 @@
       <item path="Coordinate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="DataTypes.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="EvalDireciton.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="EvalDireciton.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="GpsThread.cpp" ex="false" tool="1" flavor2="0">
       </item>

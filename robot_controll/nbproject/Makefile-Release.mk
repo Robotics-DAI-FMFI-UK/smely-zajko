@@ -35,10 +35,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o \
 	${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
 	${OBJECTDIR}/Coordinate.o \
-	${OBJECTDIR}/EvalDireciton.o \
 	${OBJECTDIR}/GpsThread.o \
 	${OBJECTDIR}/ImuThread.o \
 	${OBJECTDIR}/LocalizationAndPlaning.o \
@@ -72,6 +72,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS}
 
+${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o: /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp
+
 ${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o: /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
 	${RM} "$@.d"
@@ -86,11 +91,6 @@ ${OBJECTDIR}/Coordinate.o: Coordinate.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
-
-${OBJECTDIR}/EvalDireciton.o: EvalDireciton.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/EvalDireciton.o EvalDireciton.cpp
 
 ${OBJECTDIR}/GpsThread.o: GpsThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -30,7 +30,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
 
     // threshold
 
-    printf("evalLaser: ");
+    //printf("evalLaser: ");
     for (int i = 0; i <= ed->dir_count; i++) {
         double f = ed->eval(predicted_data, i) - 0.4;
         double g = ed->evalLaser(laserData, i);
@@ -41,9 +41,9 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
         }
         vDist.push_back(f);
         lDist.push_back(g);
-        printf("%.3f ", g);
+        //printf("%.3f ", g);
     }
-    printf("\n");
+    //printf("\n");
 
     // in destination vicinity
     if (mapAngle == DBL_MAX) {
@@ -120,20 +120,26 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
 
         double fmax = -1;
         int maxdir = 5;
-
+        move_probs.clear();
         for (int i = 0; i <= ed->dir_count; i++) {
             double coeff = 5 - abs(delta - (i - 5));
             if (coeff < 0.0)
                 coeff = 0.1;
-            coeff /= 25.0; // vyskusat 5, 12 ...
+            coeff /= 12.0; // vyskusat 5, 12 ...
             coeff += 1.0;
             // TODO x 1if hoku sez > 1.5m else 0.1
+           // lDist[i] = 1.0;
             double f = vDist[i] * coeff * lDist[i];
+            move_probs.push_back(f);
             if (f > fmax) {
                 fmax = f;
                 maxdir = i;
             }
         }
+        for(int i = 0; i < move_probs.size(); i++) {
+            move_probs[i] /= fmax;
+            move_probs[i] = 1 - move_probs[i];
+        } 
 
         int sdir = (maxdir - 5) * 8;
         //      sdir -= 3;
@@ -147,18 +153,21 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
             sdir = -40;
 
         predicted_dir = (running_mean * running_mean_weight) + (sdir * (1-running_mean_weight));
-        running_mean = (running_mean * 5.0 + predicted_dir) / 6.0;
+        running_mean = (running_mean * 3.0 + predicted_dir) / 4.0;
 
-        printf("Inferred dir: %d\tProposed dir: %f\n", sdir, predicted_dir);
+        //printf("Inferred dir: %d\tProposed dir: %f\n", sdir, predicted_dir);
 
         computed_dir = sdir;
 
         if (autonomy) {
-            sbot->setDirection(sdir);
+            sbot->setDirection(predicted_dir);
+            printf("%.10f %.10f\n", angles.dstToHeadingPoint, speed_down_dst);
             if (angles.dstToHeadingPoint <= speed_down_dst) {
                 sbot->setSpeed(5);
+                printf("setSpeed: 5\n");
             } else {
-                sbot->setSpeed(7);
+                sbot->setSpeed(100);
+                printf("setSpeed: 27\n");
             }
         }
         display_direction = maxdir;

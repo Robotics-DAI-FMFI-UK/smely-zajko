@@ -1,7 +1,7 @@
 map: ../maps/matfyz.osm
 neural_net: ../555511.net
-longitude: 48.14598
-latitude: 17.07227
+longitude: 48.1523277
+latitude: 17.0711468
 running_mean_weight: 0.7
 # start speeding down when this far from nearest map point
 speed_down_dst: 0.001

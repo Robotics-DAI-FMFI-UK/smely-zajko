@@ -8,7 +8,7 @@
 #define MAX_OBSTACLE_DISTANCE_MM 1600
 
 #define PROB_GO 1.0
-#define PROB_NO_GO 0.1
+#define PROB_NO_GO 0.001
 
 #include <cv.h>
 

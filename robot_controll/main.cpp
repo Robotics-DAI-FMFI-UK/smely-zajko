@@ -180,11 +180,11 @@ void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle,
         log_counter++;
     } else {
         log_counter = 0;
-        printf("data > %d %d %d %d %d %d %d %d %d %d %d %f %3.3f\n",
+       /* printf("data > %d %d %d %d %d %d %d %d %d %d %d %f %3.3f\n",
                sdata.lstep, sdata.rstep, sdata.lspeed, sdata.rspeed,
                sdata.blocked, sdata.obstacle, sdata.distRL, sdata.distFL,
                sdata.distM, sdata.distFR, sdata.distRR, kmtotarget * 1000,
-               idata.xAngle);
+               idata.xAngle);*/
     }
 }
 
@@ -275,6 +275,7 @@ int main(int argc, char** argv) {
 
     const double longitude = config["longitude"].as<double>();
     const double latitude = config["latitude"].as<double>();
+    printf("%f %f\n", longitude, latitude);
 
     sm.coor->running_mean_weight = config["running_mean_weight"].as<double>();
     sm.coor->speed_down_dst = config["speed_down_dst"].as<double>();
@@ -282,8 +283,8 @@ int main(int argc, char** argv) {
     Ll point;
     point.longitude = longitude;
     point.latitude = latitude;
-    sm.loc->setDestination(point);
-
+    //sm.loc->setDestination(point);
+    sm.loc->readDestination((char*) "../destination.txt");
 
     const std::string neural_net = config["neural_net"].as<std::string>();
     sm.nn->load((char*)neural_net.c_str());
@@ -386,17 +387,25 @@ int main(int argc, char** argv) {
 
         // draw proposed line
         cvLine(rgb_frame,
-               cvPoint((int)(sizeC * (sm.coor->predicted_dir / 8.0 + 5)),
+               cvPoint((int)(sizeC * 1.2 * (sm.coor->predicted_dir / 8.0 + 5)),
                        (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
                cvPoint(rgb_frame->width / 2, rgb_frame->height),
                cvScalar(0, 255, 255), 5);
 
+        
         cvLine(rgb_frame,
-               cvPoint((int)(sizeC * (sm.coor->computed_dir / 8.0 + 5)),
+               cvPoint((int)(sizeC * 1.2 * (sm.coor->computed_dir / 8.0 + 5)),
                        (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
                cvPoint(rgb_frame->width / 2, rgb_frame->height),
                cvScalar(0, 255, 0), 5);
 
+        for(int i = 0; i < sm.coor->move_probs.size(); i++) { 
+            cvLine(rgb_frame,
+                   cvPoint((int)(sizeC * (i)),
+                           (int)(sm.coor->move_probs[i] * 1.5 * (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y))),
+                   cvPoint(rgb_frame->width / 2, rgb_frame->height),
+                   cvScalar(47, 147, 47), 5);
+        }
         localizationFrame = sm.loc->getGui();
         add_debug_to_image(&localizationFrame, locwin_map_height, locwin_width,
                            sm.sdata);

@@ -13,6 +13,7 @@ using namespace std;
 #include "EvalDirection.h"
 #include "SbotThread.h"
 #include "DataTypes.h"
+#include <vector>
 
 extern bool autonomy;
 
@@ -26,6 +27,7 @@ class Coordinate {
     double speed_down_dst;
     string move_status;
     bool status_from_subroutines;
+    vector<double> move_probs;
     Coordinate();
 
     int move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
