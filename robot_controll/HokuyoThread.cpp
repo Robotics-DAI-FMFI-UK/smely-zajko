@@ -220,7 +220,8 @@ void HokuyoThread::getData(int* buffer) {
 }
 
 IplImage* HokuyoThread::getGuiFrame(int* dataArr) {
-
+   
+    
     cvSet(result, CV_RGB(255, 255, 255));
     int x, y;
     double brkAngle = -135 / 180.0 * M_PI;
@@ -233,7 +234,13 @@ IplImage* HokuyoThread::getGuiFrame(int* dataArr) {
         cvLine(result, cvPoint(guiWidth / 2, guiHeight / 2),
                cvPoint(x, guiHeight - y), cvScalar(0.4, 0.4, 0.4));
     }
+    long min = 200000;
+    long min_id = 0;
     for (int i = 0; i < RANGE_DATA_COUNT; i++) {
+        if (dataArr[i] < min && dataArr[i] > 5000) {
+            min = dataArr[i];
+            min_id = i;
+        }
         x = (int)(-dataArr[i] * sin(brkAngle + i * deltaAngle) / 35 +
                   guiWidth / 2);
         y = (int)(dataArr[i] * cos(brkAngle + i * deltaAngle) / 35 +
@@ -241,5 +248,6 @@ IplImage* HokuyoThread::getGuiFrame(int* dataArr) {
         cvCircle(result, cvPoint(x, guiHeight - y), 2, cvScalar(0.6, 0.8, 0),
                  -1);
     }
+    printf("min: %ld, %ld\n", min_id, min);
     return result;
 }
