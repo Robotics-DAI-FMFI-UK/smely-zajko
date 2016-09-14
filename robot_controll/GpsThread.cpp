@@ -28,8 +28,9 @@ Ll GpsThread::data;
 string GpsThread::buffer;
 
 int GpsThread::gps;
+static int online_mode;
 
-GpsThread::GpsThread() { end = true; }
+GpsThread::GpsThread(int is_online_mode) { end = true; online_mode = is_online_mode; }
 
 void GpsThread::setDeviceName(char* dev_name) {
     strcpy(device_name, dev_name);
@@ -80,6 +81,8 @@ void GpsThread::init() {
     if (end) {
         return;
     }
+    
+    if (!online_mode) return;
 
     struct termios oldtio, newtio;
 
@@ -117,14 +120,24 @@ void* GpsThread::mainLoop(void*) {
 
     FILE* inlog;
     inlog = fopen("../logs/gps-in.log", "a");
-    do {
-        if (!read(gps, b, 1))
-            break;
-    } while (b[0] != '\n');
+    if (online_mode)
+        do {
+            if (!read(gps, b, 1))
+                break;
+        } while (b[0] != '\n');
     while (!end) {
         int nread;
-        if (!(nread = read(gps, b + bufp, 1)))
-            break;
+        if (online_mode)
+        {
+            if (!(nread = read(gps, b + bufp, 1)))
+                break;
+        } else
+        {
+            //TODO: read from previously saved logfile
+            strcpy(b, "$GPGGA,183308.000,4809.0886,N,01704.3730,E,1,10,0.9,179.9,M,42.7,M,,0000*54\n");
+            bufp = strlen(b) - 1;
+            sleep(1);
+        }
         if (nread < 0) {
             usleep(3000);
             continue;
@@ -178,7 +191,7 @@ void* GpsThread::mainLoop(void*) {
             usleep( 100000 );//100ms
         } */
 
-    close(gps);
+    if (online_mode) close(gps);
     fclose(inlog);
 }
 

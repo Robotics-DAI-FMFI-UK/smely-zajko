@@ -37,8 +37,10 @@ int HokuyoThread::sockfd;
 int HokuyoThread::guiWidth;
 int HokuyoThread::guiHeight;
 IplImage* HokuyoThread::result;
+static int online_mode;
 
-HokuyoThread::HokuyoThread() {
+HokuyoThread::HokuyoThread(int is_online_mode) {
+    online_mode = is_online_mode;
     data = new int[RANGE_DATA_COUNT];
     end = false;
     guiWidth = 320;
@@ -54,6 +56,7 @@ void HokuyoThread::init() {
     if (end) {
         return;
     }
+    if (!online_mode) return;
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -87,97 +90,113 @@ void* HokuyoThread::mainLoop(void*) {
     unsigned char readbuf[BUFFER_SIZE];
 
     // printf("HOK1\n");
-    if (write(sockfd, start_measurement, strlen(start_measurement)) < 0) {
-        perror("Error writing to Hokuyo\n");
-        end = true;
-    }
-    usleep(250000);
-
-    unsigned char x[2];
-    int cnt = 0;
-    do {
-        if (read(sockfd, x + ((cnt++) % 2), 1) < 0) {
-            perror("Error reading response from Hokuyo");
-            end = true;
-            break;
-        }
-    } while ((x[0] != 10) || (x[1] != 10));
-
-    // printf("HOK2\n");
-    while (!end) {
-        if (write(sockfd, request_measurement, strlen(request_measurement)) <
-            0) {
+    if (online_mode)
+    {
+        if (write(sockfd, start_measurement, strlen(start_measurement)) < 0) {
             perror("Error writing to Hokuyo\n");
             end = true;
         }
-        // printf("HOK3\n");
+        usleep(250000);
 
-        int readptr = 0;
+        unsigned char x[2];
+        int cnt = 0;
         do {
-            int nread = read(sockfd, readbuf + readptr, BUFFER_SIZE - readptr);
-            if (nread < 0) {
-                perror("Problem reading from Hokuyo");
-                end = 0;
+            if (read(sockfd, x + ((cnt++) % 2), 1) < 0) {
+                perror("Error reading response from Hokuyo");
+                end = true;
                 break;
             }
-            readptr += nread;
-            // printf("nread=%d, readptr=%d readbuf[readptr - 1]=%d,
-            // readbuf[readptr - 2]=%d\n", nread, readptr, readbuf[readptr - 1],
-            // readbuf[readptr - 2]);
-            if (readptr < 2)
-                continue;
-        } while ((readbuf[readptr - 1] != 10) || (readbuf[readptr - 2] != 10));
-        // printf("HOK4\n");
-
-        int searchptr = 0;
-        for (int i = 0; i < 3; i++) {
-            while ((readbuf[searchptr] != 10) && (searchptr < readptr))
-                searchptr++;
-            searchptr++;
-        }
-        // printf("HOK5\n");
-
-        if (readptr - searchptr != 103 + RANGE_DATA_COUNT * 3) {
-            printf("Hokuyo returned packet of unexpected size, I will ignore "
-                   "it size=%d\n",
-                   readptr - searchptr);
-            continue;
-        }
-
-        int beam_index = RANGE_DATA_COUNT - 1;
-        readptr = searchptr;
-        pthread_mutex_lock(&m_read);
-        // printf("HOK6\n");
-        int counter = 0;
-        while (beam_index >= 0) {
-            // printf("%d (%d %d %d)", counter++, (int)readbuf[searchptr],
-            // (int)readbuf[searchptr + 1], (int)readbuf[searchptr + 2]);
-            int pos = (searchptr - readptr) % 66;
-            if (pos == 62) {
-                data[beam_index] = ((readbuf[searchptr] - 0x30) << 12) |
-                                   ((readbuf[searchptr + 1] - 0x30) << 6) |
-                                   (readbuf[searchptr + 4] - 0x30);
-                searchptr += 5;
-            } else if (pos == 63) {
-                data[beam_index] = ((readbuf[searchptr] - 0x30) << 12) |
-                                   ((readbuf[searchptr + 3] - 0x30) << 6) |
-                                   (readbuf[searchptr + 4] - 0x30);
-                searchptr += 5;
-            } else {
-                if (pos == 64)
-                    searchptr += 2;
-                data[beam_index] =
-                    ((((int)readbuf[searchptr]) - 0x30) << 12) |
-                    ((((int)readbuf[searchptr + 1]) - 0x30) << 6) |
-                    (((int)readbuf[searchptr + 2]) - 0x30);
-                searchptr += 3;
+        } while ((x[0] != 10) || (x[1] != 10));
+    }
+    
+    // printf("HOK2\n");
+    while (!end) {
+        if (online_mode)
+        {
+            if (write(sockfd, request_measurement, strlen(request_measurement)) <
+                0) {
+                perror("Error writing to Hokuyo\n");
+                end = true;
             }
-            // printf("  => %d; ", data[beam_index]);
-            beam_index--;
+            // printf("HOK3\n");
+
+            int readptr = 0;
+            do {
+                int nread = read(sockfd, readbuf + readptr, BUFFER_SIZE - readptr);
+                if (nread < 0) {
+                    perror("Problem reading from Hokuyo");
+                    end = 0;
+                    break;
+                }
+                readptr += nread;
+                // printf("nread=%d, readptr=%d readbuf[readptr - 1]=%d,
+                // readbuf[readptr - 2]=%d\n", nread, readptr, readbuf[readptr - 1],
+                // readbuf[readptr - 2]);
+                if (readptr < 2)
+                    continue;
+            } while ((readbuf[readptr - 1] != 10) || (readbuf[readptr - 2] != 10));
+            // printf("HOK4\n");
+
+            int searchptr = 0;
+            for (int i = 0; i < 3; i++) {
+                while ((readbuf[searchptr] != 10) && (searchptr < readptr))
+                    searchptr++;
+                searchptr++;
+            }
+            // printf("HOK5\n");
+
+            if (readptr - searchptr != 103 + RANGE_DATA_COUNT * 3) {
+                printf("Hokuyo returned packet of unexpected size, I will ignore "
+                       "it size=%d\n",
+                       readptr - searchptr);
+                continue;
+            }
+
+            int beam_index = RANGE_DATA_COUNT - 1;
+            readptr = searchptr;
+            pthread_mutex_lock(&m_read);
+            // printf("HOK6\n");
+            int counter = 0;
+            while (beam_index >= 0) {
+                // printf("%d (%d %d %d)", counter++, (int)readbuf[searchptr],
+                // (int)readbuf[searchptr + 1], (int)readbuf[searchptr + 2]);
+                int pos = (searchptr - readptr) % 66;
+                if (pos == 62) {
+                    data[beam_index] = ((readbuf[searchptr] - 0x30) << 12) |
+                                       ((readbuf[searchptr + 1] - 0x30) << 6) |
+                                       (readbuf[searchptr + 4] - 0x30);
+                    searchptr += 5;
+                } else if (pos == 63) {
+                    data[beam_index] = ((readbuf[searchptr] - 0x30) << 12) |
+                                       ((readbuf[searchptr + 3] - 0x30) << 6) |
+                                       (readbuf[searchptr + 4] - 0x30);
+                    searchptr += 5;
+                } else {
+                    if (pos == 64)
+                        searchptr += 2;
+                    data[beam_index] =
+                        ((((int)readbuf[searchptr]) - 0x30) << 12) |
+                        ((((int)readbuf[searchptr + 1]) - 0x30) << 6) |
+                        (((int)readbuf[searchptr + 2]) - 0x30);
+                    searchptr += 3;
+                }
+                // printf("  => %d; ", data[beam_index]);
+                beam_index--;
+            }
+            pthread_mutex_unlock(&m_read);
+        }
+        else //not online mode
+        {
+            // TODO: read from logfile or generate
+            pthread_mutex_lock(&m_read);
+            
+            for (int i = 0; i < RANGE_DATA_COUNT; i++)
+                data[i] = 3000;
+            pthread_mutex_unlock(&m_read);
+            sleep(1);
         }
         // printf("HOK7\n");
 
-        pthread_mutex_unlock(&m_read);
 
         // printf("HOKUYO: %d %d %d %d %d\n", data[550], data[535], data[540],
         // data[545], data[530]);

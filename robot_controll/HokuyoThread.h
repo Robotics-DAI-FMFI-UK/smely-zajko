@@ -15,7 +15,7 @@ using namespace std;
 class HokuyoThread {
 
   public:
-    HokuyoThread();
+    HokuyoThread(int is_online_mode);
 
     void init();
     void run();

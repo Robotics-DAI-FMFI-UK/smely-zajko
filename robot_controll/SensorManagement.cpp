@@ -5,7 +5,8 @@ SensorManagement::SensorManagement() {
     laser = new int[RANGE_DATA_COUNT];
 }
 
-void SensorManagement::init() {
+void SensorManagement::init(int is_online_mode) {
+    online_mode = is_online_mode;
     // new VisionContext(); je prazdny kontext
     VisionContext* con = new VisionContext();
     // new VisionModifier(); je prazdny modifier
@@ -17,13 +18,14 @@ void SensorManagement::init() {
                            nn->out_width, nn->out_height);
     loc = new LocalizationAndPlaning(800, 400);
     coor = new Coordinate();
-    gps = new GpsThread();
-    imu = new ImuThread();
-    sbot = new SbotThread();
-    hokuyo = new HokuyoThread();
+    gps = new GpsThread(online_mode);
+    imu = new ImuThread(online_mode);
+    sbot = new SbotThread(online_mode);
+    hokuyo = new HokuyoThread(online_mode);
 
     BindSerialPorts bs;
-    bs.bind(sbot, gps, imu);
+    if (online_mode)
+      bs.bind(sbot, gps, imu);
 
     gps->init();
     imu->init();

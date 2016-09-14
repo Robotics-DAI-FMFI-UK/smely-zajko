@@ -11,7 +11,7 @@ using namespace std;
 class GpsThread {
 
   public:
-    GpsThread();
+    GpsThread(int is_online_mode);
 
     void init();
     void run();
@@ -31,7 +31,7 @@ class GpsThread {
     static pthread_mutex_t m_read;
     static Ll data;
     static string buffer;
-
+    
     pthread_t t;
 
     static void* mainLoop(void*);

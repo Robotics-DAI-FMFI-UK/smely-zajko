@@ -23,7 +23,6 @@
 #include "DataTypes.h"
 //#include "JoystickThread.h"
 
-const bool START_CAM = 1;
 const bool USE_LOCALIZATION = 0;
 // const bool START_GPS = 0;
 // const bool START_IMU = 0;
@@ -213,9 +212,33 @@ CvScalar status_to_color(string status) {
  */
 
 int main(int argc, char** argv) {
+    enum image_source_type {camera, jpg, avi};
+    image_source_type image_source = camera;
+    string image_file = "file.jpg";
+    enum run_mode_type {online, offline};
+    run_mode_type run_mode = online;
+    
     IplImage* localizationFrame;
     YAML::Node config = YAML::LoadFile("../config.yaml");
-
+    
+    if (config["image_source"].as<string>().compare("camera") == 0)
+        image_source = camera;
+    else if (config["image_source"].as<string>().compare("avi") == 0)
+    {
+        image_source = avi;
+        image_file = config["image_file"].as<string>();
+    }
+    if (config["image_source"].as<string>().compare("jpg") == 0)
+    {
+        image_source = jpg;
+        image_file = config["image_file"].as<string>();
+    }
+    
+    if (config["run_mode"].as<string>().compare("online") == 0)
+        run_mode = online;
+    else if (config["run_mode"].as<string>().compare("offline") == 0)
+        run_mode = offline;
+        
     setlocale(LC_ALL, "C");
     time_t t;
     time(&t);
@@ -257,7 +280,7 @@ int main(int argc, char** argv) {
     cvSetMouseCallback("localization", loc_mouse_callback, NULL);
 
     SensorManagement sm;
-    sm.init();
+    sm.init(run_mode == online);
 
     locwin_width = sm.loc->guiMapWidth;
     locwin_map_height = sm.loc->guiMapHeight;
@@ -283,8 +306,8 @@ int main(int argc, char** argv) {
     Ll point;
     point.longitude = longitude;
     point.latitude = latitude;
-    //sm.loc->setDestination(point);
-    sm.loc->readDestination((char*) "../destination.txt");
+    sm.loc->setDestination(point);
+    //sm.loc->readDestination((char*) "../destination.txt");
 
     const std::string neural_net = config["neural_net"].as<std::string>();
     sm.nn->load((char*)neural_net.c_str());
@@ -294,17 +317,23 @@ int main(int argc, char** argv) {
 
     CvCapture* capture;
 
-    if (START_CAM) {
+    if (image_source == camera) {
         // init_video();
         printf("mplayer init video done.\n");
         capture = cvCaptureFromCAM(1); //(1);
-    } else {
+    } else if (image_source == avi) {
         // debug
-        // capture = cvCreateFileCapture( "../../video/b23.avi");
-        capture = cvCreateFileCapture("../../stromovka-friday/236.jpg");
+        const char *jezkove_oci = image_file.c_str();
+        capture = cvCreateFileCapture(jezkove_oci); 
+        //"../../video/b23.avi");
+    } else if (image_source == jpg) {
+        const char *jezkove_oci = image_file.c_str();
+        capture = cvCreateFileCapture(jezkove_oci); 
+        // "../../stromovka-friday/236.jpg");
     }
 
-    subroutine.testSbot();
+    if (run_mode == online)
+        subroutine.testSbot();
 
     IplImage* frame;
     setlocale(LC_ALL, "C");
@@ -313,12 +342,15 @@ int main(int argc, char** argv) {
 
     int frame_counter = 0;
     time_t photoTime = time(0) + 5;
+    int fetching_new_frames = 1;
     while (1) {
-        frame = cvQueryFrame(capture);
+        if (fetching_new_frames)
+            frame = cvQueryFrame(capture);
         if (!frame) {
             printf("no frame, exiting..\n");
             break;
         }
+        if (image_source == jpg) fetching_new_frames = 0;
 
         if (frame_counter < 2) {
             frame_counter++;

@@ -39,10 +39,12 @@ class SensorManagement {
     CvMat* predicted_data;
     int* laser;
 
+    int online_mode;
+    
     SensorManagement();
 
     int move();
-    void init();
+    void init(int is_online_mode);
     int update();
     int getDirNum();
     double evalNeuralForDirection(int dir);

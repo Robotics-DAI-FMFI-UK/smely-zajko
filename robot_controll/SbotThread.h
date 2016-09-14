@@ -43,7 +43,7 @@ class SbotData {
 class SbotThread {
 
   public:
-    SbotThread();
+    SbotThread(int is_online_mode);
 
     void run();
     void stop();

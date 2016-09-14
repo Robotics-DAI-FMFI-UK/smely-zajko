@@ -40,8 +40,12 @@ char SbotThread::device_name[32];
 
 int SbotThread::printingDebugging;
 
-SbotThread::SbotThread() {
+static int online_mode;
+
+
+SbotThread::SbotThread(int is_online_mode) {
     //    end = false;
+    online_mode = is_online_mode;
     printingDebugging = 1;
     outlog = fopen("../logs/sbot-out.log", "a");
     end = true; // TODO:
@@ -56,6 +60,8 @@ int SbotThread::validate(const char* devName) {
     // char *command="plink /dev/ttyUSB0 -serial -sercfg 115200,N,n,8,1";
     char command[128];
 
+    if (!online_mode) return 1;
+    
     sprintf(command, "plink %s -serial -sercfg 115200,N,n,8,1", devName);
 
     FILE* f;
@@ -135,54 +141,65 @@ void* SbotThread::mainLoop(void*) {
 
     // char *command="plink /dev/ttyUSB0 -serial -sercfg 115200,N,n,8,1";
 
-    if (pipe(fdR) < 0) {
-        perror("pipe2()");
-        exit(-1);
-    }
-    if (!pipe(fdW) < 0) {
-        perror("pipe2()");
-        exit(-1);
-    }
-
-    if ((child = fork()) == 0) {
-        /* child */
-
-        close(0);
-        close(1);
-        dup2(fdR[0], 0);
-        dup2(fdW[1], 1);
-        close(fdR[0]);
-        close(fdR[1]);
-        close(fdW[0]);
-        close(fdW[1]);
-
-        // if (execl("/usr/bin/plink", "/usr/bin/plink", "/dev/ttyUSB0",
-        // "-serial", "-sercfg", "115200,N,n,8,1", NULL) < 0) {
-        if (execl("/usr/bin/plink", "/usr/bin/plink", device_name, "-serial",
-                  "-sercfg", "115200,N,n,8,1", NULL) < 0) {
-            perror("child execl()");
+    if (online_mode)
+    {
+        if (pipe(fdR) < 0) {
+            perror("pipe2()");
             exit(-1);
         }
-    } else {
-        if (child < 0) {
+        if (!pipe(fdW) < 0) {
+            perror("pipe2()");
+            exit(-1);
+        }
+
+        if ((child = fork()) == 0) {
+            /* child */
+
+            close(0);
+            close(1);
+            dup2(fdR[0], 0);
+            dup2(fdW[1], 1);
+            close(fdR[0]);
+            close(fdR[1]);
+            close(fdW[0]);
+            close(fdW[1]);
+
+            // if (execl("/usr/bin/plink", "/usr/bin/plink", "/dev/ttyUSB0",
+            // "-serial", "-sercfg", "115200,N,n,8,1", NULL) < 0) {
+            if (execl("/usr/bin/plink", "/usr/bin/plink", device_name, "-serial",
+                      "-sercfg", "115200,N,n,8,1", NULL) < 0) {
+                perror("child execl()");
+                exit(-1);
+            }
+        }
+    }
+    else child = 123;  // "a fake pid"
+    
+    if (child < 0) {
             perror("fork()");
             exit(-1);
-        }
+    }
 
-        /* parent */
+    /* parent */
+    if (online_mode)
+    {
         close(fdR[0]);
         close(fdW[1]);
+    }
+    char line[1024];
 
-        char line[1024];
+    FILE* inlog;
+    inlog = fopen("../logs/sbot-in.log", "a");
 
-        FILE* inlog;
-        inlog = fopen("../logs/sbot-in.log", "a");
+    while (!end) {
+        // wait for '@'
+        unsigned char ch;
+        int numRead;
+        int printing = 0;
+        int lineIndex = 1;
 
-        while (!end) {
-            // wait for '@'
-            unsigned char ch;
-            int numRead;
-            int printing = 0;
+        if (online_mode)
+        {
             do {
                 if ((numRead = read(fdW[0], &ch, 1)) < 0) {
                     perror("read()");
@@ -196,8 +213,7 @@ void* SbotThread::mainLoop(void*) {
                     printf("%c", ch);
             } while (ch != '@');
             line[0] = '@';
-            int lineIndex = 1;
-
+        
             do {
                 if ((numRead = read(fdW[0], line + lineIndex, 1)) < 0) {
                     perror("read()");
@@ -207,60 +223,62 @@ void* SbotThread::mainLoop(void*) {
                 if (lineIndex > 1023)
                     break;
             } while (line[lineIndex - 1] != '\n');
-
-            if (lineIndex > 1023)
-                continue;
-            line[lineIndex] = '\0';
-
-            // fprintf(inlog, "%ld %s", time(NULL) ,line);
-            time_t t = time(NULL);
-            fprintf(inlog, "%s|%s", ctime(&t), line);
-            fflush(inlog);
-
-            // printf("%s",line);
-
-            SbotData* result = new SbotData;
-
-            int blocked, obstacle;
-
-            sscanf(line, "@ %d %d %d %d %d %d %d %d %d %d %d", &result->lstep,
-                   &result->rstep, &result->lspeed, &result->rspeed, &blocked,
-                   &obstacle, &result->distRR, &result->distFR, &result->distM,
-                   &result->distFL, &result->distRL);
-
-            result->blocked = (blocked);
-            result->obstacle = (obstacle);
-
-            if ((result->distRL < 35) && (result->distRL > 14))
-                away_from_left = 1;
-            else
-                away_from_left = 0;
-            if ((result->distRR < 35) && (result->distRR > 14))
-                away_from_right = 1;
-            else
-                away_from_right = 0;
-
-            pthread_mutex_lock(&m_read);
-            SbotThread::data = *result;
-            pthread_mutex_unlock(&m_read);
-            /*
-                        if (result->obstacle)
-                        {
-                            for (int ii = 0; ii < 30; i++)
-                            {
-                                sleep(1);
-
-                            }
-                        } */
-            delete result;
-            usleep(10000);
         }
-        close(fdR[1]);
-        close(fdW[0]);
-        waitpid(child, 0, 0);
+        else
+        {
+            // TODO: read from log file
+            strcpy(line, "@125 95 0 0 0 0 221 344 331 347 270\n");
+            lineIndex = strlen(line) - 1;
+            usleep(100000);
+        }
+        
+        if (lineIndex > 1023)
+            continue;
+        line[lineIndex] = '\0';
 
-        fclose(inlog);
-    }
+        // fprintf(inlog, "%ld %s", time(NULL) ,line);
+        time_t t = time(NULL);
+        fprintf(inlog, "%s|%s", ctime(&t), line);
+        fflush(inlog);
+
+        // printf("%s",line);
+
+        SbotData* result = new SbotData;
+
+        int blocked, obstacle;
+
+        sscanf(line, "@ %d %d %d %d %d %d %d %d %d %d %d", &result->lstep,
+               &result->rstep, &result->lspeed, &result->rspeed, &blocked,
+               &obstacle, &result->distRR, &result->distFR, &result->distM,
+               &result->distFL, &result->distRL);
+
+        result->blocked = (blocked);
+        result->obstacle = (obstacle);
+
+        if ((result->distRL < 35) && (result->distRL > 14))
+            away_from_left = 1;
+        else
+            away_from_left = 0;
+        if ((result->distRR < 35) && (result->distRR > 14))
+            away_from_right = 1;
+        else
+            away_from_right = 0;
+
+        pthread_mutex_lock(&m_read);
+        SbotThread::data = *result;
+        pthread_mutex_unlock(&m_read);
+        /*
+                    if (result->obstacle)
+                    {
+                        for (int ii = 0; ii < 30; i++)
+                        {
+                            sleep(1);
+
+                        }
+                    } */
+        delete result;
+        usleep(10000);
+    }    
 }
 
 void SbotThread::run() {
@@ -291,6 +309,7 @@ void SbotThread::sendCommand(const char* s) {
     if (end) {
         return;
     }
+    if (!online_mode) return;
 
     pthread_mutex_lock(&m_write);
 

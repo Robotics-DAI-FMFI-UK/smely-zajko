@@ -22,7 +22,7 @@ class ImuData {
 class ImuThread {
 
   public:
-    ImuThread();
+    ImuThread(int is_online_mode);
 
     void init();
     void run();
@@ -40,7 +40,7 @@ class ImuThread {
     static pthread_mutex_t m_read;
     static int imu;
     static ImuData data;
-
+    
     pthread_t t;
 
     static void* mainLoop(void*);

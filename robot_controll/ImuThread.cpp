@@ -23,10 +23,14 @@ pthread_mutex_t ImuThread::m_read;
 int ImuThread::imu = 0;
 ImuData ImuThread::data;
 char ImuThread::IMUPORT[32];
+    
+static int online_mode;
 
-ImuThread::ImuThread() { end = true; }
+ImuThread::ImuThread(int is_online_mode) { end = true; online_mode = is_online_mode; }
 
 int ImuThread::validate(char* devName) {
+    if (!online_mode) return 1;
+    
     if (!imuOpen(devName))
         return 0;
 
@@ -85,6 +89,7 @@ int ImuThread::imuOpen(char* filename) {
 void ImuThread::init() {
     if (end)
         return;
+    if (!online_mode) return;
     if (!imuOpen(IMUPORT))
         end = true;
 }
@@ -121,12 +126,17 @@ void* ImuThread::mainLoop(void*) {
         // reinit();
         usleep(100000); // 100ms
 
-        if (!readLine(b)) {
-            perror("Error reading from compass");
-            end = true;
-            break;
+        if (online_mode)
+        {
+            if (!readLine(b)) {
+                perror("Error reading from compass");
+                end = true;
+                break;
+            }
         }
-
+        else //TODO: read from logfile
+            strcpy(b, "2657  -32    3\n");
+        
         // printf( "%s\n", b );
 
         // fprintf( inlog, "%ld %s", time(NULL), b );
@@ -144,7 +154,7 @@ void* ImuThread::mainLoop(void*) {
         pthread_mutex_unlock(&m_read);
     }
 
-    close(imu);
+    if (online_mode) close(imu);
     fclose(inlog);
 }
 
