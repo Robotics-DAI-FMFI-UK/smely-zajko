@@ -312,7 +312,7 @@ int main(int argc, char** argv) {
     sm.loc->setDestination(point);
     //sm.loc->readDestination((char*) "../destination.txt");
 
-    const std::string neural_net = Config::getString("neural_net");
+    const std::string neural_net = Config::getString("neural_network_file");
     sm.nn->load((char*) neural_net.c_str());
 
     Subroutines subroutine;

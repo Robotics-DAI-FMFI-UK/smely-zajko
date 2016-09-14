@@ -1,5 +1,5 @@
 map: ../maps/matfyz.osm
-neural_net: ../555511.net
+neural_network_file: ../555511.net
 longitude: 48.1523277
 latitude: 17.0711468
 running_mean_weight: 0.7
