@@ -1,13 +1,11 @@
 #include <cv.h>
 #include <highgui.h>
 
-#include "yaml-cpp/yaml.h"
 #include <cstdlib>
 #include <map>
 #include <opencv/highgui.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -21,6 +19,7 @@
 //#include "PhoneThread.h"
 #include "Coordinate.h"
 #include "DataTypes.h"
+#include "Config.h"
 //#include "JoystickThread.h"
 
 const bool USE_LOCALIZATION = 0;
@@ -39,11 +38,11 @@ bool autonomy = true;
 void init_video() {
     FILE* mplayer;
     char* command =
-        (char*)"mplayer tv:// -tv "
-               "driver=v4l2:device=/dev/"
-               "video1:immediatemode=0:normid=0:outfmt=YUY2:input=1";
+            (char*) "mplayer tv:// -tv "
+            "driver=v4l2:device=/dev/"
+            "video1:immediatemode=0:normid=0:outfmt=YUY2:input=1";
 
-    if (!(mplayer = (FILE*)popen(command, "r"))) {
+    if (!(mplayer = (FILE*) popen(command, "r"))) {
         // If fpipe is NULL
         perror("Problems with pipe");
         exit(1);
@@ -68,10 +67,11 @@ time_t start_time;
 int locwin_width;
 int locwin_map_height;
 bool debugging = false;
+
 void loc_mouse_callback(int event, int x, int y, int flags, void* param) {
     if (debugging)
         if (event == CV_EVENT_LBUTTONDOWN ||
-            (event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON))) {
+                (event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON))) {
             pixel.x = x;
             pixel.y = locwin_map_height - y;
             clicked = 1;
@@ -81,20 +81,20 @@ void loc_mouse_callback(int event, int x, int y, int flags, void* param) {
         if (start_time > time(0)) {
             if (x > (locwin_width - 150) && x < (locwin_width - 110)) {
                 if ((y) > (locwin_map_height + 25) &&
-                    (y) < (locwin_map_height + 50)) {
+                        (y) < (locwin_map_height + 50)) {
                     start_time -= 60;
                 } else if ((y) > (locwin_map_height) &&
-                           (y) < (locwin_map_height + 25)) {
+                        (y) < (locwin_map_height + 25)) {
                     start_time += 60;
                 }
             }
 
             if (x > (locwin_width - 110) && x < (locwin_width - 20)) {
                 if ((y) > (locwin_map_height + 25) &&
-                    (y) < (locwin_map_height + 50)) {
+                        (y) < (locwin_map_height + 50)) {
                     start_time -= 5;
                 } else if ((y) > (locwin_map_height) &&
-                           (y) < (locwin_map_height + 25)) {
+                        (y) < (locwin_map_height + 25)) {
                     start_time += 5;
                 }
             }
@@ -103,33 +103,34 @@ void loc_mouse_callback(int event, int x, int y, int flags, void* param) {
 }
 CvFont font;
 CvFont fontBig;
+
 void add_debug_to_image(IplImage** img, int top_margin, int maxwidth,
-                        SbotData sdat) {
+        SbotData sdat) {
     vector<int> se;
     se.push_back(sdat.distRL); // LBocny
     se.push_back(sdat.distFL); // Lavy Predny
-    se.push_back(sdat.distM);  // UUUUUplnePredny
+    se.push_back(sdat.distM); // UUUUUplnePredny
     se.push_back(sdat.distFR); // PravyPredny
     se.push_back(sdat.distRR); // PBocny
     stringstream diststr;
-    int trs = 80;    // treshold of obstacle
+    int trs = 80; // treshold of obstacle
     int maxim = 200; // max of sensor
     for (int i = 0; i < se.size(); i++) {
         // draw rectangle
         cvRectangle(
-            *img,
-            cvPoint(235 + (i * 15), top_margin + 45 - (26 - 13 * abs(i - 2))),
-            cvPoint(255 + (i * 15), top_margin + 35 - (26 - 13 * abs(i - 2))),
-            cvScalar(0, 1 * ((double)max(se[i] - trs, 0) / (maxim - trs)),
-                     1 * (1 - (double)max(se[i] - trs, 0) / (maxim - trs))),
-            -1);
+                *img,
+                cvPoint(235 + (i * 15), top_margin + 45 - (26 - 13 * abs(i - 2))),
+                cvPoint(255 + (i * 15), top_margin + 35 - (26 - 13 * abs(i - 2))),
+                cvScalar(0, 1 * ((double) max(se[i] - trs, 0) / (maxim - trs)),
+                1 * (1 - (double) max(se[i] - trs, 0) / (maxim - trs))),
+                -1);
 
         diststr.str("");
         diststr << se[i];
         cvPutText(
-            *img, diststr.str().c_str(),
-            cvPoint(237 + (i * 15), top_margin + 43 - (26 - 13 * abs(i - 2))),
-            &font, cvScalar(0, 0, 0));
+                *img, diststr.str().c_str(),
+                cvPoint(237 + (i * 15), top_margin + 43 - (26 - 13 * abs(i - 2))),
+                &font, cvScalar(0, 0, 0));
     }
     // curtime and start time
     time_t t1 = time(0);
@@ -139,31 +140,31 @@ void add_debug_to_image(IplImage** img, int top_margin, int maxwidth,
     localtime_r(&start_time, &t2);
     char buffer[20];
     char buffer2[20];
-    strftime(buffer, sizeof(buffer), "%H:%M:%S", &t);
+    strftime(buffer, sizeof (buffer), "%H:%M:%S", &t);
     cvPutText(*img, buffer, cvPoint(maxwidth - 100, top_margin + 20), &fontBig,
-              cvScalar(0, 0, 0));
-    strftime(buffer2, sizeof(buffer2), "%H:%M:%S", &t2);
+            cvScalar(0, 0, 0));
+    strftime(buffer2, sizeof (buffer2), "%H:%M:%S", &t2);
     cvPutText(*img, buffer2, cvPoint(maxwidth - 100, top_margin + 45), &fontBig,
-              cvScalar(0, 0, 0));
+            cvScalar(0, 0, 0));
     // start time +- 'buttons'
     cvLine(*img, cvPoint(maxwidth - 150, top_margin),
-           cvPoint(maxwidth - 150, top_margin + 50), cvScalar(0, 0, 0));
+            cvPoint(maxwidth - 150, top_margin + 50), cvScalar(0, 0, 0));
     cvLine(*img, cvPoint(maxwidth - 110, top_margin),
-           cvPoint(maxwidth - 110, top_margin + 50), cvScalar(0, 0, 0));
+            cvPoint(maxwidth - 110, top_margin + 50), cvScalar(0, 0, 0));
     cvLine(*img, cvPoint(maxwidth - 150, top_margin + 25),
-           cvPoint(maxwidth, top_margin + 25), cvScalar(0, 0, 0));
+            cvPoint(maxwidth, top_margin + 25), cvScalar(0, 0, 0));
     diststr.str("+");
     cvPutText(*img, diststr.str().c_str(),
-              cvPoint(maxwidth - 137, top_margin + 20), &fontBig,
-              cvScalar(0, 0, 0));
+            cvPoint(maxwidth - 137, top_margin + 20), &fontBig,
+            cvScalar(0, 0, 0));
     diststr.str("-");
     cvPutText(*img, diststr.str().c_str(),
-              cvPoint(maxwidth - 137, top_margin + 45), &fontBig,
-              cvScalar(0, 0, 0));
+            cvPoint(maxwidth - 137, top_margin + 45), &fontBig,
+            cvScalar(0, 0, 0));
 }
 
 void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle,
-              double kmtotarget) {
+        double kmtotarget) {
     time_t t;
     time(&t);
     fprintf(mainLog,
@@ -179,11 +180,11 @@ void log_data(SbotData sdata, Ll gdata, ImuData idata, double mapAngle,
         log_counter++;
     } else {
         log_counter = 0;
-       /* printf("data > %d %d %d %d %d %d %d %d %d %d %d %f %3.3f\n",
-               sdata.lstep, sdata.rstep, sdata.lspeed, sdata.rspeed,
-               sdata.blocked, sdata.obstacle, sdata.distRL, sdata.distFL,
-               sdata.distM, sdata.distFR, sdata.distRR, kmtotarget * 1000,
-               idata.xAngle);*/
+        /* printf("data > %d %d %d %d %d %d %d %d %d %d %d %f %3.3f\n",
+                sdata.lstep, sdata.rstep, sdata.lspeed, sdata.rspeed,
+                sdata.blocked, sdata.obstacle, sdata.distRL, sdata.distFL,
+                sdata.distM, sdata.distFR, sdata.distRR, kmtotarget * 1000,
+                idata.xAngle);*/
     }
 }
 
@@ -206,39 +207,42 @@ CvScalar status_to_color(string status) {
 
     return it->second;
 }
-
+ 
 /*
  *
  */
 
 int main(int argc, char** argv) {
-    enum image_source_type {camera, jpg, avi};
+    
+    enum image_source_type {
+        camera, jpg, avi
+    };
     image_source_type image_source = camera;
     string image_file = "file.jpg";
-    enum run_mode_type {online, offline};
+
+    enum run_mode_type {
+        online, offline
+    };
     run_mode_type run_mode = online;
-    
+
     IplImage* localizationFrame;
-    YAML::Node config = YAML::LoadFile("../config.yaml");
-    
-    if (config["image_source"].as<string>().compare("camera") == 0)
+
+    if (Config::getString("image_source").compare("camera") == 0)
         image_source = camera;
-    else if (config["image_source"].as<string>().compare("avi") == 0)
-    {
+    else if (Config::getString("image_source").compare("avi") == 0) {
         image_source = avi;
-        image_file = config["image_file"].as<string>();
+        image_file = Config::getString("image_file");
     }
-    if (config["image_source"].as<string>().compare("jpg") == 0)
-    {
+    if (Config::getString("image_source").compare("jpg") == 0) {
         image_source = jpg;
-        image_file = config["image_file"].as<string>();
+        image_file = Config::getString("image_file");
     }
-    
-    if (config["run_mode"].as<string>().compare("online") == 0)
+
+    if (Config::getString("run_mode").compare("online") == 0)
         run_mode = online;
-    else if (config["run_mode"].as<string>().compare("offline") == 0)
+    else if (Config::getString("run_mode").compare("offline") == 0)
         run_mode = offline;
-        
+
     setlocale(LC_ALL, "C");
     time_t t;
     time(&t);
@@ -261,10 +265,10 @@ int main(int argc, char** argv) {
 
     cvNamedWindow("camera", CV_WINDOW_AUTOSIZE);
     cvNamedWindow("path", CV_WINDOW_NORMAL |
-                              CV_WINDOW_KEEPRATIO); // Win.normal dovoluje
-                                                    // resize lebo out je drobny
-                                                    // a obrazok sa stretchne,
-                                                    // keepratio je obvious
+            CV_WINDOW_KEEPRATIO); // Win.normal dovoluje
+    // resize lebo out je drobny
+    // a obrazok sa stretchne,
+    // keepratio je obvious
     cvNamedWindow("localization", CV_WINDOW_AUTOSIZE);
     cvNamedWindow("laser", CV_WINDOW_AUTOSIZE);
 
@@ -293,15 +297,14 @@ int main(int argc, char** argv) {
     // sm.loc->readMap( (char *)"../maps/botanicka.osm" );
     // sm.loc->readMap( (char *)"../maps/borsky2.osm" );
     // sm.loc->readMap( (char *)"../maps/pisek.osm" );
-    const std::string map_file = config["map"].as<std::string>();
-    sm.loc->readMap((char*)map_file.c_str());
+    const std::string map_file = Config::getString("map");
+    sm.loc->readMap((char*) map_file.c_str());
 
-    const double longitude = config["longitude"].as<double>();
-    const double latitude = config["latitude"].as<double>();
-    printf("%f %f\n", longitude, latitude);
+    const double longitude = Config::getDouble("longitude");
+    const double latitude = Config::getDouble("latitude");
 
-    sm.coor->running_mean_weight = config["running_mean_weight"].as<double>();
-    sm.coor->speed_down_dst = config["speed_down_dst"].as<double>();
+    sm.coor->running_mean_weight = Config::getDouble("running_mean_weight");
+    sm.coor->speed_down_dst = Config::getDouble("speed_down_dst");
 
     Ll point;
     point.longitude = longitude;
@@ -309,8 +312,8 @@ int main(int argc, char** argv) {
     sm.loc->setDestination(point);
     //sm.loc->readDestination((char*) "../destination.txt");
 
-    const std::string neural_net = config["neural_net"].as<std::string>();
-    sm.nn->load((char*)neural_net.c_str());
+    const std::string neural_net = Config::getString("neural_net");
+    sm.nn->load((char*) neural_net.c_str());
 
     Subroutines subroutine;
     subroutine.setup(sm.loc, sm.sbot);
@@ -324,11 +327,11 @@ int main(int argc, char** argv) {
     } else if (image_source == avi) {
         // debug
         const char *jezkove_oci = image_file.c_str();
-        capture = cvCreateFileCapture(jezkove_oci); 
+        capture = cvCreateFileCapture(jezkove_oci);
         //"../../video/b23.avi");
     } else if (image_source == jpg) {
         const char *jezkove_oci = image_file.c_str();
-        capture = cvCreateFileCapture(jezkove_oci); 
+        capture = cvCreateFileCapture(jezkove_oci);
         // "../../stromovka-friday/236.jpg");
     }
 
@@ -359,10 +362,10 @@ int main(int argc, char** argv) {
         frame_counter = 0;
 
         IplImage* rgb_frame = cvCreateImage(cvSize(camera_w, camera_h),
-                                            frame->depth, frame->nChannels);
+                frame->depth, frame->nChannels);
         cvResize(frame, rgb_frame);
         IplImage* tmp_frame = cvCreateImage(cvSize(camera_w, camera_h),
-                                            frame->depth, frame->nChannels);
+                frame->depth, frame->nChannels);
         cvFlip(rgb_frame, rgb_frame, 0);
         cvFlip(rgb_frame, rgb_frame, 1);
         cvCvtColor(rgb_frame, tmp_frame, CV_BGR2Lab);
@@ -399,52 +402,52 @@ int main(int argc, char** argv) {
             break;
 
         log_data(sm.sdata, sm.gdata, sm.idata, sm.angles.map,
-                 sm.angles.dstToFin);
+                sm.angles.dstToFin);
 
         int display_direction = 0;
         if (time(0) >= start_time) {
             display_direction = sm.move();
         } else {
             if (time(NULL) % 10 == 0) {
-                printf("T-%d seconds\n", (int)(start_time - time(NULL)));
+                printf("T-%d seconds\n", (int) (start_time - time(NULL)));
             }
         }
         // draw result
         int sizeC = tmp_frame->width / sm.ed->dir_count;
         cvLine(rgb_frame,
-               cvPoint(sizeC * (display_direction),
-                       (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
-               cvPoint(rgb_frame->width / 2, rgb_frame->height),
-               cvScalar(0, 0, 255), 5);
+                cvPoint(sizeC * (display_direction),
+                (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
+                cvPoint(rgb_frame->width / 2, rgb_frame->height),
+                cvScalar(0, 0, 255), 5);
 
         // draw proposed line
         cvLine(rgb_frame,
-               cvPoint((int)(sizeC * 1.2 * (sm.coor->predicted_dir / 8.0 + 5)),
-                       (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
-               cvPoint(rgb_frame->width / 2, rgb_frame->height),
-               cvScalar(0, 255, 255), 5);
+                cvPoint((int) (sizeC * 1.2 * (sm.coor->predicted_dir / 8.0 + 5)),
+                (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
+                cvPoint(rgb_frame->width / 2, rgb_frame->height),
+                cvScalar(0, 255, 255), 5);
 
-        
+
         cvLine(rgb_frame,
-               cvPoint((int)(sizeC * 1.2 * (sm.coor->computed_dir / 8.0 + 5)),
-                       (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
-               cvPoint(rgb_frame->width / 2, rgb_frame->height),
-               cvScalar(0, 255, 0), 5);
+                cvPoint((int) (sizeC * 1.2 * (sm.coor->computed_dir / 8.0 + 5)),
+                (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
+                cvPoint(rgb_frame->width / 2, rgb_frame->height),
+                cvScalar(0, 255, 0), 5);
 
-        for(int i = 0; i < sm.coor->move_probs.size(); i++) { 
+        for (int i = 0; i < sm.coor->move_probs.size(); i++) {
             cvLine(rgb_frame,
-                   cvPoint((int)(sizeC * (i)),
-                           (int)(sm.coor->move_probs[i] * 1.5 * (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y))),
-                   cvPoint(rgb_frame->width / 2, rgb_frame->height),
-                   cvScalar(47, 147, 47), 5);
+                    cvPoint((int) (sizeC * (i)),
+                    (int) (sm.coor->move_probs[i] * 1.5 * (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y))),
+                    cvPoint(rgb_frame->width / 2, rgb_frame->height),
+                    cvScalar(47, 147, 47), 5);
         }
         localizationFrame = sm.loc->getGui();
         add_debug_to_image(&localizationFrame, locwin_map_height, locwin_width,
-                           sm.sdata);
+                sm.sdata);
 
         cvPutText(localizationFrame, sm.coor->move_status.c_str(),
-                  cvPoint(locwin_width - 337, locwin_map_height + 25),
-                  &fontHuge, status_to_color(sm.coor->move_status));
+                cvPoint(locwin_width - 337, locwin_map_height + 25),
+                &fontHuge, status_to_color(sm.coor->move_status));
 
         cvShowImage("camera", rgb_frame);
         cvShowImage("laser", sm.getLaserFrame());

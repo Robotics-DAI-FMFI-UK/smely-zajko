@@ -1,5 +1,5 @@
-#ifndef EVALDIRECITON_H
-#define EVALDIRECITON_H
+#ifndef EVALDIRECTION_H
+#define EVALDIRECTION_H
 
 #define LASER_VALS_START 420
 #define LASER_VALS_END 660
@@ -42,4 +42,4 @@ class EvalDirection {
   private:
 };
 
-#endif /* EVALDIRECITON_H */
+#endif /* EVALDIRECTION_H */
