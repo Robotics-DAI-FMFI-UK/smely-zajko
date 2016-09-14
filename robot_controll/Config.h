@@ -3,7 +3,6 @@
 
 #include "yaml-cpp/yaml.h"
 
-#include <map>
 #include <string.h>
 
 using namespace std;
