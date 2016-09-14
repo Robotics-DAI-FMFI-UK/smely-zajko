@@ -10,6 +10,7 @@ speed_down_dst: 0.001
 #image_source: jpg
 image_source: camera
 # name of file to use as input instead of camera
+# download example avi input from: dai.fmph.uniba.sk/projects/smelyzajko/robotour/data/example_input.avi
 #image_file: ../example_input.avi
 #image_file: ../example_input.jpg
 image_file: none
