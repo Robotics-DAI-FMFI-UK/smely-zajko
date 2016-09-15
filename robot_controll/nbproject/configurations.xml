@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>BindSerialPorts.h</itemPath>
+      <itemPath>/home/navigation/src/smely-zajko/robot_controll/Config.h</itemPath>
       <itemPath>DataTypes.h</itemPath>
       <itemPath>/home/navigation/src/smely-zajko/robot_controll/EvalDirection.h</itemPath>
       <itemPath>GpsThread.h</itemPath>
@@ -24,6 +25,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>BindSerialPorts.cpp</itemPath>
+      <itemPath>/home/navigation/src/smely-zajko/robot_controll/Config.cpp</itemPath>
       <itemPath>Coordinate.cpp</itemPath>
       <itemPath>Coordinate.h</itemPath>
       <itemPath>/home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp</itemPath>
@@ -60,17 +62,11 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
-        <cTool>
-          <incDir>
-            <pElem>../../fann-2.1.0/src/include</pElem>
-          </incDir>
-        </cTool>
         <ccTool>
           <incDir>
             <pElem>../rapidxml-1.13</pElem>
             <pElem>/usr/include/opencv</pElem>
             <pElem>../nn_lib</pElem>
-            <pElem>../../fann-2.1.0/src/include</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
@@ -92,6 +88,16 @@
         </linkerTool>
       </compileType>
       <item path="../../fann-2.1.0/src/include/fann.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/Config.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/Config.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -171,6 +177,16 @@
         </asmTool>
       </compileType>
       <item path="../../fann-2.1.0/src/include/fann.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/Config.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/home/navigation/src/smely-zajko/robot_controll/Config.h"
             ex="false"
             tool="3"
             flavor2="0">

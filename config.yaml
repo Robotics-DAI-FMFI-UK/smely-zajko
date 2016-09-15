@@ -1,20 +1,33 @@
 map: ../maps/matfyz.osm
-neural_network_file: ../555511.net
+#neural_net: ../555511.net
+#neural_net: ../stvrtkovytest.net
+#neural_net: ../stvrtkovytest_fann_2.0.net
+#neural_net: ../fifty_fifty.net
+#neural_net: ../vsetky81.net
+#neural_net: ../vsetky_12_1.net
+neural_network_file: ../vsetky_10_1.net
+#neural_net: ../nova_12_1.net
 longitude: 48.1523277
 latitude: 17.0711468
 running_mean_weight: 0.7
 # start speeding down when this far from nearest map point
-speed_down_dst: 0.001
+speed_down_dst: 0.003
 # camera/avi/jpg
-#image_source: avi
 #image_source: jpg
-image_source: camera
+image_source: avi
+#image_source: camera
 # name of file to use as input instead of camera
 # download example avi input from: dai.fmph.uniba.sk/projects/smelyzajko/robotour/data/example_input.avi
-#image_file: ../example_input.avi
+#image_file: ../vsetky_png.avi
+image_file: ../example_input.avi
+#image_file: ../all_training.avi
+#image_file: ../oo.avi
 #image_file: ../example_input.jpg
-image_file: none
+#image_file: ../monoscope_image.jpg
+#image_file: none
 # wheter robot is connected, offline means no comm. with robot hw
 # online / offline 
 #run_mode: offline
-run_mode: online
+run_mode: offline
+video_delay: 0
+

@@ -334,6 +334,13 @@ void SbotThread::setDirection(int d) {
     sendCommand(buff);
 }
 
+void SbotThread::setMaxSpeed(int maxSpeed) {
+    char buff[32];
+
+    sprintf(buff, "m %d;", maxSpeed);
+    sendCommand(buff);
+}
+
 void SbotThread::setSpeed(int s) {
     char buff[32];
 

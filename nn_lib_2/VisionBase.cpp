@@ -99,14 +99,10 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
                         }
                     }
                 }
-                //context
-                for(int rr = 0; rr < saa.size(); rr++){
-                    fprintf(outFile, "%f ", saa[rr]);
-                }
                 
-                fprintf(outFile, "\n");
-
                 //vypis chceny vystup
+                int results[out_x * out_y];
+                int results_index = 0;
 
                 xo = x + in_x / 2 - step_x / 2;
                 yo = y + in_y / 2 - step_y / 2;
@@ -128,15 +124,37 @@ int VisionBase::create_training_file_full(vector<IplImage*> inputs, vector< vect
                         if (((float)pom / ((step_x / out_x) * (step_y / out_y))) >= 0.5) {
                             res = 1;
                         }
-                        if(res == 1)posi++;else neg++;
-                        fprintf(outFile, "%d ", res);
+                        results[results_index++] = res;
                         
 
                     }
                 }
 
-                fprintf(outFile, "\n");
+               /* 
+                if (((results[0] == 0) && (neg < 150000)) ||
+                    ((results[0] == 1) && (posi < 150000)))    
+                {
+                */
+                    //context
+                    for(int rr = 0; rr < saa.size(); rr++){
+                        fprintf(outFile, "%f ", saa[rr]);
+                    }
 
+                    fprintf(outFile, "\n");
+
+
+                    results_index = 0;
+                    for (int f = 0; f < out_x; f++) {
+                        for (int g = 0; g < out_y; g++) {
+
+                            if(results[results_index] == 1)posi++;else neg++;
+                            fprintf(outFile, "%d ", results[results_index]);
+                            results_index++;
+                        }
+                    }
+
+                    fprintf(outFile, "\n");
+                //}
             }
         }
     }

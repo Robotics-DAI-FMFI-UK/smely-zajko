@@ -31,18 +31,28 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
     // threshold
 
     //printf("evalLaser: ");
+    double max_neural_dir = 0;
+    double max_neural_dir_val = 0.0;
     for (int i = 0; i <= ed->dir_count; i++) {
         double f = ed->eval(predicted_data, i) - 0.4;
         double g = ed->evalLaser(laserData, i);
         if (f < 0) {
             f = 0;
+            
         } else if (f > 0 && g > 0.5) {
             isChodnik = 1;
         }
+        
+        if (f > max_neural_dir_val) {
+            max_neural_dir_val = f;
+            max_neural_dir = i;
+        }
+        
         vDist.push_back(f);
         lDist.push_back(g);
         //printf("%.3f ", g);
     }
+    neuron_dir = max_neural_dir;
     //printf("\n");
 
     // in destination vicinity
@@ -166,8 +176,8 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
                 sbot->setSpeed(5);
                 printf("setSpeed: 5\n");
             } else {
-                sbot->setSpeed(100);
-                printf("setSpeed: 27\n");
+                sbot->setSpeed(10);
+                printf("setSpeed: 10\n");
             }
         }
         display_direction = maxdir;

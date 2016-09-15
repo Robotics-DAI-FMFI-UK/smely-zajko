@@ -261,11 +261,11 @@ int main(int argc, char** argv) {
     //par.push_back({5,5,5,5,1,1,12,1});
     //par.push_back({5,5,5,5,1,1,20,1});
     //par.push_back({5,5,5,5,1,1,6,2});
-    //par.push_back({5,5,5,5,1,1,10,2});
-    par.push_back({5,5,5,5,1,1,12,1});
-    par.push_back({5,5,5,5,1,1,8,1});
+    par.push_back({5,5,5,5,1,1,10,1});
+//    par.push_back({5,5,5,5,1,1,8,1});
+    //par.push_back({5,5,5,5,1,1,8,1});
     par.push_back({5,5,5,5,1,1,12,2});
-    par.push_back({5,5,5,5,1,1,12,3});
+    //par.push_back({5,5,5,5,1,1,12,3});
     printf("cross valid started\n");
     for(int p = 0; p < par.size(); p++){
         params.clear();

@@ -42,8 +42,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=-march=corei7 -I../nn_lib_2 `pkg-config --cflags opencv` `pkg-config --cflags fann` -std=c++11 -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d"
+CCFLAGS=-march=corei7 -I../nn_lib_2 `pkg-config --cflags opencv` `pkg-config --cflags fann` -std=c++11 -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d" 
+CXXFLAGS=-march=corei7 -I../nn_lib_2 `pkg-config --cflags opencv` `pkg-config --cflags fann` -std=c++11 -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d" 
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -52,13 +52,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../nn_lib_2/dist/Release/GNU-Linux/libnn_lib_2.a `pkg-config --libs opencv` `pkg-config --libs fann` -march=corei7
+LDLIBSOPTIONS=/home/navigation/src/smely-zajko/nn_lib_2/dist/Release/GNU-Linux/libnn_lib_2.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ../nn_lib_2/dist/Release/GNU-Linux/libnn_lib_2.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: /home/navigation/src/smely-zajko/nn_lib_2/dist/Release/GNU-Linux/libnn_lib_2.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
@@ -67,11 +67,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nn_train_2: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -O2 -s -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../nn_lib_2 && ${MAKE}  -f Makefile CONF=Release
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -80,7 +79,6 @@ ${OBJECTDIR}/main.o: main.cpp
 
 # Subprojects
 .clean-subprojects:
-	cd ../nn_lib_2 && ${MAKE}  -f Makefile CONF=Release clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

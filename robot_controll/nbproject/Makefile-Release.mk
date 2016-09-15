@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1bea6ee6/Config.o \
 	${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o \
 	${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
@@ -71,6 +72,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/1bea6ee6/Config.o: /home/navigation/src/smely-zajko/robot_controll/Config.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/Config.o /home/navigation/src/smely-zajko/robot_controll/Config.cpp
 
 ${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o: /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6

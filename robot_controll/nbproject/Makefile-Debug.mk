@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1bea6ee6/Config.o \
 	${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o \
 	${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
@@ -74,60 +75,65 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS}
 
+${OBJECTDIR}/_ext/1bea6ee6/Config.o: /home/navigation/src/smely-zajko/robot_controll/Config.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/Config.o /home/navigation/src/smely-zajko/robot_controll/Config.cpp
+
 ${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o: /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp
 
 ${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o: /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o /home/navigation/src/smely-zajko/robot_controll/HokuyoThread.cpp
 
 ${OBJECTDIR}/BindSerialPorts.o: BindSerialPorts.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/BindSerialPorts.o BindSerialPorts.cpp
 
 ${OBJECTDIR}/Coordinate.o: Coordinate.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Coordinate.o Coordinate.cpp
 
 ${OBJECTDIR}/GpsThread.o: GpsThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/GpsThread.o GpsThread.cpp
 
 ${OBJECTDIR}/ImuThread.o: ImuThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ImuThread.o ImuThread.cpp
 
 ${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
 
 ${OBJECTDIR}/SbotThread.o: SbotThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SbotThread.o SbotThread.cpp
 
 ${OBJECTDIR}/SensorManagement.o: SensorManagement.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SensorManagement.o SensorManagement.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/SensorManagement.o SensorManagement.cpp
 
 ${OBJECTDIR}/Subroutines.o: Subroutines.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Subroutines.o Subroutines.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Subroutines.o Subroutines.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib -I../../fann-2.1.0/src/include `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -I../rapidxml-1.13 -I/usr/include/opencv -I../nn_lib `pkg-config --cflags yaml-cpp`   -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

@@ -227,6 +227,12 @@ int main(int argc, char** argv) {
 
     IplImage* localizationFrame;
 
+    YAML::Node config = YAML::LoadFile("../config.yaml");
+    
+    int video_delay = 0;
+    if (config["video_delay"].IsDefined())
+        video_delay = config["video_delay"].as<int>();
+    
     if (Config::getString("image_source").compare("camera") == 0)
         image_source = camera;
     else if (Config::getString("image_source").compare("avi") == 0) {
@@ -347,6 +353,7 @@ int main(int argc, char** argv) {
     time_t photoTime = time(0) + 5;
     int fetching_new_frames = 1;
     while (1) {
+        sleep(video_delay);
         if (fetching_new_frames)
             frame = cvQueryFrame(capture);
         if (!frame) {
@@ -415,10 +422,10 @@ int main(int argc, char** argv) {
         // draw result
         int sizeC = tmp_frame->width / sm.ed->dir_count;
         cvLine(rgb_frame,
-                cvPoint(sizeC * (display_direction),
-                (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
-                cvPoint(rgb_frame->width / 2, rgb_frame->height),
-                cvScalar(0, 0, 255), 5);
+               cvPoint(sizeC * (sm.coor->neuron_dir),
+                       (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y)),
+               cvPoint(rgb_frame->width / 2, rgb_frame->height),
+               cvScalar(0, 0, 255), 5);
 
         // draw proposed line
         cvLine(rgb_frame,
@@ -436,10 +443,10 @@ int main(int argc, char** argv) {
 
         for (int i = 0; i < sm.coor->move_probs.size(); i++) {
             cvLine(rgb_frame,
-                    cvPoint((int) (sizeC * (i)),
-                    (int) (sm.coor->move_probs[i] * 1.5 * (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y))),
-                    cvPoint(rgb_frame->width / 2, rgb_frame->height),
-                    cvScalar(47, 147, 47), 5);
+                   cvPoint((int)(sizeC * (i)),
+                           (int)(sm.coor->move_probs[i] * 1.5 * (rgb_frame->height - sm.ed->triangle_h * sm.nn->step_y))),
+                   cvPoint(rgb_frame->width / 2, rgb_frame->height),
+                   cvScalar(47, 147, 47), 2);
         }
         localizationFrame = sm.loc->getGui();
         add_debug_to_image(&localizationFrame, locwin_map_height, locwin_width,

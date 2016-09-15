@@ -53,6 +53,7 @@ class SbotThread {
     void setSpeed(int s);
     void unblock();
     void ignoreObstacle(bool val);
+    void setMaxSpeed(int maxSpeed);
 
     // Sbot->PC
     // SbotData getData();

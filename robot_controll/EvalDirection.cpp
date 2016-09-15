@@ -87,8 +87,8 @@ double EvalDirection::eval(CvMat* frame, int direction) {
 
     double r = comp_sum(frame);
 
-    cvLine(frame, cvPoint(A.x, A.y), cvPoint(C.x, C.y), cvScalar(0, 0, 0), 1);
-    cvLine(frame, cvPoint(C.x, C.y), cvPoint(B.x, B.y), cvScalar(0, 0, 0), 1);
+    //cvLine(frame, cvPoint(A.x, A.y), cvPoint(C.x, C.y), cvScalar(0, 0, 0), 1);
+   //cvLine(frame, cvPoint(C.x, C.y), cvPoint(B.x, B.y), cvScalar(0, 0, 0), 1);
 
     // printf("eval direction: %d sum: %f  \n", direction,r);
 

@@ -33,7 +33,7 @@ int VisionRegionReduced::create_training( vector<IplImage*> inputs, vector<CvMat
     int positives = 0;
 
     //head
-    fprintf(outFile, "%d %d %d\n", inputs.size()*parts_x*parts_y, this->input_neurons, this->output_neurons );
+    fprintf(outFile, "%ld %d %d\n", inputs.size()*parts_x*parts_y, this->input_neurons, this->output_neurons );
 
     for (int k = 0; k < inputs.size(); k++) {
 
@@ -88,7 +88,7 @@ int VisionRegionReduced::create_random_training( vector<IplImage*> inputs, vecto
     int positives = 0;
 
     //head
-    fprintf(outFile, "%d %d %d\n", inputs.size()*sampleCount, this->input_neurons, this->output_neurons );
+    fprintf(outFile, "%ld %d %d\n", inputs.size()*sampleCount, this->input_neurons, this->output_neurons );
 
     for(int k=0; k<inputs.size(); k++ ){
 

@@ -31,7 +31,7 @@ int VisionHistogram::create_random_training( vector<IplImage*> inputs, vector<Cv
     int positives = 0;
 
     //head
-    fprintf(outFile, "%d %d %d\n", inputs.size()*sampleCount, this->input_neurons, this->output_neurons );
+    fprintf(outFile, "%ld %d %d\n", inputs.size()*sampleCount, this->input_neurons, this->output_neurons );
 
     for(int k=0; k<inputs.size(); k++ ){
 

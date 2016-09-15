@@ -349,8 +349,12 @@ CvMat* VisionBase::create_out_mat(vector<fann_type> calc_out){
    
             double d = calc_out.at(ite);
             ite++;
-            d = d*2; //weight
+            
+            d += 0.2;
+            d = d*d*d*d*d*d; //weight
 
+            //d *= 2;
+            
             if(d<0){
                 d=0;
             }else if(d>1){

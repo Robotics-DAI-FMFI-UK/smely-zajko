@@ -9,6 +9,7 @@ void SensorManagement::init(int is_online_mode) {
     online_mode = is_online_mode;
     // new VisionContext(); je prazdny kontext
     VisionContext* con = new VisionContext();
+    //VisionContext* con = new ContextHistogram();
     // new VisionModifier(); je prazdny modifier
     VisionModifier* mod = new VisionModifier();
     vector<int> vmod;
@@ -36,6 +37,7 @@ void SensorManagement::init(int is_online_mode) {
     imu->run();
     hokuyo->run();
 
+    sbot->setMaxSpeed(20);
     // nn.load("../plzen4.net");//tiez mozno je ale az moc preuceno
     // nn.load("../555511.net");
     // nn->load("../555511.net");
