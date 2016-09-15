@@ -11,6 +11,9 @@
 #define PROB_NO_GO 0.001
 
 #include <cv.h>
+#include <vector>
+
+using namespace std;
 
 class EvalDirection {
     CvPoint A, B, C;
@@ -36,6 +39,7 @@ class EvalDirection {
     double eval(CvMat* frame, int direction);
     double evalLaser(int* laserData, int direction);
     int get_best(CvMat* frame);
+    vector<int> directions;
 
     virtual ~EvalDirection();
 

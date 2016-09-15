@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 EvalDirection::EvalDirection(int triangle_w, int triangle_h, int dir_count,
-                             int frame_w, int frame_h) {
+        int frame_w, int frame_h) {
     this->dir_count = dir_count;
     this->triangle_w = triangle_w;
     this->triangle_h = triangle_h;
@@ -19,7 +19,19 @@ EvalDirection::EvalDirection(int triangle_w, int triangle_h, int dir_count,
     S = (triangle_h * triangle_w) / 2;
 
     this->laser_vals_per_direction =
-        (LASER_VALS_END - LASER_VALS_START) / dir_count;
+            (LASER_VALS_END - LASER_VALS_START) / dir_count;
+
+    directions.push_back(650);
+    directions.push_back(630);
+    directions.push_back(610);
+    directions.push_back(585);
+    directions.push_back(560);
+    directions.push_back(525);
+    directions.push_back(500);
+    directions.push_back(470);
+    directions.push_back(445);
+    directions.push_back(420);
+    directions.push_back(400);
 }
 
 EvalDirection::~EvalDirection() {}
@@ -36,7 +48,7 @@ void EvalDirection::set_mask() {
     cvLine(mask, C, B, cvScalar(1));
 
     cvFloodFill(mask, cvPoint((A.x + B.x + C.x) / 3, (A.y + B.y + C.y) / 3),
-                cvScalar(1));
+            cvScalar(1));
 
     // cvShowImage( "debug", mask );
 }
@@ -65,11 +77,11 @@ double EvalDirection::eval(CvMat* frame, int direction) {
         return -1;
     }
 
-    double sizeC = frame_w / (double)(dir_count);
-    double sizeA = (frame_w - triangle_w) / (double)(dir_count);
-    A.x = (int)(sizeA * direction + 0.5);
-    B.x = (int)(frame_w - sizeA * (dir_count - direction) + 0.5);
-    C.x = (int)(sizeC * direction + 0.5);
+    double sizeC = frame_w / (double) (dir_count);
+    double sizeA = (frame_w - triangle_w) / (double) (dir_count);
+    A.x = (int) (sizeA * direction + 0.5);
+    B.x = (int) (frame_w - sizeA * (dir_count - direction) + 0.5);
+    C.x = (int) (sizeC * direction + 0.5);
 
     // printf("tr d: %d A: %d B: %d C: %d \n", direction,A.x, B.x, C.x);
 
@@ -106,6 +118,27 @@ int EvalDirection::get_best(CvMat* frame) {
 double EvalDirection::evalLaser(int* laserData, int direction) {
 
     direction = 10 - direction;
+
+
+    // left side
+    int direction_laser_begin = directions[direction] + 10;
+    // right side
+    int direction_laser_end = directions[direction] - 10;
+
+    int sum = 0;
+    int sum1 = 0;
+
+    for (int i = direction_laser_end; i < direction_laser_begin; i++) {
+
+        sum += (1 - i);
+        sum1 += (1 - i) * laserData[i];
+    }
+
+    double result = (1.0 / sum) * sum1;
+
+    return result;
+
+    /*
     int start = LASER_VALS_START + (direction * laser_vals_per_direction);
     int end = LASER_VALS_START + ((direction + 1) * laser_vals_per_direction);
 
@@ -150,4 +183,5 @@ double EvalDirection::evalLaser(int* laserData, int direction) {
     } else {
         return PROB_GO;
     }
+     */
 }
