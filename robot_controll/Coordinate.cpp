@@ -33,6 +33,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
     //printf("evalLaser: ");
     double max_neural_dir = 0;
     double max_neural_dir_val = 0.0;
+    printf("HOKUYO WEIGHTS:\n");
     for (int i = 0; i <= ed->dir_count; i++) {
         double f = ed->eval(predicted_data, i) - 0.4;
         double g = ed->evalLaser(laserData, i);
@@ -50,8 +51,9 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
         
         vDist.push_back(f);
         lDist.push_back(g);
-        //printf("%.3f ", g);
+        printf("%.3f ", g);
     }
+    printf("\n");
     neuron_dir = max_neural_dir;
     //printf("\n");
 
@@ -134,7 +136,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
         for (int i = 0; i <= ed->dir_count; i++) {
             double coeff = 5 - abs(delta - (i - 5));
             if (coeff < 0.0)
-                coeff = 0.1;
+                coeff = 0.000001; //0.1;
             coeff /= 12.0; // vyskusat 5, 12 ...
             coeff += 1.0;
             // TODO x 1if hoku sez > 1.5m else 0.1
@@ -171,13 +173,13 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
 
         if (autonomy) {
             sbot->setDirection(predicted_dir);
-            printf("%.10f %.10f\n", angles.dstToHeadingPoint, speed_down_dst);
+            //printf("%.10f %.10f\n", angles.dstToHeadingPoint, speed_down_dst);
             if (angles.dstToHeadingPoint <= speed_down_dst) {
                 sbot->setSpeed(5);
-                printf("setSpeed: 5\n");
+                //printf("setSpeed: 5\n");
             } else {
                 sbot->setSpeed(10);
-                printf("setSpeed: 10\n");
+                //printf("setSpeed: 10\n");
             }
         }
         display_direction = maxdir;

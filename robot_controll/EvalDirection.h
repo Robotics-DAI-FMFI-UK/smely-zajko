@@ -10,6 +10,9 @@
 #define PROB_GO 1.0
 #define PROB_NO_GO 0.001
 
+#define PARABOLA_RANGE_FORWARD 2500.0
+#define PARABOLA_RANGE_SIDE 800.0
+
 #include <cv.h>
 #include <vector>
 
@@ -40,6 +43,7 @@ class EvalDirection {
     double evalLaser(int* laserData, int direction);
     int get_best(CvMat* frame);
     vector<int> directions;
+    double max_range[1081];
 
     virtual ~EvalDirection();
 

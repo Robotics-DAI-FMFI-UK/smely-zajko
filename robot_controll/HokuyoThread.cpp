@@ -81,6 +81,15 @@ void HokuyoThread::init() {
     printf("Hokuyo connected\n");
 }
 
+void filter_hokuyo_borders(int *data)
+{
+   for (int i = 60; i < 180; i++)
+       data[i] = data[300 - i];
+   for (int i = 1020; i > 900; i--)
+       data[i] = data[900 - (i - 900)];
+}
+
+
 void* HokuyoThread::mainLoop(void*) {
 
     FILE* inlog;
@@ -183,6 +192,7 @@ void* HokuyoThread::mainLoop(void*) {
                 // printf("  => %d; ", data[beam_index]);
                 beam_index--;
             }
+            filter_hokuyo_borders(data);
             pthread_mutex_unlock(&m_read);
         }
         else //not online mode
@@ -192,6 +202,17 @@ void* HokuyoThread::mainLoop(void*) {
             
             for (int i = 0; i < RANGE_DATA_COUNT; i++)
                 data[i] = 3000;
+            
+            for (int i = 0; i < 4 * RANGE_DATA_COUNT / 9; i++)
+                data[i] = 600.0 / cos(((i - 180) / 4.0) / 180.0 * M_PI);
+
+            for (int i = 5 * RANGE_DATA_COUNT / 9; i < RANGE_DATA_COUNT; i++)
+                data[i] = 600.0 / cos(M_PI - ((i - 180) / 4.0) / 180.0 * M_PI);
+
+            /*
+            for (int i = 35 * RANGE_DATA_COUNT / 90; i <= 55 * RANGE_DATA_COUNT / 90; i++)
+                data[i] = 500.0 / sin(((i - 180) / 4.0) / 180.0 * M_PI);
+           */
             pthread_mutex_unlock(&m_read);
             sleep(1);
         }
@@ -267,6 +288,6 @@ IplImage* HokuyoThread::getGuiFrame(int* dataArr) {
         cvCircle(result, cvPoint(x, guiHeight - y), 2, cvScalar(0.6, 0.8, 0),
                  -1);
     }
-    printf("min: %ld, %ld\n", min_id, min);
+    //printf("min: %ld, %ld\n", min_id, min);
     return result;
 }
