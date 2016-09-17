@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/1bea6ee6/Config.o \
 	${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o \
 	${OBJECTDIR}/_ext/1bea6ee6/HokuyoThread.o \
 	${OBJECTDIR}/BindSerialPorts.o \
@@ -46,6 +45,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/SbotThread.o \
 	${OBJECTDIR}/SensorManagement.o \
 	${OBJECTDIR}/Subroutines.o \
+	${OBJECTDIR}/Config.o \
 	${OBJECTDIR}/main.o
 
 
@@ -54,7 +54,7 @@ CFLAGS=
 
 # CC Compiler Flags
 CCFLAGS=
-CXXFLAGS=
+CXXFLAGS=-march=corei7 -I../nn_lib `pkg-config --cflags opencv` `pkg-config --cflags fann` -std=c++11 -O3 -ftree-parallelize-loops=4 -floop-parallelize-all -MMD -MP -MF "$@.d"
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -63,7 +63,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=-L/usr/lib/x86_64-linux-gnu -L/usr/lib ../nn_lib/dist/Release/GNU-Linux/libnn_lib.a -lopencv_core -lopencv_highgui -lopencv_ml -lfann -lpthread -lopencv_imgproc -lopencv_legacy `pkg-config --libs yaml-cpp`
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -72,11 +72,6 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/robot_controll ${OBJECTFILES} ${LDLIBSOPTIONS}
-
-${OBJECTDIR}/_ext/1bea6ee6/Config.o: /home/navigation/src/smely-zajko/robot_controll/Config.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1bea6ee6/Config.o /home/navigation/src/smely-zajko/robot_controll/Config.cpp
 
 ${OBJECTDIR}/_ext/1bea6ee6/EvalDirection.o: /home/navigation/src/smely-zajko/robot_controll/EvalDirection.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1bea6ee6
@@ -112,6 +107,11 @@ ${OBJECTDIR}/LocalizationAndPlaning.o: LocalizationAndPlaning.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/LocalizationAndPlaning.o LocalizationAndPlaning.cpp
+
+${OBJECTDIR}/Config.o: Config.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Config.o Config.cpp
 
 ${OBJECTDIR}/SbotThread.o: SbotThread.cpp 
 	${MKDIR} -p ${OBJECTDIR}
