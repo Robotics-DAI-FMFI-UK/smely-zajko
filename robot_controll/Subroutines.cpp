@@ -20,42 +20,57 @@ void Subroutines::setup(LocalizationAndPlaning* lc, SbotThread* sb) {
     sbot = sb;
 }
 
+void say(string);
+
 void Subroutines::manageObstacles(SensorManagement sm) {
-    if (sm.sdata.obstacle && (!was_obstacle)) {
+    int hokuyo_to_stop = HokuyoThread::demands_immediate_stop();
+    int see_obstacle = sm.sdata.obstacle || hokuyo_to_stop;
+    if (hokuyo_to_stop) 
+    {
+        sbot->stopNow();
+        say("I beg your pardon");
+    }
+
+    if (see_obstacle && (!was_obstacle)) {
         time_t tobs = time(NULL);
         found_obstacle = tobs;
         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!OBSTACLE\n");
         sm.coor->move_status = "obstacle";
     }
     time_t tmnow = time(NULL);
-    if ((sm.sdata.obstacle) && (tmnow - found_obstacle > 20)) {
+    if (see_obstacle && (tmnow - found_obstacle > 20)) {
         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BACKING UP\n");
         found_obstacle = found_obstacle + 30;
         // cuvat alebo aspon tocit!!
-        double lft = sm.evalNeuralForDirection(0);
-        double rgh = sm.evalNeuralForDirection(sm.getDirNum());
-        int bakdir = 0;
-        if (lft > rgh) {
-            bakdir = -40;
-            printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT\n");
-            sm.coor->move_status = "back up left";
-        } else {
-            bakdir = 40;
+        int back_direction = 0;
+        // if compass has smaller delta direction
+        if(fabs(sm.coor->delta) < 20) {
+            back_direction = 40;
             printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RIGHT\n");
             sm.coor->move_status = "back up right";
+        } else {
+            if(sm.coor->delta > 0) {
+                back_direction = 40;
+                printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RIGHT - COMPASS\n");
+                sm.coor->move_status = "back up right";
+            } else {
+                back_direction = -40;
+                printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LEFT - COMPASS\n");
+                sm.coor->move_status = "back up left";
+            }
         }
         sbot->ignoreObstacle(true);
         sbot->setDirection(0);
         sbot->setSpeed(-3);
         sleep(4);
-        sbot->setDirection(bakdir);
-        sbot->setSpeed(2);
-        sleep(2);
+        sbot->setDirection(back_direction);
+        sbot->setSpeed(3);
+        sleep(3);
         sbot->setDirection(0);
         sbot->setSpeed(0);
         sleep(2);
         sbot->ignoreObstacle(false);
-    } else if (sm.sdata.obstacle) {
+    } else if (see_obstacle) {
         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! %ld\n",
                tmnow - found_obstacle);
         fflush(stdout);
@@ -63,8 +78,8 @@ void Subroutines::manageObstacles(SensorManagement sm) {
         sprintf(str, "obstacle %ld", tmnow - found_obstacle);
         sm.coor->move_status = str;
     }
-    was_obstacle = sm.sdata.obstacle;
-    sm.coor->status_from_subroutines = sm.sdata.obstacle;
+    was_obstacle = see_obstacle;
+    sm.coor->status_from_subroutines = see_obstacle;
 }
 
 int Subroutines::manageFinish(SensorManagement sm) {

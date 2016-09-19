@@ -188,8 +188,15 @@ void LocalizationAndPlaning::readMap(char* filename) {
     delete[] str;
 
     for (int i = 0; i < paths.size(); i++) {
-
-        for (int j = 1; j < paths[i].points.size() - 1; j++) {
+        int points_size = paths[i].points.size();
+        
+        // if the path does not have points on the map
+        // we do not consider it to be valid
+        if (points_size == 0) {
+            continue;
+        }
+        
+        for (int j = 1; j < points_size - 1; j++) {
             double id1 = paths[i].points[j];
             double id2 = paths[i].points[j - 1];
             double id3 = paths[i].points[j + 1];

@@ -23,6 +23,7 @@ class HokuyoThread {
 
     void getData(int* buffer);
     IplImage* getGuiFrame(int* dataArr);
+    static int demands_immediate_stop() { int hdis = hokuyo_demands_immediate_stop; hokuyo_demands_immediate_stop = 0; return hdis; }
 
   private:
     static bool end;
@@ -32,6 +33,7 @@ class HokuyoThread {
     static int guiWidth;
     static int guiHeight;
     static IplImage* result;
+    static int hokuyo_demands_immediate_stop;
 
     pthread_t t;
 

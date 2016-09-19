@@ -60,17 +60,17 @@ EvalDirection::EvalDirection(int triangle_w, int triangle_h, int dir_count,
     double par_c = PARABOLA_RANGE_FORWARD;
     double par_a = -PARABOLA_RANGE_FORWARD / (PARABOLA_RANGE_SIDE * PARABOLA_RANGE_SIDE);
 
-    printf("parabola a = %f, c = %f\n", par_a, par_c);
+    //printf("parabola a = %f, c = %f\n", par_a, par_c);
 
     for (int ray = 180; ray <= 900; ray++) {
         double alpha = (ray_to_alpha(ray) + 90.0) / 180.0 * M_PI;
-        printf("sqrt of %f\n", sin(alpha) * sin(alpha) - 4 * par_a * par_c * cos(alpha) * cos(alpha));
-        printf("dividing by %f\n", (2 * par_a * cos(alpha) * cos(alpha)));
+        //printf("sqrt of %f\n", sin(alpha) * sin(alpha) - 4 * par_a * par_c * cos(alpha) * cos(alpha));
+        //printf("dividing by %f\n", (2 * par_a * cos(alpha) * cos(alpha)));
         if (ray == 540) max_range[ray] = PARABOLA_RANGE_FORWARD;
         else max_range[ray] = -((0.0 - sin(alpha) +
                 sqrt(sin(alpha) * sin(alpha) - 4 * par_a * par_c * cos(alpha) * cos(alpha)))
                 / (2 * par_a * cos(alpha) * cos(alpha)));
-        printf("%d   %f   %f\n", ray, alpha, max_range[ray]);
+        //printf("%d   %f   %f\n", ray, alpha, max_range[ray]);
     }
 }
 
@@ -158,9 +158,6 @@ int EvalDirection::get_best(CvMat* frame) {
 // TODO eval direction from hokuyo
 
 double EvalDirection::evalLaser(int* laserData, int direction) {
-
-    direction = 10 - direction;
-
 
 //    int direction_laser_begin = max(180, directions[direction] - 360);
     int direction_laser_begin = directions[direction] - 360;

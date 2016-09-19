@@ -28,6 +28,7 @@ class Coordinate {
     double speed_down_dst;
     string move_status;
     bool status_from_subroutines;
+    double delta;
     vector<double> move_probs;
     Coordinate();
 

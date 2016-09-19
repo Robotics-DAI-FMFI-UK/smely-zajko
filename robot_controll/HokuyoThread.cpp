@@ -36,8 +36,10 @@ int* HokuyoThread::data;
 int HokuyoThread::sockfd;
 int HokuyoThread::guiWidth;
 int HokuyoThread::guiHeight;
+int HokuyoThread::hokuyo_demands_immediate_stop;
 IplImage* HokuyoThread::result;
 static int online_mode;
+
 
 HokuyoThread::HokuyoThread(int is_online_mode) {
     online_mode = is_online_mode;
@@ -45,6 +47,7 @@ HokuyoThread::HokuyoThread(int is_online_mode) {
     end = false;
     guiWidth = 320;
     guiHeight = 240;
+    hokuyo_demands_immediate_stop = 0;
 }
 
 void HokuyoThread::init() {
@@ -97,6 +100,7 @@ void* HokuyoThread::mainLoop(void*) {
     char* start_measurement = "BM\n";
     char* request_measurement = "GD0000108000\n";
     unsigned char readbuf[BUFFER_SIZE];
+    int disruption;
 
     // printf("HOK1\n");
     if (online_mode)
@@ -165,7 +169,8 @@ void* HokuyoThread::mainLoop(void*) {
             readptr = searchptr;
             pthread_mutex_lock(&m_read);
             // printf("HOK6\n");
-            int counter = 0;
+            //int counter = 0;
+	    int rays_with_critical_distance = 0;
             while (beam_index >= 0) {
                 // printf("%d (%d %d %d)", counter++, (int)readbuf[searchptr],
                 // (int)readbuf[searchptr + 1], (int)readbuf[searchptr + 2]);
@@ -190,6 +195,21 @@ void* HokuyoThread::mainLoop(void*) {
                     searchptr += 3;
                 }
                 // printf("  => %d; ", data[beam_index]);
+		if ((beam_index > 220) && (beam_index < 860)) 
+		{
+			if (data[beam_index] < 300) 
+			{
+				rays_with_critical_distance++;
+				disruption = 0;
+	    			if (rays_with_critical_distance > 70) hokuyo_demands_immediate_stop = 1;
+			}
+			else 
+			{
+				if (disruption) rays_with_critical_distance = 0;
+				disruption = 1;
+			}
+		}
+                
                 beam_index--;
             }
             filter_hokuyo_borders(data);

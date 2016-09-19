@@ -35,6 +35,20 @@ FILE* mainLog;
 int log_counter = 0;
 bool autonomy = true;
 
+void say(string sentence) 
+{
+    static time_t last_speak;
+    time_t current_time;
+    time(&current_time);
+    if (current_time > last_speak + 5)
+    {                
+        char buf[128];
+        sprintf(buf, "echo '%s' | espeak -v en-us -p 90 -a 400 &", sentence.c_str());
+        system(buf);
+        last_speak = current_time;
+    }
+}
+
 void init_video() {
     FILE* mplayer;
     char* command =
@@ -227,11 +241,9 @@ int main(int argc, char** argv) {
 
     IplImage* localizationFrame;
 
-    YAML::Node config = YAML::LoadFile("../config.yaml");
-    
     int video_delay = 0;
-    if (config["video_delay"].IsDefined())
-        video_delay = config["video_delay"].as<int>();
+    if (Config::isDefined("video_delay"))
+        video_delay = Config::getInt("video_delay");
     
     if (Config::getString("image_source").compare("camera") == 0)
         image_source = camera;
@@ -306,15 +318,21 @@ int main(int argc, char** argv) {
     const std::string map_file = Config::getString("map");
     sm.loc->readMap((char*) map_file.c_str());
 
-    const double longitude = Config::getDouble("longitude");
-    const double latitude = Config::getDouble("latitude");
 
     sm.coor->running_mean_weight = Config::getDouble("running_mean_weight");
     sm.coor->speed_down_dst = Config::getDouble("speed_down_dst");
 
     Ll point;
-    point.longitude = longitude;
-    point.latitude = latitude;
+    if(Config::isDefined("minute_notation")){
+        float lat_d, lat_m, lat_s, lon_d, lon_m, lon_s;
+        sscanf(Config::getString("longitude").c_str(), "%f %f %f", &lon_d, &lon_m, &lon_s);
+        sscanf(Config::getString("latitude").c_str(), "%f %f %f", &lat_d, &lat_m, &lat_s);
+        point.longitude = (double)(lon_d + lon_m / 60.0 + lon_s / 3600.0);
+        point.latitude = (double)(lat_d + lat_m / 60.0 + lat_s / 3600.0);
+    } else {
+        point.longitude = Config::getDouble("longitude");
+        point.latitude = Config::getDouble("latitude");
+    }
     sm.loc->setDestination(point);
     //sm.loc->readDestination((char*) "../destination.txt");
 
@@ -352,6 +370,7 @@ int main(int argc, char** argv) {
     int frame_counter = 0;
     time_t photoTime = time(0) + 5;
     int fetching_new_frames = 1;
+    string prev_status = "";
     while (1) {
         sleep(video_delay);
         if (fetching_new_frames)
@@ -452,6 +471,11 @@ int main(int argc, char** argv) {
         add_debug_to_image(&localizationFrame, locwin_map_height, locwin_width,
                 sm.sdata);
 
+        
+        if (prev_status != sm.coor->move_status) {
+            say(sm.coor->move_status);
+            prev_status = sm.coor->move_status;
+        }
         cvPutText(localizationFrame, sm.coor->move_status.c_str(),
                 cvPoint(locwin_width - 337, locwin_map_height + 25),
                 &fontHuge, status_to_color(sm.coor->move_status));
@@ -468,6 +492,9 @@ int main(int argc, char** argv) {
         cvReleaseImage(&localizationFrame);
 
         char c = cvWaitKey(33);
+        if (c == '+') start_time += 20;
+        if (c == '-') start_time -= 20;
+        
         if (c == 27)
             break;
     }

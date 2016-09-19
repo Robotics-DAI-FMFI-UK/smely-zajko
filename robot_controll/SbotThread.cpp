@@ -341,6 +341,12 @@ void SbotThread::setMaxSpeed(int maxSpeed) {
     sendCommand(buff);
 }
 
+void SbotThread::stopNow() {
+    char buff[32];
+    sprintf(buff, "/");
+    sendCommand(buff);
+}
+
 void SbotThread::setSpeed(int s) {
     char buff[32];
 

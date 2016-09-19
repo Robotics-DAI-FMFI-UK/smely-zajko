@@ -10,6 +10,7 @@ Coordinate::Coordinate() {
     move_status = "standby";
     running_mean_weight = 0.0;
     speed_down_dst = 0.0;
+    delta = 0.0;
 }
 
 // returns direction as integer
@@ -23,7 +24,6 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
 
     int display_direction = 0;
 
-    double delta;
     vector<double> vDist;
     vector<double> lDist;
     int isChodnik = 0;
@@ -137,7 +137,7 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
             double coeff = 5 - abs(delta - (i - 5));
             if (coeff < 0.0)
                 coeff = 0.000001; //0.1;
-            coeff /= 12.0; // vyskusat 5, 12 ...
+            coeff /= 25.0; // vyskusat 5, 12 ...
             coeff += 1.0;
             // TODO x 1if hoku sez > 1.5m else 0.1
            // lDist[i] = 1.0;
@@ -175,11 +175,11 @@ int Coordinate::move(CvMat* predicted_data, SbotThread* sbot, GpsAngles angles,
             sbot->setDirection(predicted_dir);
             //printf("%.10f %.10f\n", angles.dstToHeadingPoint, speed_down_dst);
             if (angles.dstToHeadingPoint <= speed_down_dst) {
-                sbot->setSpeed(5);
-                //printf("setSpeed: 5\n");
+                sbot->setSpeed(7);
+                printf("setSpeed: 7\n");
             } else {
                 sbot->setSpeed(10);
-                //printf("setSpeed: 10\n");
+                printf("setSpeed: 10\n");
             }
         }
         display_direction = maxdir;

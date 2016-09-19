@@ -1,14 +1,20 @@
-map: ../maps/matfyz.osm
-#neural_net: ../555511.net
+map: ../maps/deggendorf_edited.osm
+neural_network_file: ../555511.net
 #neural_net: ../stvrtkovytest.net
 #neural_net: ../stvrtkovytest_fann_2.0.net
 #neural_net: ../fifty_fifty.net
 #neural_net: ../vsetky81.net
 #neural_net: ../vsetky_12_1.net
-neural_network_file: ../vsetky_10_1.net
+#neural_network_file: ../vsetky_10_1.net
 #neural_net: ../nova_12_1.net
-longitude: 48.1523277
-latitude: 17.0711468
+latitude: 48.8302308
+longitude: 12.9553283
+# ----------------------------------
+#
+#minute_notation: true
+#latitude: '48.0 49.0 46.8912'
+#longitude: '12.0 57.0 6.8904'
+# ----------------------------------
 running_mean_weight: 0.7
 # start speeding down when this far from nearest map point
 speed_down_dst: 0.003
@@ -27,7 +33,6 @@ image_file: ../example_input.avi
 #image_file: none
 # wheter robot is connected, offline means no comm. with robot hw
 # online / offline 
-#run_mode: offline
 run_mode: offline
+#run_mode: online
 video_delay: 0
-
