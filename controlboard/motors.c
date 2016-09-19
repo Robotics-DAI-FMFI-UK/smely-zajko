@@ -167,6 +167,15 @@ void stop(void)
   target_speedR = 0;
 }
 
+void stop_now(void)
+{
+  set_servo(0, SERVO_STOP);
+  target_speedL = 0;
+  target_speedR = 0;
+  pwm_speedL = SERVO_STOP;
+  pwm_speedR = SERVO_STOP;
+}
+
 void setup_motors()
 {
 	next_updateL = 0;

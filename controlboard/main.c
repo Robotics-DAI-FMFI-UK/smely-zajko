@@ -159,12 +159,12 @@ void obstacle_avoidance(void)
 	if (dist[2] < 25) dist[2] = 200;
 
     // and one of the other 4 (round robin)
-	srf08_sample(SRF08_ADDR + which_sensor * 2);
+	//srf08_sample(SRF08_ADDR + which_sensor * 2);
 	
 	// umbrella solution
-	//srf08_echos[0] = 200;
+	srf08_echos[0] = 200;
 	
-	wait(14);
+	//wait(14);
 	dist[which_sensor] = srf08_echos[0];
 	if (dist[which_sensor] < 10) dist[which_sensor] = 200;
 

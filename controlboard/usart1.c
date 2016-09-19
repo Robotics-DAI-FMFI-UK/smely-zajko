@@ -34,6 +34,7 @@ FILE usart1 = FDEV_SETUP_STREAM(usart1_putchar, usart1_getchar, _FDEV_SETUP_RW);
 
 void process_char(char c);
 void usart1_onechar();
+void stop_now(void);
 
 ISR(USART1_RX_vect)
 {
@@ -145,6 +146,9 @@ void process_char(char c)
   {
 	  switch (c)
 	  {
+	    case '/': command = '/';
+		          stop_now();
+				  break;
 	    case 's': command = 's';
 		          expect_command = 0;
 				  value = 0;
